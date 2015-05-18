@@ -82,29 +82,31 @@ TEST(SchedulerGroup, ScheduleMultipleNonOverlappingEvents)
 TEST(SchedulerGroup, ScheduleBasicOverlappingEvents)
 {
     const unsigned int firstEarlyStartTime = 10;
+    const unsigned int firstLatestStartTime = 20;
     const unsigned int lastEarlyStartTime = 20;
+    const unsigned int lastLatestStartTime = 30;
     const unsigned int duration = 15;
     auto newTaskList = std::make_shared<std::vector<std::shared_ptr<Task>>>();
     
-    auto newTask = std::make_shared<Task>();
-    newTask->setEarliestStartTime(firstEarlyStartTime);
-    newTask->setLatestEndTime(20);
-    newTask->setDuration(duration);
-    newTaskList->push_back(newTask);
+    auto firstTask = std::make_shared<Task>();
+    firstTask->setEarliestStartTime(firstEarlyStartTime);
+    firstTask->setLatestEndTime(firstLatestStartTime);
+    firstTask->setDuration(duration);
+    newTaskList->push_back(firstTask);
     
-    newTask = std::make_shared<Task>();
-    newTask->setEarliestStartTime(lastEarlyStartTime);
-    newTask->setLatestEndTime(30);
-    newTask->setDuration(duration);
-    newTaskList->push_back(newTask);
+    auto lastTask = std::make_shared<Task>();
+    lastTask->setEarliestStartTime(lastEarlyStartTime);
+    lastTask->setLatestEndTime(lastLatestStartTime);
+    lastTask->setDuration(duration);
+    newTaskList->push_back(lastTask);
     
     testScheduler->setTaskList(newTaskList);
     testScheduler->schedule();
 
     auto event = testScheduler->getScheduledEvent(0);
-    CHECK(newTaskList->at(0).get() == event->getParent().get());
+    CHECK(firstTask.get() == event->getParent().get());
     LONGS_EQUAL(firstEarlyStartTime, event->getStartTime());
     event = testScheduler->getScheduledEvent(1);
-    CHECK(newTaskList->at(1).get() == event->getParent().get());
+    CHECK(lastTask.get() == event->getParent().get());
     LONGS_EQUAL(firstEarlyStartTime + duration, event->getStartTime());
 }
