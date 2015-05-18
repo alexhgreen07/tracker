@@ -1,91 +1,91 @@
 #include <CppUTest/TestHarness.h>
 
-#include "event.hpp"
+#include "task.hpp"
 
-TEST_GROUP(EventGroup)
+TEST_GROUP(TaskGroup)
 {
-    std::shared_ptr<Event> testEvent;
+    std::shared_ptr<Task> testTask;
     
     void setup()
     {
-        testEvent = std::make_shared<Event>();
+        testTask = std::make_shared<Task>();
     }
 };
 
-TEST(EventGroup, BasicInitialize)
+TEST(TaskGroup, BasicInitialize)
 {
-    LONGS_EQUAL(0,testEvent->getEarliestStartTime());
-    LONGS_EQUAL(0,testEvent->getLatestEndTime());
-    LONGS_EQUAL(0,testEvent->getDuration());
-    LONGS_EQUAL(0,testEvent->getChildrenCount());
-    CHECK(testEvent->getParent().expired());
+    LONGS_EQUAL(0,testTask->getEarliestStartTime());
+    LONGS_EQUAL(0,testTask->getLatestEndTime());
+    LONGS_EQUAL(0,testTask->getDuration());
+    LONGS_EQUAL(0,testTask->getChildrenCount());
+    CHECK(testTask->getParent().expired());
 }
 
-TEST(EventGroup, SetEarliestStartTime)
+TEST(TaskGroup, SetEarliestStartTime)
 {
     unsigned int testTime = 10;
-    testEvent->setEarliestStartTime(testTime);
+    testTask->setEarliestStartTime(testTime);
     
-    LONGS_EQUAL(testTime,testEvent->getEarliestStartTime());
+    LONGS_EQUAL(testTime,testTask->getEarliestStartTime());
 }
 
-TEST(EventGroup, SetLatestEndTime)
+TEST(TaskGroup, SetLatestEndTime)
 {
     unsigned int testTime = 15;
-    testEvent->setLatestEndTime(testTime);
+    testTask->setLatestEndTime(testTime);
     
-    LONGS_EQUAL(testTime,testEvent->getLatestEndTime());
+    LONGS_EQUAL(testTime,testTask->getLatestEndTime());
 }
 
-TEST(EventGroup, SetDuration)
+TEST(TaskGroup, SetDuration)
 {
     unsigned int testDuration = 20;
-    testEvent->setDuration(testDuration);
+    testTask->setDuration(testDuration);
     
-    LONGS_EQUAL(testDuration, testEvent->getDuration())
+    LONGS_EQUAL(testDuration, testTask->getDuration())
 }
 
-TEST(EventGroup, AddChild)
+TEST(TaskGroup, AddChild)
 {
-    std::shared_ptr<Event> newChild = std::make_shared<Event>();
-    testEvent->addChild(newChild);
+    std::shared_ptr<Task> newChild = std::make_shared<Task>();
+    testTask->addChild(newChild);
     
-    LONGS_EQUAL(1,testEvent->getChildrenCount());
+    LONGS_EQUAL(1,testTask->getChildrenCount());
 }
 
-TEST(EventGroup, GetChild)
+TEST(TaskGroup, GetChild)
 {
-    std::shared_ptr<Event> newChild = std::make_shared<Event>();
-    testEvent->addChild(newChild);
-    std::shared_ptr<Event> child = testEvent->getChild(0);
+    std::shared_ptr<Task> newChild = std::make_shared<Task>();
+    testTask->addChild(newChild);
+    std::shared_ptr<Task> child = testTask->getChild(0);
     
     CHECK(child.get() == newChild.get());
 }
 
-TEST(EventGroup, RemoveChild)
+TEST(TaskGroup, RemoveChild)
 {
-    std::shared_ptr<Event> newChild = std::make_shared<Event>();
-    testEvent->addChild(newChild);
-    testEvent->removeChild(0);
+    std::shared_ptr<Task> newChild = std::make_shared<Task>();
+    testTask->addChild(newChild);
+    testTask->removeChild(0);
     
-    LONGS_EQUAL(0,testEvent->getChildrenCount());
+    LONGS_EQUAL(0,testTask->getChildrenCount());
 }
 
-TEST(EventGroup, GetParentofChild)
+TEST(TaskGroup, GetParentofChild)
 {
-    std::shared_ptr<Event> newChild = std::make_shared<Event>();
-    testEvent->addChild(newChild);
-    std::shared_ptr<Event> childParent = std::shared_ptr<Event>(newChild->getParent());
+    std::shared_ptr<Task> newChild = std::make_shared<Task>();
+    testTask->addChild(newChild);
+    std::shared_ptr<Task> childParent = std::shared_ptr<Task>(newChild->getParent());
     
-    CHECK(childParent.get() == testEvent.get());
+    CHECK(childParent.get() == testTask.get());
 }
 
-TEST(EventGroup, CheckParentofChildAfterRemoval)
+TEST(TaskGroup, CheckParentofChildAfterRemoval)
 {
-    std::shared_ptr<Event> newChild = std::make_shared<Event>();
-    testEvent->addChild(newChild);
-    testEvent->removeChild(0);
-    std::weak_ptr<Event> childParent = newChild->getParent();
+    std::shared_ptr<Task> newChild = std::make_shared<Task>();
+    testTask->addChild(newChild);
+    testTask->removeChild(0);
+    std::weak_ptr<Task> childParent = newChild->getParent();
     
     CHECK(childParent.expired());
 }
