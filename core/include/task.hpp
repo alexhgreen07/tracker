@@ -1,5 +1,5 @@
-#ifndef __EVENT_HPP__
-#define __EVENT_HPP__
+#ifndef __TASK_HPP__
+#define __TASK_HPP__
 
 #include <memory>
 #include <vector>
