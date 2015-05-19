@@ -56,7 +56,7 @@ std::shared_ptr<Event> Scheduler::getScheduledEvent(unsigned int index)
 
 bool Scheduler::compareTasks(std::shared_ptr<Task> a, std::shared_ptr<Task> b)
 {
-    return (a->getLatestEndTime() < b->getLatestEndTime());
+    return (a->getLatestStartTime() < b->getLatestStartTime());
 }
 bool Scheduler::compareEvents(std::shared_ptr<Event> a, std::shared_ptr<Event> b)
 {

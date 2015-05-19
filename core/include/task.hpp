@@ -14,6 +14,7 @@ public:
     void setEarliestStartTime(unsigned int earliestStartTime);
     unsigned int getLatestEndTime();
     void setLatestEndTime(unsigned int latestEndTime);
+    unsigned int getLatestStartTime();
     unsigned int getDuration();
     void setDuration(unsigned int duration);
     void addChild(std::shared_ptr<Task> child);

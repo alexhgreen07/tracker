@@ -25,6 +25,10 @@ void Task::setLatestEndTime(unsigned int latestEndTime)
 {
     this->latestEndTime = latestEndTime;
 }
+unsigned int Task::getLatestStartTime()
+{
+    return latestEndTime - duration;
+}
 unsigned int Task::getDuration()
 {
     return duration;
