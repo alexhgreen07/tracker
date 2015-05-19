@@ -5,6 +5,11 @@ Event::Event() :
     duration(0)
 {}
 
+Event::Event(unsigned int startTime, unsigned int duration) :
+    startTime(startTime),
+    duration(duration)
+{}
+
 unsigned int Event::getDuration()
 {
     return duration;

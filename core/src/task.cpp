@@ -9,6 +9,12 @@ Task::Task() :
     children()
 {}
 
+Task::Task(unsigned int earliestStartTime,unsigned int latestEndTime,unsigned int duration) :
+    earliestStartTime(earliestStartTime),
+    latestEndTime(latestEndTime),
+    duration(duration)
+{}
+
 unsigned int Task::getEarliestStartTime()
 {
     return earliestStartTime;

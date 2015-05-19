@@ -39,10 +39,7 @@ TEST(SchedulerGroup, ScheduleSingleEvent)
     
     auto newTaskList = std::make_shared<std::vector<std::shared_ptr<Task>>>();
     
-    auto newTask = std::make_shared<Task>();
-    newTask->setEarliestStartTime(startTime);
-    newTask->setLatestEndTime(startTime + duration);
-    newTask->setDuration(duration);
+    auto newTask = std::make_shared<Task>(startTime,startTime + duration,duration);
     newTaskList->push_back(newTask);
     
     testScheduler->setTaskList(newTaskList);
@@ -61,10 +58,8 @@ TEST(SchedulerGroup, ScheduleMultipleNonOverlappingEvents)
     
     for(unsigned int i = 0; i < 5; i++)
     {
-        auto newTask = std::make_shared<Task>();
-        newTask->setEarliestStartTime(i * duration);
-        newTask->setLatestEndTime(i * duration + duration);
-        newTask->setDuration(duration);
+        auto newTask =
+            std::make_shared<Task>(i * duration,i * duration + duration,duration);
         newTaskList->push_back(newTask);
     }
     
@@ -89,16 +84,12 @@ TEST(SchedulerGroup, ScheduleBasicOverlappingEvents)
     const unsigned int lastLatestStartTime = 30 + duration;
     auto newTaskList = std::make_shared<std::vector<std::shared_ptr<Task>>>();
     
-    auto firstTask = std::make_shared<Task>();
-    firstTask->setEarliestStartTime(firstEarlyStartTime);
-    firstTask->setLatestEndTime(firstLatestStartTime);
-    firstTask->setDuration(duration);
+    auto firstTask =
+        std::make_shared<Task>(firstEarlyStartTime,firstLatestStartTime,duration);
     newTaskList->push_back(firstTask);
     
-    auto lastTask = std::make_shared<Task>();
-    lastTask->setEarliestStartTime(lastEarlyStartTime);
-    lastTask->setLatestEndTime(lastLatestStartTime);
-    lastTask->setDuration(duration);
+    auto lastTask =
+        std::make_shared<Task>(lastEarlyStartTime,lastLatestStartTime,duration);
     newTaskList->push_back(lastTask);
     
     testScheduler->setTaskList(newTaskList);

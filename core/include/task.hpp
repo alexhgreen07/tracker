@@ -9,6 +9,7 @@ class Task :
 {
 public:
     Task();
+    Task(unsigned int earliestStartTime,unsigned int latestEndTime,unsigned int duration);
     
     unsigned int getEarliestStartTime();
     void setEarliestStartTime(unsigned int earliestStartTime);

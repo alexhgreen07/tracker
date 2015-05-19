@@ -9,6 +9,7 @@ class Event
 {
 public:
     Event();
+    Event(unsigned int startTime, unsigned int duration);
     unsigned int getDuration();
     void setDuration(unsigned int duration);
     unsigned int getStartTime();

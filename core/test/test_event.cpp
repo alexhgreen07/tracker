@@ -48,15 +48,12 @@ TEST(EventGroup, CheckNotOverlapping)
     unsigned int testStartTime = 10;
     unsigned int testDuration = 10;
     unsigned int testOverlapTime = testStartTime + testDuration;
-    auto testOverlappingEvent = std::make_shared<Event>();
+    auto testNonOverlappingEvent = std::make_shared<Event>(testOverlapTime,testDuration);
     
     testEvent->setStartTime(testStartTime);
     testEvent->setDuration(testDuration);
     
-    testOverlappingEvent->setStartTime(testOverlapTime);
-    testOverlappingEvent->setDuration(testDuration);
-    
-    CHECK_FALSE(testEvent->overlaps(testOverlappingEvent));
+    CHECK_FALSE(testEvent->overlaps(testNonOverlappingEvent));
 }
 
 TEST(EventGroup, CheckOverlapping)
@@ -64,13 +61,10 @@ TEST(EventGroup, CheckOverlapping)
     unsigned int testStartTime = 10;
     unsigned int testDuration = 10;
     unsigned int testOverlapTime = testStartTime + (testDuration / 2);
-    auto testOverlappingEvent = std::make_shared<Event>();
+    auto testOverlappingEvent = std::make_shared<Event>(testOverlapTime,testDuration);
     
     testEvent->setStartTime(testStartTime);
     testEvent->setDuration(testDuration);
-    
-    testOverlappingEvent->setStartTime(testOverlapTime);
-    testOverlappingEvent->setDuration(testDuration);
     
     CHECK(testEvent->overlaps(testOverlappingEvent));
 }
