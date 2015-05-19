@@ -37,9 +37,41 @@ TEST(EventGroup, SetDuration)
 
 TEST(EventGroup, SetParentTask)
 {
-    std::shared_ptr<Task> testTask = std::make_shared<Task>();
+    auto testTask = std::make_shared<Task>();
     testEvent->setParent(testTask);
     
     CHECK(testEvent->getParent().get() == testTask.get());
+}
+
+TEST(EventGroup, CheckNotOverlapping)
+{
+    unsigned int testStartTime = 10;
+    unsigned int testDuration = 10;
+    unsigned int testOverlapTime = testStartTime + testDuration;
+    auto testOverlappingEvent = std::make_shared<Event>();
+    
+    testEvent->setStartTime(testStartTime);
+    testEvent->setDuration(testDuration);
+    
+    testOverlappingEvent->setStartTime(testOverlapTime);
+    testOverlappingEvent->setDuration(testDuration);
+    
+    CHECK_FALSE(testEvent->overlaps(testOverlappingEvent));
+}
+
+TEST(EventGroup, CheckOverlapping)
+{
+    unsigned int testStartTime = 10;
+    unsigned int testDuration = 10;
+    unsigned int testOverlapTime = testStartTime + (testDuration / 2);
+    auto testOverlappingEvent = std::make_shared<Event>();
+    
+    testEvent->setStartTime(testStartTime);
+    testEvent->setDuration(testDuration);
+    
+    testOverlappingEvent->setStartTime(testOverlapTime);
+    testOverlappingEvent->setDuration(testDuration);
+    
+    CHECK(testEvent->overlaps(testOverlappingEvent));
 }
 

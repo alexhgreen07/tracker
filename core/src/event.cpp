@@ -20,6 +20,11 @@ unsigned int Event::getStartTime()
     return startTime;
 }
 
+unsigned int Event::getEndTime()
+{
+    return startTime + duration;
+}
+
 void Event::setStartTime(unsigned int startTime)
 {
     this->startTime = startTime;
@@ -33,4 +38,13 @@ std::shared_ptr<Task> Event::getParent()
 void Event::setParent(std::shared_ptr<Task> parent)
 {
     this->parent = parent;
+}
+
+bool Event::overlaps(std::shared_ptr<Event> eventToCheck)
+{
+    return
+        ((eventToCheck->getStartTime() >= startTime) &&
+       (eventToCheck->getStartTime() < getEndTime())) ||
+       ((eventToCheck->getEndTime() >= startTime) &&
+        (eventToCheck->getEndTime() < getEndTime()));
 }
