@@ -23,6 +23,8 @@ private:
     std::shared_ptr<std::vector<std::shared_ptr<Event>>>
         scheduleInFreeSpace(std::shared_ptr<Task> currentTask, unsigned int & earliestFreeTime);
     
+    bool findFreeSpaceBetween(unsigned int startTime, unsigned int endTime, unsigned int & freeStartTime, unsigned int & duration);
+    
     static bool compareTasks(std::shared_ptr<Task> a, std::shared_ptr<Task> b);
     static bool compareEvents(std::shared_ptr<Event> a, std::shared_ptr<Event> b);
 };

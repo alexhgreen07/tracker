@@ -46,32 +46,102 @@ std::shared_ptr<std::vector<std::shared_ptr<Event>>>
 {
     auto scheduledEvents = std::make_shared<std::vector<std::shared_ptr<Event>>>();
     
-    auto newEvent = std::make_shared<Event>();
-    unsigned int eventStartTime = 0;
+    unsigned int remainingDuration = currentTask->getDuration();
+    unsigned int nextStartTime = currentTask->getEarliestStartTime();
     
-    newEvent->setParent(currentTask);
-    newEvent->setDuration(currentTask->getDuration());
-    
-    if(earliestFreeTime <= currentTask->getEarliestStartTime())
+    while(remainingDuration > 0)
     {
-        eventStartTime = currentTask->getEarliestStartTime();
+        auto newEvent = std::make_shared<Event>();
+        unsigned int freeStartTime = 0;
+        unsigned int freeDuration = 0;
+        
+        newEvent->setParent(currentTask);
+        
+        findFreeSpaceBetween(
+                             nextStartTime,
+                             currentTask->getLatestEndTime(),
+                             freeStartTime,freeDuration);
+        
+        if(freeDuration > remainingDuration)
+        {
+            newEvent->setDuration(remainingDuration);
+        }
+        else
+        {
+            newEvent->setDuration(freeDuration);
+        }
+        
+        newEvent->setStartTime(freeStartTime);
+        
+        scheduledEvents->push_back(newEvent);
+        
+        remainingDuration -= newEvent->getDuration();
+        nextStartTime += freeDuration;
     }
-    else
-    {
-        eventStartTime = earliestFreeTime;
-    }
-    
-    newEvent->setStartTime(eventStartTime);
-    earliestFreeTime = eventStartTime + currentTask->getDuration();
-    
-    scheduledEvents->push_back(newEvent);
     
     return scheduledEvents;
 }
 
+bool Scheduler::findFreeSpaceBetween(unsigned int startTime, unsigned int endTime, unsigned int & freeStartTime, unsigned int & freeDuration)
+{
+    bool found = false;
+    auto newEvent = std::make_shared<Event>(startTime,(endTime - startTime));
+    
+    if(scheduledEvents.size() == 0)
+    {
+        freeDuration = endTime - startTime;
+        freeStartTime = startTime;
+        found = true;
+    }
+    else
+    {
+        auto upperBound =
+            std::lower_bound(scheduledEvents.begin(),scheduledEvents.end(),newEvent,compareEvents);
+        
+        if(upperBound == scheduledEvents.end())
+        {
+            upperBound--;
+            auto closestEvent = *upperBound;
+            
+            freeDuration = endTime - closestEvent->getEndTime();
+            freeStartTime = closestEvent->getEndTime();
+            found = true;
+        }
+        else
+        {
+            auto closestEvent = *upperBound;
+            
+            if(startTime >= closestEvent->getStartTime())
+            {
+                upperBound++;
+                if(upperBound != scheduledEvents.end())
+                {
+                    closestEvent = *(upperBound++);
+                }
+                else
+                {
+                    freeDuration = endTime - closestEvent->getEndTime();
+                    freeStartTime = closestEvent->getEndTime();
+                    found = true;
+                }
+            }
+            
+            if(!found && (closestEvent->getStartTime() <= endTime))
+            {
+                freeDuration = closestEvent->getStartTime() - startTime;
+                freeStartTime = closestEvent->getStartTime() - freeDuration;
+                found = true;
+            }
+        }
+        
+    }
+    
+    return found;
+}
+
 bool Scheduler::compareTasks(std::shared_ptr<Task> a, std::shared_ptr<Task> b)
 {
-    return (a->getLatestStartTime() < b->getLatestStartTime());
+    return (a->getLatestEndTime() < b->getLatestEndTime());
 }
 bool Scheduler::compareEvents(std::shared_ptr<Event> a, std::shared_ptr<Event> b)
 {
