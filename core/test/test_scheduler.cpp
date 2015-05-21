@@ -134,3 +134,59 @@ TEST(SchedulerGroup, ScheduleOverlappingEventsWithSplit)
     CHECK(lastTask.get() == event->getParent().get());
     LONGS_EQUAL(firstLatestEndTime, event->getStartTime());
 }
+
+TEST(SchedulerGroup, ScheduleThreeOverlappingEventsWithSplit)
+{
+    const unsigned int firstEarlyStartTime = 0;
+    const unsigned int firstDuration = 30;
+    const unsigned int firstLatestEndTime = firstEarlyStartTime + firstDuration + 60;
+    const unsigned int secondEarlyStartTime = 20;
+    const unsigned int secondDuration = 15;
+    const unsigned int secondLatestEndTime = secondEarlyStartTime + secondDuration;
+    const unsigned int lastEarlyStartTime = 10;
+    const unsigned int lastDuration = 30;
+    const unsigned int lastLatestEndTime = lastEarlyStartTime + lastDuration + 20;
+    auto newTaskList = std::make_shared<std::vector<std::shared_ptr<Task>>>();
+    
+    auto firstTask =
+    std::make_shared<Task>(firstEarlyStartTime,firstLatestEndTime,firstDuration);
+    newTaskList->push_back(firstTask);
+    
+    auto secondTask =
+    std::make_shared<Task>(secondEarlyStartTime,secondLatestEndTime,secondDuration);
+    newTaskList->push_back(secondTask);
+    
+    auto lastTask =
+    std::make_shared<Task>(lastEarlyStartTime,lastLatestEndTime,lastDuration);
+    newTaskList->push_back(lastTask);
+    
+    testScheduler->setTaskList(newTaskList);
+    testScheduler->schedule();
+    
+    auto event = testScheduler->getScheduledEvent(0);
+    CHECK(firstTask.get() == event->getParent().get());
+    LONGS_EQUAL(firstEarlyStartTime, event->getStartTime());
+    
+    event = testScheduler->getScheduledEvent(1);
+    CHECK(lastTask.get() == event->getParent().get());
+    LONGS_EQUAL(lastEarlyStartTime, event->getStartTime());
+
+    event = testScheduler->getScheduledEvent(2);
+    CHECK(secondTask.get() == event->getParent().get());
+    LONGS_EQUAL(secondEarlyStartTime, event->getStartTime());
+    
+    event = testScheduler->getScheduledEvent(3);
+    CHECK(lastTask.get() == event->getParent().get());
+    LONGS_EQUAL(secondLatestEndTime, event->getStartTime());
+    
+    event = testScheduler->getScheduledEvent(4);
+    CHECK(firstTask.get() == event->getParent().get());
+    
+    for(unsigned int i = 1; i < testScheduler->getScheduledEventCount(); i++)
+    {
+        auto lastEvent = testScheduler->getScheduledEvent(i - 1);
+        auto event = testScheduler->getScheduledEvent(i);
+        
+        CHECK_FALSE(event->overlaps(lastEvent));
+    }
+}

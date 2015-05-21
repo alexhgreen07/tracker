@@ -84,54 +84,58 @@ std::shared_ptr<std::vector<std::shared_ptr<Event>>>
 
 bool Scheduler::findFreeSpaceBetween(unsigned int startTime, unsigned int endTime, unsigned int & freeStartTime, unsigned int & freeDuration)
 {
-    bool found = false;
+    bool found = true;
     auto newEvent = std::make_shared<Event>(startTime,(endTime - startTime));
     
     if(scheduledEvents.size() == 0)
     {
         freeDuration = endTime - startTime;
         freeStartTime = startTime;
-        found = true;
     }
     else
     {
-        auto upperBound =
+        auto lowerBound =
             std::lower_bound(scheduledEvents.begin(),scheduledEvents.end(),newEvent,compareEvents);
         
-        if(upperBound == scheduledEvents.end())
+        freeDuration = 0;
+        while(freeDuration == 0)
         {
-            upperBound--;
-            auto closestEvent = *upperBound;
-            
-            freeDuration = endTime - closestEvent->getEndTime();
-            freeStartTime = closestEvent->getEndTime();
-            found = true;
-        }
-        else
-        {
-            auto closestEvent = *upperBound;
-            
-            if(startTime >= closestEvent->getStartTime())
+            if(lowerBound == scheduledEvents.begin())
             {
-                upperBound++;
-                if(upperBound != scheduledEvents.end())
+                auto closestEvent = *lowerBound;
+                
+                if(startTime < closestEvent->getStartTime())
                 {
-                    closestEvent = *(upperBound++);
+                    freeDuration = closestEvent->getStartTime() - startTime;
+                    freeStartTime = closestEvent->getStartTime() - freeDuration;
                 }
-                else
+            }
+            else if(lowerBound == scheduledEvents.end())
+            {
+                lowerBound--;
+                auto closestEvent = *lowerBound;
+                
+                if(closestEvent->getEndTime() < endTime)
                 {
                     freeDuration = endTime - closestEvent->getEndTime();
                     freeStartTime = closestEvent->getEndTime();
-                    found = true;
+                }
+                else
+                {
+                    found = false;
+                    break;
                 }
             }
-            
-            if(!found && (closestEvent->getStartTime() <= endTime))
+            else
             {
-                freeDuration = closestEvent->getStartTime() - startTime;
-                freeStartTime = closestEvent->getStartTime() - freeDuration;
-                found = true;
+                auto closestEvent = *lowerBound;
+                auto nextClosestEvent = *(++lowerBound);
+                
+                freeDuration = closestEvent->getEndTime() - nextClosestEvent->getStartTime();
+                freeStartTime = closestEvent->getEndTime();
             }
+            
+            lowerBound++;
         }
         
     }

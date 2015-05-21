@@ -50,6 +50,6 @@ bool Event::overlaps(std::shared_ptr<Event> eventToCheck)
     return
         ((eventToCheck->getStartTime() >= startTime) &&
        (eventToCheck->getStartTime() < getEndTime())) ||
-       ((eventToCheck->getEndTime() >= startTime) &&
+       ((eventToCheck->getEndTime() > startTime) &&
         (eventToCheck->getEndTime() < getEndTime()));
 }
