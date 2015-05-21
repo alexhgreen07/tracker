@@ -40,12 +40,12 @@ std::shared_ptr<Task> Event::getParent()
     return parent;
 }
 
-void Event::setParent(std::shared_ptr<Task> parent)
+void Event::setParent(const std::shared_ptr<Task> & parent)
 {
     this->parent = parent;
 }
 
-bool Event::overlaps(std::shared_ptr<Event> eventToCheck)
+bool Event::overlaps(const std::shared_ptr<Event> & eventToCheck)
 {
     return
         ((eventToCheck->getStartTime() >= startTime) &&

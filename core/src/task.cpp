@@ -70,7 +70,7 @@ std::weak_ptr<Task> Task::getParent()
 {
     return parent;
 }
-void Task::setParent(std::shared_ptr<Task> parent)
+void Task::setParent(const std::shared_ptr<Task> & parent)
 {
     this->parent = parent;
 }

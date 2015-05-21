@@ -11,7 +11,7 @@ class Scheduler
 {
 public:
     std::shared_ptr<std::vector<std::shared_ptr<Task>>> getTaskList();
-    void setTaskList(std::shared_ptr<std::vector<std::shared_ptr<Task>>> taskList);
+    void setTaskList(const std::shared_ptr<std::vector<std::shared_ptr<Task>>> & taskList);
     size_t getScheduledEventCount();
     void schedule();
     std::shared_ptr<Event> getScheduledEvent(unsigned int index);
@@ -21,12 +21,12 @@ private:
     std::vector<std::shared_ptr<Event>> scheduledEvents;
     
     std::shared_ptr<std::vector<std::shared_ptr<Event>>>
-        scheduleInFreeSpace(std::shared_ptr<Task> currentTask, unsigned int & earliestFreeTime);
+        scheduleInFreeSpace(const std::shared_ptr<Task> & currentTask, unsigned int & earliestFreeTime);
     
     bool findFreeSpaceBetween(unsigned int startTime, unsigned int endTime, unsigned int & freeStartTime, unsigned int & duration);
     
-    static bool compareTasks(std::shared_ptr<Task> a, std::shared_ptr<Task> b);
-    static bool compareEvents(std::shared_ptr<Event> a, std::shared_ptr<Event> b);
+    static bool compareTasks(const std::shared_ptr<Task> & a, const std::shared_ptr<Task> & b);
+    static bool compareEvents(const std::shared_ptr<Event> & a, const std::shared_ptr<Event> & b);
 };
 
 #endif

@@ -16,8 +16,8 @@ public:
     unsigned int getEndTime();
     void setStartTime(unsigned int startTime);
     std::shared_ptr<Task> getParent();
-    void setParent(std::shared_ptr<Task> parent);
-    bool overlaps(std::shared_ptr<Event> eventToCheck);
+    void setParent(const std::shared_ptr<Task> & parent);
+    bool overlaps(const std::shared_ptr<Event> & eventToCheck);
 private:
     unsigned int startTime;
     unsigned int duration;

@@ -25,7 +25,7 @@ public:
     std::weak_ptr<Task> getParent();
     
 protected:
-    void setParent(std::shared_ptr<Task> parent);
+    void setParent(const std::shared_ptr<Task> & parent);
     
 private:
     unsigned int earliestStartTime;

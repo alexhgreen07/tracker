@@ -4,7 +4,7 @@ std::shared_ptr<std::vector<std::shared_ptr<Task>>> Scheduler::getTaskList()
 {
     return taskList;
 }
-void Scheduler::setTaskList(std::shared_ptr<std::vector<std::shared_ptr<Task>>> taskList)
+void Scheduler::setTaskList(const std::shared_ptr<std::vector<std::shared_ptr<Task>>> & taskList)
 {
     this->taskList = taskList;
 }
@@ -42,7 +42,7 @@ std::shared_ptr<Event> Scheduler::getScheduledEvent(unsigned int index)
 }
 
 std::shared_ptr<std::vector<std::shared_ptr<Event>>>
-    Scheduler::scheduleInFreeSpace(std::shared_ptr<Task> currentTask, unsigned int & earliestFreeTime)
+    Scheduler::scheduleInFreeSpace(const std::shared_ptr<Task> & currentTask, unsigned int & earliestFreeTime)
 {
     auto scheduledEvents = std::make_shared<std::vector<std::shared_ptr<Event>>>();
     
@@ -143,11 +143,11 @@ bool Scheduler::findFreeSpaceBetween(unsigned int startTime, unsigned int endTim
     return found;
 }
 
-bool Scheduler::compareTasks(std::shared_ptr<Task> a, std::shared_ptr<Task> b)
+bool Scheduler::compareTasks(const std::shared_ptr<Task> & a, const std::shared_ptr<Task> & b)
 {
     return (a->getLatestEndTime() < b->getLatestEndTime());
 }
-bool Scheduler::compareEvents(std::shared_ptr<Event> a, std::shared_ptr<Event> b)
+bool Scheduler::compareEvents(const std::shared_ptr<Event> & a, const std::shared_ptr<Event> & b)
 {
     return (a->getStartTime() < b->getStartTime());
 }
