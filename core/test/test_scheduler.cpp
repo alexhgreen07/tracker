@@ -230,10 +230,45 @@ TEST(SchedulerGroup, ScheduleConflictingTasks)
     testScheduler->setTaskList(newTaskList);
     testScheduler->schedule();
     
+    LONGS_EQUAL(3,testScheduler->getScheduledEventCount());
+    
     auto event = testScheduler->getScheduledEvent(0);
     CHECK_EVENT(firstTask,0,10,event);
     event = testScheduler->getScheduledEvent(1);
     CHECK_EVENT(lastTask,10,5,event);
     event = testScheduler->getScheduledEvent(2);
     CHECK_EVENT(lastTask,15,5,event);
+}
+
+TEST(SchedulerGroup, ScheduleThreeConflictingTasks)
+{
+    const unsigned int duration = 10;
+    
+    auto newTaskList = std::make_shared<std::vector<std::shared_ptr<Task>>>();
+    
+    auto firstTask =
+    std::make_shared<Task>(0,10,duration);
+    newTaskList->push_back(firstTask);
+    
+    auto secondTask =
+    std::make_shared<Task>(5,15,duration);
+    newTaskList->push_back(secondTask);
+    
+    auto lastTask =
+    std::make_shared<Task>(10,20,duration);
+    newTaskList->push_back(lastTask);
+    
+    testScheduler->setTaskList(newTaskList);
+    testScheduler->schedule();
+    
+    LONGS_EQUAL(4,testScheduler->getScheduledEventCount());
+    
+    auto event = testScheduler->getScheduledEvent(0);
+    CHECK_EVENT(firstTask,0,10,event);
+    event = testScheduler->getScheduledEvent(1);
+    CHECK_EVENT(secondTask,10,5,event);
+    event = testScheduler->getScheduledEvent(2);
+    CHECK_EVENT(secondTask,15,5,event);
+    event = testScheduler->getScheduledEvent(3);
+    CHECK_EVENT(lastTask,20,10,event);
 }

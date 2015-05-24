@@ -127,7 +127,15 @@ bool Scheduler::findFreeSpaceBetween(unsigned int startTime, unsigned int endTim
                 }
                 else
                 {
-                    freeStartTime = startTime;
+                    if(closestEvent->getEndTime() >= startTime)
+                    {
+                        freeStartTime = closestEvent->getEndTime();
+                    }
+                    else
+                    {
+                        freeStartTime = startTime;                        
+                    }
+                    
                     found = false;
                     break;
                 }
