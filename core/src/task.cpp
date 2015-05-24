@@ -80,12 +80,15 @@ void Task::setRecurranceParameters(unsigned int period, unsigned int lateOffset)
     
     recurringChildren.clear();
     
-    for(unsigned int i = 0; i < (latestEndTime - earliestStartTime) / recurringPeriod; i++)
+    if(recurringPeriod > 0)
     {
-        unsigned int childEarliestStartTime = earliestStartTime + i * recurringPeriod;
-        unsigned int childLatestEndTime = earliestStartTime + recurringLateOffset + i * recurringPeriod;
-        auto newChild = std::make_shared<Task>(childEarliestStartTime,childLatestEndTime,duration);
-        recurringChildren.push_back(newChild);
+        for(unsigned int i = 0; i < (latestEndTime - earliestStartTime) / recurringPeriod; i++)
+        {
+            unsigned int childEarliestStartTime = earliestStartTime + i * recurringPeriod;
+            unsigned int childLatestEndTime = earliestStartTime + recurringLateOffset + i * recurringPeriod;
+            auto newChild = std::make_shared<Task>(childEarliestStartTime,childLatestEndTime,duration);
+            recurringChildren.push_back(newChild);
+        }
     }
 }
 
@@ -98,6 +101,11 @@ std::shared_ptr<const Task> Task::getRecurringChild(unsigned int index)
 {
     std::shared_ptr<const Task> returnValue = recurringChildren[index];
     return returnValue;
+}
+
+void Task::clearRecurranceParameters()
+{
+    setRecurranceParameters(0,0);
 }
 
 void Task::setParent(const std::shared_ptr<Task> & parent)

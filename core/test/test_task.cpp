@@ -108,3 +108,16 @@ TEST(TaskGroup, SetRecurringParameters)
         LONGS_EQUAL(duration,recurringTask->getDuration());
     }
 }
+
+TEST(TaskGroup, ClearRecurringParameters)
+{
+    const unsigned int duration = 5;
+    const unsigned int period = 10;
+    testTask->setLatestEndTime(duration * period);
+    testTask->setDuration(duration);
+    testTask->setRecurranceParameters(period,duration);
+    
+    testTask->clearRecurranceParameters();
+    
+    LONGS_EQUAL(0,testTask->getRecurringTaskCount());
+}
