@@ -2,7 +2,7 @@
 
 #include "database.hpp"
 
-TEST_GROUP(DatabaseGroup)
+TEST_GROUP(Sqlite3Group)
 {
     std::shared_ptr<DatabaseSqlite3> testDatabase;
     
@@ -17,13 +17,13 @@ TEST_GROUP(DatabaseGroup)
     }
 };
 
-TEST(DatabaseGroup, BasicOpen)
+TEST(Sqlite3Group, BasicOpen)
 {
     testDatabase->open("./test.sqlite3");
     CHECK(testDatabase->isConnected());
 }
 
-TEST(DatabaseGroup, BasicClose)
+TEST(Sqlite3Group, BasicClose)
 {
     testDatabase->open("./test.sqlite3");
     testDatabase->close();
