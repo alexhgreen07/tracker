@@ -106,7 +106,7 @@ std::shared_ptr<const Task> Task::getRecurringChild(unsigned int index)
 
 std::weak_ptr<Task> Task::getRecurranceParent() const
 {
-    return recurranceParent;
+    return recurrenceParent;
 }
 
 void Task::clearRecurranceParameters()
@@ -121,5 +121,5 @@ void Task::setParent(const std::shared_ptr<Task> & parent)
 
 void Task::setRecurranceParent(const std::shared_ptr<Task> & parent)
 {
-    this->recurranceParent = parent;
+    this->recurrenceParent = parent;
 }
