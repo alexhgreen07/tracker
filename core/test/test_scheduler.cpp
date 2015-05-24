@@ -291,3 +291,29 @@ TEST(SchedulerGroup, ScheduleThreeConflictingTasks)
     
     CHECK_NO_OVERLAP();
 }
+
+TEST(SchedulerGroup, ScheduleBasicRecurringTask)
+{
+    const unsigned int count = 4;
+    const unsigned int duration = 5;
+    const unsigned int period = 10;
+    const unsigned int latestEndTime = (count) * period;
+    auto newTaskList = std::make_shared<std::vector<std::shared_ptr<Task>>>();
+    auto newTask = std::make_shared<Task>(0,latestEndTime,duration);
+    
+    newTask->setRecurranceParameters(period, duration);
+    newTaskList->push_back(newTask);
+    
+    testScheduler->setTaskList(newTaskList);
+    testScheduler->schedule();
+    
+    LONGS_EQUAL(count,testScheduler->getScheduledEventCount());
+    
+    for(unsigned int i = 0; i < count; i++)
+    {
+        auto taskToCheck = newTask->getRecurringChild(i);
+        
+        auto event = testScheduler->getScheduledEvent(i);
+        CHECK_EVENT(taskToCheck,taskToCheck->getEarliestStartTime(),taskToCheck->getDuration(),event);
+    }
+}

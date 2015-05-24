@@ -27,6 +27,7 @@ public:
     void setRecurranceParameters(unsigned int period, unsigned int lateOffset);
     size_t getRecurringTaskCount() const;
     std::weak_ptr<Task> getRecurranceParent() const;
+    bool getIsRecurringParent() const;
     void clearRecurranceParameters();
     
     std::shared_ptr<const Task> getRecurringChild(unsigned int index);

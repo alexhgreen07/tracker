@@ -16,15 +16,13 @@ void Scheduler::schedule()
 {
     if(taskList)
     {
-        unsigned int earliestFreeTime = 0;
-        
         std::sort(taskList->begin(),taskList->end(),compareTasks);
         scheduledEvents.clear();
         
         for(unsigned int i = 0; i < taskList->size(); i++)
         {
             auto currentTask = taskList->at(i);
-            auto newEvents = scheduleInFreeSpace(currentTask,earliestFreeTime);
+            auto newEvents = scheduleInFreeSpace(currentTask);
             
             for(unsigned int j = 0; j < newEvents->size(); j++)
             {
@@ -42,10 +40,28 @@ std::shared_ptr<Event> Scheduler::getScheduledEvent(unsigned int index) const
 }
 
 std::shared_ptr<std::vector<std::shared_ptr<Event>>>
-    Scheduler::scheduleInFreeSpace(const std::shared_ptr<Task> & currentTask, unsigned int & earliestFreeTime)
+    Scheduler::scheduleInFreeSpace(const std::shared_ptr<Task> & currentTask)
 {
     auto scheduledEvents = std::make_shared<std::vector<std::shared_ptr<Event>>>();
     
+    if(currentTask->getIsRecurringParent())
+    {
+        for(unsigned int i = 0 ; i < currentTask->getRecurringTaskCount(); i++)
+        {
+            auto recurringChild = currentTask->getRecurringChild(i);
+            scheduleOneOffInFreeSpace(scheduledEvents,recurringChild);
+        }
+    }
+    else
+    {
+        scheduleOneOffInFreeSpace(scheduledEvents,currentTask);
+    }
+    
+    return scheduledEvents;
+}
+
+void Scheduler::scheduleOneOffInFreeSpace(std::shared_ptr<std::vector<std::shared_ptr<Event>>> & scheduledEvents, const std::shared_ptr<const Task> & currentTask)
+{
     unsigned int remainingDuration = currentTask->getDuration();
     unsigned int nextStartTime = currentTask->getEarliestStartTime();
     
@@ -58,9 +74,9 @@ std::shared_ptr<std::vector<std::shared_ptr<Event>>>
         newEvent->setParent(currentTask);
         
         auto spaceIsAvailable = findFreeSpaceBetween(
-                             nextStartTime,
-                             currentTask->getLatestEndTime(),
-                             freeStartTime,freeDuration);
+                                                     nextStartTime,
+                                                     currentTask->getLatestEndTime(),
+                                                     freeStartTime,freeDuration);
         
         if(!spaceIsAvailable)
         {
@@ -84,7 +100,6 @@ std::shared_ptr<std::vector<std::shared_ptr<Event>>>
         nextStartTime = newEvent->getEndTime();
     }
     
-    return scheduledEvents;
 }
 
 bool Scheduler::findFreeSpaceBetween(unsigned int startTime, unsigned int endTime, unsigned int & freeStartTime, unsigned int & freeDuration)

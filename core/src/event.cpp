@@ -35,12 +35,12 @@ void Event::setStartTime(unsigned int startTime)
     this->startTime = startTime;
 }
 
-std::shared_ptr<Task> Event::getParent() const
+std::shared_ptr<const Task> Event::getParent() const
 {
     return parent;
 }
 
-void Event::setParent(const std::shared_ptr<Task> & parent)
+void Event::setParent(const std::shared_ptr<const Task> & parent)
 {
     this->parent = parent;
 }

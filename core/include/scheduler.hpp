@@ -21,7 +21,10 @@ private:
     std::vector<std::shared_ptr<Event>> scheduledEvents;
     
     std::shared_ptr<std::vector<std::shared_ptr<Event>>>
-        scheduleInFreeSpace(const std::shared_ptr<Task> & currentTask, unsigned int & earliestFreeTime);
+        scheduleInFreeSpace(const std::shared_ptr<Task> & currentTask);
+    
+    void scheduleOneOffInFreeSpace(std::shared_ptr<std::vector<std::shared_ptr<Event>>> & scheduledEvents,
+                                  const std::shared_ptr<const Task> & currentTask);
     
     bool findFreeSpaceBetween(unsigned int startTime, unsigned int endTime, unsigned int & freeStartTime, unsigned int & duration);
     

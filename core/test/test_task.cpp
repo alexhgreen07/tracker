@@ -122,5 +122,5 @@ TEST(TaskGroup, ClearRecurringParameters)
     
     testTask->clearRecurranceParameters();
     
-    LONGS_EQUAL(0,testTask->getRecurringTaskCount());
+    CHECK_FALSE(testTask->getIsRecurringParent());
 }

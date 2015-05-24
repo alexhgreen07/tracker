@@ -109,6 +109,11 @@ std::weak_ptr<Task> Task::getRecurranceParent() const
     return recurrenceParent;
 }
 
+bool Task::getIsRecurringParent() const
+{
+    return (recurringChildren.size() > 0);
+}
+
 void Task::clearRecurranceParameters()
 {
     setRecurranceParameters(0,0);
