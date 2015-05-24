@@ -6,7 +6,9 @@ Task::Task() :
     earliestStartTime(0),
     latestEndTime(0),
     duration(0),
-    children()
+    children(),
+    recurringPeriod(0),
+    recurringLateOffset(0)
 {}
 
 Task::Task(unsigned int earliestStartTime,unsigned int latestEndTime,unsigned int duration) :
@@ -15,7 +17,7 @@ Task::Task(unsigned int earliestStartTime,unsigned int latestEndTime,unsigned in
     duration(duration)
 {}
 
-unsigned int Task::getEarliestStartTime()
+unsigned int Task::getEarliestStartTime() const
 {
     return earliestStartTime;
 }
@@ -23,7 +25,7 @@ void Task::setEarliestStartTime(unsigned int earliestStartTime)
 {
     this->earliestStartTime = earliestStartTime;
 }
-unsigned int Task::getLatestEndTime()
+unsigned int Task::getLatestEndTime() const
 {
     return latestEndTime;
 }
@@ -31,11 +33,11 @@ void Task::setLatestEndTime(unsigned int latestEndTime)
 {
     this->latestEndTime = latestEndTime;
 }
-unsigned int Task::getLatestStartTime()
+unsigned int Task::getLatestStartTime() const
 {
     return latestEndTime - duration;
 }
-unsigned int Task::getDuration()
+unsigned int Task::getDuration() const
 {
     return duration;
 }
@@ -70,6 +72,34 @@ std::weak_ptr<Task> Task::getParent()
 {
     return parent;
 }
+
+void Task::setRecurranceParameters(unsigned int period, unsigned int lateOffset)
+{
+    recurringPeriod = period;
+    recurringLateOffset = lateOffset;
+    
+    recurringChildren.clear();
+    
+    for(unsigned int i = 0; i < (latestEndTime - earliestStartTime) / recurringPeriod; i++)
+    {
+        unsigned int childEarliestStartTime = earliestStartTime + i * recurringPeriod;
+        unsigned int childLatestEndTime = earliestStartTime + recurringLateOffset + i * recurringPeriod;
+        auto newChild = std::make_shared<Task>(childEarliestStartTime,childLatestEndTime,duration);
+        recurringChildren.push_back(newChild);
+    }
+}
+
+size_t Task::getRecurringTaskCount()
+{
+    return recurringChildren.size();
+}
+
+std::shared_ptr<const Task> Task::getRecurringChild(unsigned int index)
+{
+    std::shared_ptr<const Task> returnValue = recurringChildren[index];
+    return returnValue;
+}
+
 void Task::setParent(const std::shared_ptr<Task> & parent)
 {
     this->parent = parent;
