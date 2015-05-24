@@ -57,10 +57,15 @@ std::shared_ptr<std::vector<std::shared_ptr<Event>>>
         
         newEvent->setParent(currentTask);
         
-        findFreeSpaceBetween(
+        auto spaceIsAvailable = findFreeSpaceBetween(
                              nextStartTime,
                              currentTask->getLatestEndTime(),
                              freeStartTime,freeDuration);
+        
+        if(!spaceIsAvailable)
+        {
+            freeDuration = remainingDuration;
+        }
         
         if(freeDuration > remainingDuration)
         {
@@ -76,7 +81,7 @@ std::shared_ptr<std::vector<std::shared_ptr<Event>>>
         scheduledEvents->push_back(newEvent);
         
         remainingDuration -= newEvent->getDuration();
-        nextStartTime += freeDuration;
+        nextStartTime = newEvent->getEndTime();
     }
     
     return scheduledEvents;
@@ -115,13 +120,14 @@ bool Scheduler::findFreeSpaceBetween(unsigned int startTime, unsigned int endTim
                 lowerBound--;
                 auto closestEvent = *lowerBound;
                 
-                if(closestEvent->getEndTime() < endTime)
+                if((closestEvent->getEndTime() < endTime) && (closestEvent->getEndTime() >= startTime))
                 {
                     freeDuration = endTime - closestEvent->getEndTime();
                     freeStartTime = closestEvent->getEndTime();
                 }
                 else
                 {
+                    freeStartTime = startTime;
                     found = false;
                     break;
                 }

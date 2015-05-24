@@ -214,3 +214,26 @@ TEST(SchedulerGroup, ScheduleThreeOverlappingEventsWithSplit)
         CHECK_FALSE(event->overlaps(lastEvent));
     }
 }
+
+TEST(SchedulerGroup, ScheduleConflictingTasks)
+{
+    auto newTaskList = std::make_shared<std::vector<std::shared_ptr<Task>>>();
+    
+    auto firstTask =
+        std::make_shared<Task>(0,10,10);
+    newTaskList->push_back(firstTask);
+    
+    auto lastTask =
+        std::make_shared<Task>(5,15,10);
+    newTaskList->push_back(lastTask);
+    
+    testScheduler->setTaskList(newTaskList);
+    testScheduler->schedule();
+    
+    auto event = testScheduler->getScheduledEvent(0);
+    CHECK_EVENT(firstTask,0,10,event);
+    event = testScheduler->getScheduledEvent(1);
+    CHECK_EVENT(lastTask,10,5,event);
+    event = testScheduler->getScheduledEvent(2);
+    CHECK_EVENT(lastTask,15,5,event);
+}
