@@ -87,12 +87,13 @@ void Task::setRecurranceParameters(unsigned int period, unsigned int lateOffset)
             unsigned int childEarliestStartTime = earliestStartTime + i * recurringPeriod;
             unsigned int childLatestEndTime = earliestStartTime + recurringLateOffset + i * recurringPeriod;
             auto newChild = std::make_shared<Task>(childEarliestStartTime,childLatestEndTime,duration);
+            newChild->setRecurranceParent(shared_from_this());
             recurringChildren.push_back(newChild);
         }
     }
 }
 
-size_t Task::getRecurringTaskCount()
+size_t Task::getRecurringTaskCount() const
 {
     return recurringChildren.size();
 }
@@ -103,6 +104,11 @@ std::shared_ptr<const Task> Task::getRecurringChild(unsigned int index)
     return returnValue;
 }
 
+std::weak_ptr<Task> Task::getRecurranceParent() const
+{
+    return recurranceParent;
+}
+
 void Task::clearRecurranceParameters()
 {
     setRecurranceParameters(0,0);
@@ -111,4 +117,9 @@ void Task::clearRecurranceParameters()
 void Task::setParent(const std::shared_ptr<Task> & parent)
 {
     this->parent = parent;
+}
+
+void Task::setRecurranceParent(const std::shared_ptr<Task> & parent)
+{
+    this->recurranceParent = parent;
 }

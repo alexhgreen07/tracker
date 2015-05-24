@@ -25,13 +25,15 @@ public:
     std::weak_ptr<Task> getParent();
     
     void setRecurranceParameters(unsigned int period, unsigned int lateOffset);
-    size_t getRecurringTaskCount();
+    size_t getRecurringTaskCount() const;
+    std::weak_ptr<Task> getRecurranceParent() const;
     void clearRecurranceParameters();
     
     std::shared_ptr<const Task> getRecurringChild(unsigned int index);
     
 protected:
     void setParent(const std::shared_ptr<Task> & parent);
+    void setRecurranceParent(const std::shared_ptr<Task> & parent);
     
 private:
     unsigned int earliestStartTime;
@@ -43,6 +45,7 @@ private:
     
     unsigned int recurringPeriod;
     unsigned int recurringLateOffset;
+    std::weak_ptr<Task> recurranceParent;
 };
 
 #endif
