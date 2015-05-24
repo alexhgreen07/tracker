@@ -89,3 +89,38 @@ TEST(TaskGroup, CheckParentofChildAfterRemoval)
     
     CHECK(childParent.expired());
 }
+
+TEST(TaskGroup, SetRecurringParameters)
+{
+    const unsigned int duration = 5;
+    const unsigned int period = 10;
+    testTask->setLatestEndTime(duration * period);
+    testTask->setDuration(duration);
+    testTask->setRecurranceParameters(period,duration);
+    
+    LONGS_EQUAL(5,testTask->getRecurringTaskCount());
+    
+    for(unsigned int i = 0; i < testTask->getRecurringTaskCount(); i++)
+    {
+        std::shared_ptr<const Task> recurringTask = testTask->getRecurringChild(i);
+        LONGS_EQUAL(i * 10,recurringTask->getEarliestStartTime());
+        LONGS_EQUAL(i * 10 + 5,recurringTask->getLatestEndTime());
+        LONGS_EQUAL(duration,recurringTask->getDuration());
+        
+        std::shared_ptr<Task> recurrenceParent = std::shared_ptr<Task>(recurringTask->getRecurranceParent());
+        CHECK(testTask == recurrenceParent);
+    }
+}
+
+TEST(TaskGroup, ClearRecurringParameters)
+{
+    const unsigned int duration = 5;
+    const unsigned int period = 10;
+    testTask->setLatestEndTime(duration * period);
+    testTask->setDuration(duration);
+    testTask->setRecurranceParameters(period,duration);
+    
+    testTask->clearRecurranceParameters();
+    
+    CHECK_FALSE(testTask->getIsRecurringParent());
+}

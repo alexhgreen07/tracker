@@ -1,6 +1,6 @@
 #include <CppUTest/CommandLineTestRunner.h>
 
-#include "event.hpp"
+#include "scheduler.hpp"
 
 int main(int ac, char** av)
 {
