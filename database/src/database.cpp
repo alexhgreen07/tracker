@@ -18,8 +18,7 @@ DatabaseSqlite3::DatabaseSqlite3() :
 void DatabaseSqlite3::open(std::string connectionString)
 {
     sqlite3 *db;
-    int rc;
-    rc = sqlite3_open(connectionString.c_str(), &db);
+    int rc = sqlite3_open(connectionString.c_str(), &db);
     privData = (void*)db;
     connected = true;
     
@@ -41,4 +40,13 @@ void DatabaseSqlite3::close()
 bool DatabaseSqlite3::isConnected()
 {
     return connected;
+}
+
+void DatabaseSqlite3::execute(std::string sqlString)
+{
+    sqlite3 *db = (sqlite3*)privData;
+    int rc = sqlite3_exec(db, sqlString.c_str(), NULL, 0, NULL);
+    if( rc != SQLITE_OK ){
+        throw std::runtime_error("Failed to execute query");
+    }
 }
