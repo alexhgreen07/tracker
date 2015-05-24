@@ -10,14 +10,14 @@ class Event
 public:
     Event();
     Event(unsigned int startTime, unsigned int duration);
-    unsigned int getDuration();
+    unsigned int getDuration() const;
     void setDuration(unsigned int duration);
-    unsigned int getStartTime();
-    unsigned int getEndTime();
+    unsigned int getStartTime() const;
+    unsigned int getEndTime() const;
     void setStartTime(unsigned int startTime);
-    std::shared_ptr<Task> getParent();
+    std::shared_ptr<Task> getParent() const;
     void setParent(const std::shared_ptr<Task> & parent);
-    bool overlaps(const std::shared_ptr<Event> & eventToCheck);
+    bool overlaps(const std::shared_ptr<Event> & eventToCheck) const;
 private:
     unsigned int startTime;
     unsigned int duration;

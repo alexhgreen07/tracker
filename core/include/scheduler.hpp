@@ -12,9 +12,9 @@ class Scheduler
 public:
     std::shared_ptr<std::vector<std::shared_ptr<Task>>> getTaskList();
     void setTaskList(const std::shared_ptr<std::vector<std::shared_ptr<Task>>> & taskList);
-    size_t getScheduledEventCount();
+    size_t getScheduledEventCount() const;
     void schedule();
-    std::shared_ptr<Event> getScheduledEvent(unsigned int index);
+    std::shared_ptr<Event> getScheduledEvent(unsigned int index) const;
     
 private:
     std::shared_ptr<std::vector<std::shared_ptr<Task>>> taskList;

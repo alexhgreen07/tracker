@@ -8,7 +8,7 @@ void Scheduler::setTaskList(const std::shared_ptr<std::vector<std::shared_ptr<Ta
 {
     this->taskList = taskList;
 }
-size_t Scheduler::getScheduledEventCount()
+size_t Scheduler::getScheduledEventCount() const
 {
     return scheduledEvents.size();
 }
@@ -36,7 +36,7 @@ void Scheduler::schedule()
         }
     }
 }
-std::shared_ptr<Event> Scheduler::getScheduledEvent(unsigned int index)
+std::shared_ptr<Event> Scheduler::getScheduledEvent(unsigned int index) const
 {
     return scheduledEvents[index];
 }
