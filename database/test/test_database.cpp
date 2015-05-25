@@ -80,3 +80,24 @@ TEST(Sqlite3Group, BasicSelect)
         FAIL("Failed to execute select");
     }
 }
+
+TEST(Sqlite3Group, BasicInsert)
+{
+    std::string insertTestSql = "insert into `persons` values(1)";
+    testDatabase->execute(createTableTestSql);
+    
+    try {
+        testDatabase->execute(insertTestSql);
+        
+        auto data = testDatabase->select("select * from `persons`");
+        LONGS_EQUAL(1, data->size());
+        
+        auto row = data->at(0);
+        LONGS_EQUAL(1, row->size());
+        
+        auto resultVersion = data->at(0)->at(0);
+        CHECK(resultVersion == "1");
+    } catch (std::exception & exc) {
+        FAIL("Insert statement threw exception");
+    }
+}
