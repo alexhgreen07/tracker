@@ -4,6 +4,10 @@
 
 #include "database.hpp"
 
+static std::string dbName = "./test.sqlite3";
+static std::string createTableTestSql = "CREATE TABLE persons(personID int);";
+static std::string dropTableTestSql = "DROP TABLE persons;";
+
 TEST_GROUP(Sqlite3Group)
 {
     std::shared_ptr<DatabaseSqlite3> testDatabase;
@@ -11,8 +15,6 @@ TEST_GROUP(Sqlite3Group)
     
     void setup()
     {
-        dbName = "./test.sqlite3";
-        
         testDatabase = std::make_shared<DatabaseSqlite3>();
         testDatabase->open(dbName);
     }
@@ -21,6 +23,11 @@ TEST_GROUP(Sqlite3Group)
     {
         testDatabase->close();
         std::remove(dbName.c_str());
+    }
+    
+    void createTestTable()
+    {
+        testDatabase->execute(createTableTestSql);
     }
 };
 
@@ -38,7 +45,18 @@ TEST(Sqlite3Group, BasicClose)
 TEST(Sqlite3Group, CreateTable)
 {
     try {
-        testDatabase->execute("CREATE TABLE Persons(PersonID int);");
+        testDatabase->execute(createTableTestSql);
+    } catch (std::exception & exc) {
+        FAIL("Create table threw exception");
+    }
+}
+
+TEST(Sqlite3Group, DropTable)
+{
+    createTestTable();
+    
+    try {
+        testDatabase->execute(dropTableTestSql);
     } catch (std::exception & exc) {
         FAIL("Create table threw exception");
     }
