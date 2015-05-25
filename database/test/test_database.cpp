@@ -28,6 +28,12 @@ TEST_GROUP(Sqlite3Group)
     {
         testDatabase->execute(createTableTestSql);
     }
+    
+    void insertTestRow()
+    {
+        std::string insertTestSql = "insert into `persons` values(1)";
+        testDatabase->execute(insertTestSql);
+    }
 };
 
 TEST(Sqlite3Group, BasicOpen)
@@ -83,11 +89,10 @@ TEST(Sqlite3Group, BasicSelect)
 
 TEST(Sqlite3Group, BasicInsert)
 {
-    std::string insertTestSql = "insert into `persons` values(1)";
-    testDatabase->execute(createTableTestSql);
+    createTestTable();
     
     try {
-        testDatabase->execute(insertTestSql);
+        insertTestRow();
         
         auto data = testDatabase->select("select * from `persons`");
         LONGS_EQUAL(1, data->size());
@@ -97,6 +102,24 @@ TEST(Sqlite3Group, BasicInsert)
         
         auto resultVersion = data->at(0)->at(0);
         CHECK(resultVersion == "1");
+    } catch (std::exception & exc) {
+        FAIL("Insert statement threw exception");
+    }
+}
+
+TEST(Sqlite3Group, BasicDelete)
+{
+    std::string deleteTestSql = "delete from `persons`";
+    
+    createTestTable();
+    insertTestRow();
+    
+    try {
+        testDatabase->execute(deleteTestSql);
+        
+        auto data = testDatabase->select("select * from `persons`");
+        LONGS_EQUAL(0, data->size());
+        
     } catch (std::exception & exc) {
         FAIL("Insert statement threw exception");
     }
