@@ -70,6 +70,9 @@ TEST(Sqlite3Group, BasicSelect)
         
         LONGS_EQUAL(1, data->size());
         
+        auto row = data->at(0);
+        LONGS_EQUAL(1, row->size());
+        
         auto resultVersion = data->at(0)->at(0);
         CHECK(resultVersion == "3.8.11");
         
