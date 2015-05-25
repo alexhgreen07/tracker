@@ -16,6 +16,7 @@ class Database
 {
 public:
     Database();
+    virtual ~Database();
     virtual void open(std::string connectionString) = 0;
     virtual void close() = 0;
     virtual bool isConnected() = 0;
@@ -26,6 +27,7 @@ class DatabaseSqlite3 : Database
 {
 public:
     DatabaseSqlite3();
+    ~DatabaseSqlite3() override;
     void open(std::string connectionString) override;
     void close() override;
     bool isConnected() override;

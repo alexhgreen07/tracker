@@ -7,13 +7,17 @@
 Database::Database()
 {}
 
+Database::~Database()
+{}
+
 DatabaseSqlite3::DatabaseSqlite3() :
     Database(),
     privData(NULL),
     connected(false)
-{
-    
-}
+{}
+
+DatabaseSqlite3::~DatabaseSqlite3()
+{}
 
 void DatabaseSqlite3::open(std::string connectionString)
 {
