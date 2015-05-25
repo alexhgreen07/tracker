@@ -57,9 +57,9 @@ void DatabaseSqlite3::execute(std::string sqlString)
     }
 }
 
-std::shared_ptr<std::vector<std::shared_ptr<std::vector<std::string>>>> DatabaseSqlite3::select(std::string sqlString)
+std::shared_ptr<std::vector<std::vector<std::string>>> DatabaseSqlite3::select(std::string sqlString)
 {
-    auto returnValue = std::make_shared<std::vector<std::shared_ptr<std::vector<std::string>>>>();
+    auto returnValue = std::make_shared<std::vector<std::vector<std::string>>>();
     sqlite3 *db = (sqlite3*)privData;
     sqlite3_stmt *res;
     int rc = sqlite3_prepare_v2(db,sqlString.c_str(), -1, &res, 0);
@@ -76,15 +76,15 @@ std::shared_ptr<std::vector<std::shared_ptr<std::vector<std::string>>>> Database
         
         if(rc == SQLITE_ROW)
         {
-            auto newRow = std::make_shared<std::vector<std::string>>();
+            auto newRow = std::vector<std::string>();
             
             for(unsigned int i = 0; i < columnCount; i++)
             {
                 const unsigned char * colResult = sqlite3_column_text(res, 0);
-                newRow->push_back(std::string((const char*)colResult,strlen((const char*)colResult)));
+                newRow.push_back(std::string((const char*)colResult,strlen((const char*)colResult)));
                 
                 returnValue->push_back(newRow);
-            }            
+            }
         }
         
     }while(rc == SQLITE_ROW);

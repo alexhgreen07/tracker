@@ -77,9 +77,9 @@ TEST(Sqlite3Group, BasicSelect)
         LONGS_EQUAL(1, data->size());
         
         auto row = data->at(0);
-        LONGS_EQUAL(1, row->size());
+        LONGS_EQUAL(1, row.size());
         
-        auto resultVersion = data->at(0)->at(0);
+        auto resultVersion = row.at(0);
         CHECK(resultVersion == "3.8.11");
         
     } catch (std::exception & exc) {
@@ -98,9 +98,9 @@ TEST(Sqlite3Group, BasicInsert)
         LONGS_EQUAL(1, data->size());
         
         auto row = data->at(0);
-        LONGS_EQUAL(1, row->size());
+        LONGS_EQUAL(1, row.size());
         
-        auto resultVersion = data->at(0)->at(0);
+        auto resultVersion = row.at(0);
         CHECK(resultVersion == "1");
     } catch (std::exception & exc) {
         FAIL("Insert statement threw exception");
@@ -139,9 +139,9 @@ TEST(Sqlite3Group, BasicUpdate)
         LONGS_EQUAL(1, data->size());
         
         auto row = data->at(0);
-        LONGS_EQUAL(1, row->size());
+        LONGS_EQUAL(1, row.size());
         
-        auto resultVersion = data->at(0)->at(0);
+        auto resultVersion = row.at(0);
         CHECK(resultVersion == "2");
     } catch (std::exception & exc) {
         FAIL("Insert statement threw exception");
