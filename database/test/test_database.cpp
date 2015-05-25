@@ -4,7 +4,7 @@
 
 #include "database.hpp"
 
-static std::string dbName = "./test.sqlite3";
+static std::string dbName = ":memory:";
 static std::string createTableTestSql = "CREATE TABLE persons(personID int);";
 static std::string dropTableTestSql = "DROP TABLE persons;";
 
@@ -22,7 +22,6 @@ TEST_GROUP(Sqlite3Group)
     void teardown()
     {
         testDatabase->close();
-        std::remove(dbName.c_str());
     }
     
     void createTestTable()
@@ -59,5 +58,22 @@ TEST(Sqlite3Group, DropTable)
         testDatabase->execute(dropTableTestSql);
     } catch (std::exception & exc) {
         FAIL("Create table threw exception");
+    }
+}
+
+TEST(Sqlite3Group, BasicSelect)
+{
+    std::string selectTestSql = "select SQLITE_VERSION();";
+    
+    try {
+        auto data = testDatabase->select(selectTestSql);
+        
+        LONGS_EQUAL(1, data->size());
+        
+        auto resultVersion = data->at(0)->at(0);
+        CHECK(resultVersion == "3.8.11");
+        
+    } catch (std::exception & exc) {
+        FAIL("Failed to execute select");
     }
 }

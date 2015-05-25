@@ -10,7 +10,9 @@
 #ifndef __DATABASE_HPP__
 #define __DATABASE_HPP__
 
+#include <memory>
 #include <string>
+#include <vector>
 
 class Database
 {
@@ -21,6 +23,7 @@ public:
     virtual void close() = 0;
     virtual bool isConnected() = 0;
     virtual void execute(std::string sqlString) = 0;
+    virtual std::shared_ptr<std::vector<std::shared_ptr<std::vector<std::string>>>> select(std::string sqlString) = 0;
 };
 
 class DatabaseSqlite3 : Database
@@ -32,6 +35,7 @@ public:
     void close() override;
     bool isConnected() override;
     void execute(std::string sqlString) override;
+    std::shared_ptr<std::vector<std::shared_ptr<std::vector<std::string>>>> select(std::string sqlString) override;
 private:
     void * privData;
     bool connected;
