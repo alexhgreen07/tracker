@@ -32,8 +32,6 @@ TEST(NetworkApiGroup, BasicOpen)
     JsonRpcServer serv("A Server Instancename", "res/procedures.json", procedurePointers, notPointers, &http);
     if(serv.startServer()) {
         cout << "Server started successfully" << endl;
-        getchar();
-        serv.stopServer();
     } else {
         cout << "Error starting Server" << endl;
     }
