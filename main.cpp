@@ -23,9 +23,9 @@ int main(int ac, char** av)
     procedurePointers["sayHello"] = &sayHello;
     notPointers["notifyServer"] = &notifyServer;
     
-    HTTPConnector http(8080,"./res");
+    HTTPConnector http(8080,"./ui");
     
-    JsonRpcServer serv("A Server Instancename", "res/procedures.json", procedurePointers, notPointers, &http);
+    JsonRpcServer serv("A Server Instancename", "ui/procedures.json", procedurePointers, notPointers, &http);
     serv.startServer();
     
     getline (cin, input);
