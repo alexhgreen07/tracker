@@ -2,35 +2,26 @@
 #define __EVENT_HPP__
 
 #include <memory>
-#include <vector>
 
-class Event :
-    public std::enable_shared_from_this<Event>
+#include "task.hpp"
+
+class Event
 {
 public:
     Event();
-    
-    unsigned int getEarliestStartTime();
-    void setEarliestStartTime(unsigned int earliestStartTime);
-    unsigned int getLatestEndTime();
-    void setLatestEndTime(unsigned int latestEndTime);
-    unsigned int getDuration();
+    Event(unsigned int startTime, unsigned int duration);
+    unsigned int getDuration() const;
     void setDuration(unsigned int duration);
-    void addChild(std::shared_ptr<Event> child);
-    std::shared_ptr<Event> getChild(unsigned int index);
-    size_t getChildrenCount();
-    void removeChild(unsigned int index);
-    std::weak_ptr<Event> getParent();
-    
-protected:
-    void setParent(std::shared_ptr<Event> parent);
-    
+    unsigned int getStartTime() const;
+    unsigned int getEndTime() const;
+    void setStartTime(unsigned int startTime);
+    std::shared_ptr<const Task> getParent() const;
+    void setParent(const std::shared_ptr<const Task> & parent);
+    bool overlaps(const std::shared_ptr<Event> & eventToCheck) const;
 private:
-    unsigned int earliestStartTime;
-    unsigned int latestEndTime;
+    unsigned int startTime;
     unsigned int duration;
-    std::vector<std::shared_ptr<Event>> children;
-    std::weak_ptr<Event> parent;
+    std::shared_ptr<const Task> parent;
 };
 
 #endif

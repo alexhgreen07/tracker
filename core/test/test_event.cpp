@@ -14,78 +14,58 @@ TEST_GROUP(EventGroup)
 
 TEST(EventGroup, BasicInitialize)
 {
-    LONGS_EQUAL(0,testEvent->getEarliestStartTime());
-    LONGS_EQUAL(0,testEvent->getLatestEndTime());
     LONGS_EQUAL(0,testEvent->getDuration());
-    LONGS_EQUAL(0,testEvent->getChildrenCount());
-    CHECK(testEvent->getParent().expired());
+    LONGS_EQUAL(0,testEvent->getStartTime());
+    CHECK(!testEvent->getParent());
 }
 
-TEST(EventGroup, SetEarliestStartTime)
+TEST(EventGroup, SetStartTime)
 {
-    unsigned int testTime = 10;
-    testEvent->setEarliestStartTime(testTime);
+    unsigned int testStartTime = 10;
+    testEvent->setStartTime(testStartTime);
     
-    LONGS_EQUAL(testTime,testEvent->getEarliestStartTime());
-}
-
-TEST(EventGroup, SetLatestEndTime)
-{
-    unsigned int testTime = 15;
-    testEvent->setLatestEndTime(testTime);
-    
-    LONGS_EQUAL(testTime,testEvent->getLatestEndTime());
+    LONGS_EQUAL(testStartTime,testEvent->getStartTime());
 }
 
 TEST(EventGroup, SetDuration)
 {
-    unsigned int testDuration = 20;
+    unsigned int testDuration = 10;
     testEvent->setDuration(testDuration);
     
-    LONGS_EQUAL(testDuration, testEvent->getDuration())
+    LONGS_EQUAL(testDuration,testEvent->getDuration());
 }
 
-TEST(EventGroup, AddChild)
+TEST(EventGroup, SetParentTask)
 {
-    std::shared_ptr<Event> newChild = std::make_shared<Event>();
-    testEvent->addChild(newChild);
+    auto testTask = std::make_shared<Task>();
+    testEvent->setParent(testTask);
     
-    LONGS_EQUAL(1,testEvent->getChildrenCount());
+    CHECK(testEvent->getParent().get() == testTask.get());
 }
 
-TEST(EventGroup, GetChild)
+TEST(EventGroup, CheckNotOverlapping)
 {
-    std::shared_ptr<Event> newChild = std::make_shared<Event>();
-    testEvent->addChild(newChild);
-    std::shared_ptr<Event> child = testEvent->getChild(0);
+    unsigned int testStartTime = 10;
+    unsigned int testDuration = 10;
+    unsigned int testOverlapTime = testStartTime + testDuration;
+    auto testNonOverlappingEvent = std::make_shared<Event>(testOverlapTime,testDuration);
     
-    CHECK(child.get() == newChild.get());
+    testEvent->setStartTime(testStartTime);
+    testEvent->setDuration(testDuration);
+    
+    CHECK_FALSE(testEvent->overlaps(testNonOverlappingEvent));
 }
 
-TEST(EventGroup, RemoveChild)
+TEST(EventGroup, CheckOverlapping)
 {
-    std::shared_ptr<Event> newChild = std::make_shared<Event>();
-    testEvent->addChild(newChild);
-    testEvent->removeChild(0);
+    unsigned int testStartTime = 10;
+    unsigned int testDuration = 10;
+    unsigned int testOverlapTime = testStartTime + (testDuration / 2);
+    auto testOverlappingEvent = std::make_shared<Event>(testOverlapTime,testDuration);
     
-    LONGS_EQUAL(0,testEvent->getChildrenCount());
+    testEvent->setStartTime(testStartTime);
+    testEvent->setDuration(testDuration);
+    
+    CHECK(testEvent->overlaps(testOverlappingEvent));
 }
 
-TEST(EventGroup, GetParentofChild)
-{
-    std::shared_ptr<Event> newChild = std::make_shared<Event>();
-    testEvent->addChild(newChild);
-    std::shared_ptr<Event> childParent = std::shared_ptr<Event>(newChild->getParent());
-    
-    CHECK(childParent.get() == testEvent.get());
-}
-
-TEST(EventGroup, CheckParentofChildAfterRemoval)
-{
-    std::shared_ptr<Event> newChild = std::make_shared<Event>();
-    testEvent->addChild(newChild);
-    testEvent->removeChild(0);
-    std::weak_ptr<Event> childParent = newChild->getParent();
-    
-    CHECK(childParent.expired());
-}

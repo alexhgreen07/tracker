@@ -1,66 +1,55 @@
 #include "event.hpp"
 
-#include <cstddef>
-
 Event::Event() :
-    earliestStartTime(0),
-    latestEndTime(0),
-    duration(0),
-    children()
+    startTime(0),
+    duration(0)
 {}
 
-unsigned int Event::getEarliestStartTime()
-{
-    return earliestStartTime;
-}
-void Event::setEarliestStartTime(unsigned int earliestStartTime)
-{
-    this->earliestStartTime = earliestStartTime;
-}
-unsigned int Event::getLatestEndTime()
-{
-    return latestEndTime;
-}
-void Event::setLatestEndTime(unsigned int latestEndTime)
-{
-    this->latestEndTime = latestEndTime;
-}
-unsigned int Event::getDuration()
+Event::Event(unsigned int startTime, unsigned int duration) :
+    startTime(startTime),
+    duration(duration)
+{}
+
+unsigned int Event::getDuration() const
 {
     return duration;
 }
+
 void Event::setDuration(unsigned int duration)
 {
     this->duration = duration;
 }
-void Event::addChild(std::shared_ptr<Event> child)
+
+unsigned int Event::getStartTime() const
 {
-    //TODO: ensure checks are made for parent/child compatibility
-    
-    child->setParent(shared_from_this());
-    children.push_back(child);
+    return startTime;
 }
-std::shared_ptr<Event> Event::getChild(unsigned int index)
+
+unsigned int Event::getEndTime() const
 {
-    return children[index];
+    return startTime + duration;
 }
-size_t Event::getChildrenCount()
+
+void Event::setStartTime(unsigned int startTime)
 {
-    return children.size();
+    this->startTime = startTime;
 }
-void Event::removeChild(unsigned int index)
-{
-    std::shared_ptr<Event> childToErase = children[index];
-    
-    children.erase(children.begin() + index);
-    
-    childToErase->setParent(std::shared_ptr<Event>(nullptr));
-}
-std::weak_ptr<Event> Event::getParent()
+
+std::shared_ptr<const Task> Event::getParent() const
 {
     return parent;
 }
-void Event::setParent(std::shared_ptr<Event> parent)
+
+void Event::setParent(const std::shared_ptr<const Task> & parent)
 {
     this->parent = parent;
+}
+
+bool Event::overlaps(const std::shared_ptr<Event> & eventToCheck) const
+{
+    return
+        ((eventToCheck->getStartTime() >= startTime) &&
+       (eventToCheck->getStartTime() < getEndTime())) ||
+       ((eventToCheck->getEndTime() > startTime) &&
+        (eventToCheck->getEndTime() < getEndTime()));
 }

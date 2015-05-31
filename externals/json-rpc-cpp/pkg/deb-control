@@ -1,0 +1,8 @@
+Package: libjson-rpc-cpp
+Version: 1.1-1
+Priority: optional
+Architecture: amd64
+Maintainer: Peter Spiess-Knafl <peter.knafl@gmail.com>
+Description: JSON-RPC Library for C++
+ This library provides a great library for handling json-rpc calls in C++.
+ 
