@@ -10,7 +10,7 @@ int main(int ac, char** av)
     string input;
     
     TrackerApp app;
-    app.run();
+    app.start();
     
     getline (cin, input);
     

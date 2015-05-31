@@ -5,7 +5,7 @@ namespace Tracker
 namespace Application
 {
 
-void TrackerApp::run()
+void TrackerApp::start()
 {
     server.start();
 }

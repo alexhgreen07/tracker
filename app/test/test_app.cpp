@@ -14,6 +14,6 @@ TEST_GROUP(AppGroup)
 TEST(AppGroup, BasicInitialize)
 {
     TrackerApp app;
-    app.run();
+    app.start();
 }
 
