@@ -1,18 +1,19 @@
 #include <string>
 #include <iostream>
 
-#include <app.hpp>
+#include <CppUTest/TestHarness.h>
+
+#include "app.hpp"
 
 using namespace Tracker::Application;
 
-int main(int ac, char** av)
+TEST_GROUP(AppGroup)
 {
-    string input;
-    
+};
+
+TEST(AppGroup, BasicInitialize)
+{
     TrackerApp app;
     app.start();
-    
-    getline (cin, input);
-    
-    return 0;
 }
+

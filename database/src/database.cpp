@@ -6,6 +6,11 @@
 
 #include <sqlite3.h>
 
+namespace Tracker
+{
+namespace Database
+{
+
 Database::Database()
 {}
 
@@ -92,4 +97,7 @@ std::shared_ptr<std::vector<std::vector<std::string>>> DatabaseSqlite3::select(s
     sqlite3_finalize(res);
     
     return returnValue;
+}
+
+}
 }

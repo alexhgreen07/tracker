@@ -4,6 +4,8 @@
 
 #include "database.hpp"
 
+using namespace Tracker::Database;
+
 TEST_GROUP(Sqlite3Group)
 {
     std::shared_ptr<DatabaseSqlite3> testDatabase;
