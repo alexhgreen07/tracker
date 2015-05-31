@@ -13,7 +13,7 @@ using namespace Network;
 class TrackerApp
 {
 public:
-    void start();
+    bool start();
 private:
     Server server;
 };

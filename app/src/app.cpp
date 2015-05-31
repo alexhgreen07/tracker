@@ -5,9 +5,9 @@ namespace Tracker
 namespace Application
 {
 
-void TrackerApp::start()
+bool TrackerApp::start()
 {
-    server.start();
+    return server.start();
 }
 
 }
