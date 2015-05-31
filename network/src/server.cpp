@@ -1,5 +1,10 @@
 #include "server.hpp"
 
+namespace Tracker
+{
+namespace Network
+{
+
 static void sayHello(const Json::Value& request, Json::Value& response) {
     response = "Hello: " + request["name"].asString();
 }
@@ -24,4 +29,7 @@ Server::Server() :
 bool Server::start()
 {
     return serv.startServer();
+}
+
+}
 }

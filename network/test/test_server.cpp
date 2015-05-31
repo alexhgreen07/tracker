@@ -5,6 +5,8 @@
 
 #include "server.hpp"
 
+using namespace Tracker::Network;
+
 TEST_GROUP(NetworkServerGroup)
 {
 };

@@ -3,6 +3,8 @@
 
 #include <app.hpp>
 
+using namespace Tracker::Application;
+
 int main(int ac, char** av)
 {
     string input;

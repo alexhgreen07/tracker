@@ -3,6 +3,13 @@
 
 #include <server.hpp>
 
+namespace Tracker
+{
+namespace Application
+{
+
+using namespace Network;
+    
 class TrackerApp
 {
 public:
@@ -10,5 +17,10 @@ public:
 private:
     Server server;
 };
+    
+}
+}
+
+
 
 #endif

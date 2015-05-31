@@ -5,6 +5,8 @@
 
 #include "app.hpp"
 
+using namespace Tracker::Application;
+
 TEST_GROUP(AppGroup)
 {
 };

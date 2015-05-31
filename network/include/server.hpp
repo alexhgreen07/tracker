@@ -5,6 +5,11 @@
 
 using namespace jsonrpc;
 
+namespace Tracker
+{
+namespace Network
+{
+
 class Server
 {
 public:
@@ -21,5 +26,8 @@ private:
     HTTPConnector http;
     JsonRpcServer serv;
 };
+    
+}
+}
 
 #endif

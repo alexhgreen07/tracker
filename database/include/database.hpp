@@ -14,6 +14,11 @@
 #include <string>
 #include <vector>
 
+namespace Tracker
+{
+namespace Database
+{
+
 class Database
 {
 public:
@@ -40,5 +45,8 @@ private:
     void * privData;
     bool connected;
 };
+    
+}
+}
 
 #endif
