@@ -3,8 +3,6 @@
 
 #include <CppUTest/TestHarness.h>
 
-using namespace Tracker::Application;
-
 TEST_GROUP(AppDBGroup)
 {
 };
