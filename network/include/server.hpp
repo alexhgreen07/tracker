@@ -11,8 +11,13 @@ public:
     Server();
     bool start();
 private:
-    JsonMethods procedurePointers;
-    JsonNotifications notPointers;
+    struct Procedures{
+        Procedures();
+        JsonMethods procedurePointers;
+        JsonNotifications notPointers;
+    };
+    
+    Procedures procedures;
     HTTPConnector http;
     JsonRpcServer serv;
 };

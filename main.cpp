@@ -1,32 +1,14 @@
 #include <string>
 #include <iostream>
 
-#include <json-rpc.h>
-
-using namespace jsonrpc;
-
-void sayHello(const Json::Value& request, Json::Value& response) {
-    response = "Hello: " + request["name"].asString();
-}
-
-void notifyServer(const Json::Value& request) {
-    cout << "server received some Notification" << endl;
-}
+#include <app.hpp>
 
 int main(int ac, char** av)
 {
-    std::string input;
+    string input;
     
-    JsonMethods procedurePointers;
-    JsonNotifications notPointers;
-    
-    procedurePointers["sayHello"] = &sayHello;
-    notPointers["notifyServer"] = &notifyServer;
-    
-    HTTPConnector http(8080,"./ui");
-    
-    JsonRpcServer serv("A Server Instancename", "ui/procedures.json", procedurePointers, notPointers, &http);
-    serv.startServer();
+    TrackerApp app;
+    app.run();
     
     getline (cin, input);
     
