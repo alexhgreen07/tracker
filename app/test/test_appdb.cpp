@@ -19,6 +19,8 @@ public:
     {
         database.execute("create table version (version int)");
         database.execute("insert into version values (" + currentVersion + ")");
+        
+        database.execute("create table tasks (task_id int)");
     }
     
     std::string getCurrentVersion()
@@ -57,6 +59,7 @@ TEST_GROUP_BASE(AppDBGroup, AppDBGroupBase)
     TEST_SETUP()
     {
         mysqlDB.open(":memory:");
+        testDB.initializeNewDatabase();
     }
     
     TEST_TEARDOWN()
@@ -67,9 +70,14 @@ TEST_GROUP_BASE(AppDBGroup, AppDBGroupBase)
 
 TEST(AppDBGroup, InitializeNewDatabase)
 {
-    testDB.initializeNewDatabase();
-    
     auto result = mysqlDB.select("select version from version");
     
     STRCMP_EQUAL(result->at(0)[0].c_str(),testDB.getCurrentVersion().c_str());
+}
+
+TEST(AppDBGroup, ValidateTasksTableExists)
+{
+    auto result = mysqlDB.select("select * from tasks");
+    
+    LONGS_EQUAL(0, result->size());
 }
