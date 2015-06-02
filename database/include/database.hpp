@@ -31,7 +31,7 @@ public:
     virtual std::shared_ptr<std::vector<std::vector<std::string>>> select(std::string sqlString) = 0;
 };
 
-class DatabaseSqlite3 : Database
+class DatabaseSqlite3 : public Database
 {
 public:
     DatabaseSqlite3();

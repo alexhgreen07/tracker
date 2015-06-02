@@ -7,12 +7,11 @@ namespace Tracker
 namespace Application
 {
 
-using namespace Database;
-    
-class AppDB : public DatabaseSqlite3
+class AppDB
 {
 public:
-    AppDB() :
+    AppDB(Database::Database & database) :
+        database(database),
         currentVersion("0")
     {}
     
@@ -20,8 +19,8 @@ public:
     {
         int returnValue = 0;
         
-        execute("create table version (version varchar(10))");
-        execute("insert into version values (\"" + currentVersion + "\")");
+        database.execute("create table version (version varchar(10))");
+        database.execute("insert into version values (\"" + currentVersion + "\")");
         
         return returnValue;
     }
@@ -31,6 +30,7 @@ public:
         return currentVersion;
     }
 private:
+    Database::Database & database;
     std::string currentVersion;
 };
 
@@ -42,33 +42,38 @@ private:
 
 #include <CppUTest/TestHarness.h>
 
-using namespace Tracker::Application;
+using namespace Tracker;
+using namespace Application;
 
-TEST_GROUP(AppDBGroup)
+TEST_BASE(AppDBGroupBase)
 {
+    Database::DatabaseSqlite3 mysqlDB;
     AppDB testDB;
+    
+    AppDBGroupBase() :
+        testDB(mysqlDB)
+    {}
+};
+
+TEST_GROUP_BASE(AppDBGroup, AppDBGroupBase)
+{
     
     TEST_SETUP()
     {
-        testDB.open(":memory:");
+        mysqlDB.open(":memory:");
     }
     
     TEST_TEARDOWN()
     {
-        testDB.close();
+        mysqlDB.close();
     }
 };
-
-TEST(AppDBGroup, BasicOpen)
-{
-    CHECK(testDB.isConnected());
-}
 
 TEST(AppDBGroup, InitializeNewDatabase)
 {
     testDB.initializeNewDatabase();
     
-    auto result = testDB.select("select version from version");
+    auto result = mysqlDB.select("select version from version");
     
     STRCMP_EQUAL(result->at(0)[0].c_str(),testDB.getCurrentVersion().c_str());
 }
