@@ -19,8 +19,8 @@ public:
     {
         int returnValue = 0;
         
-        database.execute("create table version (version varchar(10))");
-        database.execute("insert into version values (\"" + currentVersion + "\")");
+        database.execute("create table version (version int)");
+        database.execute("insert into version values (" + currentVersion + ")");
         
         return returnValue;
     }
