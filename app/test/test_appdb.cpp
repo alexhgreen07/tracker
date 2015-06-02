@@ -15,14 +15,10 @@ public:
         currentVersion("0")
     {}
     
-    int initializeNewDatabase()
+    void initializeNewDatabase()
     {
-        int returnValue = 0;
-        
         database.execute("create table version (version int)");
         database.execute("insert into version values (" + currentVersion + ")");
-        
-        return returnValue;
     }
     
     std::string getCurrentVersion()
