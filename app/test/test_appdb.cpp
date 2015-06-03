@@ -75,6 +75,14 @@ public:
         database.execute(insertString);
     }
     
+    void removeTask(unsigned int taskId)
+    {
+        std::string deleteString =
+        "delete from tasks where taskId = " + std::to_string(taskId);
+        
+        database.execute(deleteString);
+    }
+    
     std::string getCurrentVersion()
     {
         return currentVersion;
@@ -143,4 +151,16 @@ TEST(AppDBGroup, ValidateTaskInsert)
     auto result = testDB.getTasks();
     
     LONGS_EQUAL(1, result->size());
+}
+
+TEST(AppDBGroup, ValidateTaskDelete)
+{
+    Core::Task newTask;
+    
+    testDB.insertTask(newTask);
+    testDB.removeTask(1);
+    
+    auto result = testDB.getTasks();
+    
+    LONGS_EQUAL(0, result->size());
 }
