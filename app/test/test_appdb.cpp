@@ -18,8 +18,18 @@ public:
     void initializeNewDatabase()
     {
         database.execute("create table version (version int)");
-        database.execute("insert into version values (" + currentVersion + ")");
         
+        createVersionTable();
+        createTasksTable();
+    }
+    
+    void createVersionTable()
+    {
+        database.execute("insert into version values (" + currentVersion + ")");
+    }
+    
+    void createTasksTable()
+    {
         database.execute("create table tasks (task_id int)");
     }
     
