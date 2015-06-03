@@ -1,5 +1,10 @@
 #include "event.hpp"
 
+namespace Tracker
+{
+namespace Core
+{
+
 Event::Event() :
     startTime(0),
     duration(0)
@@ -52,4 +57,7 @@ bool Event::overlaps(const std::shared_ptr<Event> & eventToCheck) const
        (eventToCheck->getStartTime() < getEndTime())) ||
        ((eventToCheck->getEndTime() > startTime) &&
         (eventToCheck->getEndTime() < getEndTime()));
+}
+    
+}
 }

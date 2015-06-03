@@ -1,12 +1,13 @@
 #include <string>
 
 #include <database.hpp>
+#include <task.hpp>
 
 namespace Tracker
 {
 namespace Application
 {
-
+    
 class AppDB
 {
 public:
@@ -30,7 +31,48 @@ public:
     
     void createTasksTable()
     {
-        database.execute("create table tasks (task_id int)");
+        std::string createSql = "create table tasks (";
+        createSql += "taskId integer primary key asc";
+        createSql += ",earliestStartTime real";
+        createSql += ",latestEndTime real";
+        createSql += ",duration real";
+        createSql += ");";
+        
+        database.execute(createSql);
+    }
+    
+    std::shared_ptr<std::vector<Core::Task>> getTasks()
+    {
+        auto tasksTable = database.select("select * from tasks");
+        auto tasks = std::make_shared<std::vector<Core::Task>>();
+        
+        for(unsigned int i = 0; i < tasksTable->size(); i++)
+        {
+            Core::Task nextTask;
+            
+            tasks->push_back(nextTask);
+        }
+        
+        return tasks;
+    }
+    
+    void insertTask(Core::Task & newTask)
+    {
+        std::string columnsString = "";
+        std::string valuesString = "";
+        
+        columnsString += "earliestStartTime";
+        valuesString += std::to_string(newTask.getEarliestStartTime());
+        columnsString += ",latestEndTime";
+        valuesString += "," + std::to_string(newTask.getLatestEndTime());
+        columnsString += ",duration";
+        valuesString += "," + std::to_string(newTask.getDuration());
+        
+        std::string insertString =
+            "insert into tasks (" +
+            columnsString + ") values(" + valuesString + ")";
+        
+        database.execute(insertString);
     }
     
     std::string getCurrentVersion()
@@ -78,7 +120,7 @@ TEST_GROUP_BASE(AppDBGroup, AppDBGroupBase)
     }
 };
 
-TEST(AppDBGroup, InitializeNewDatabase)
+TEST(AppDBGroup, ValidateVersionTable)
 {
     auto result = mysqlDB.select("select version from version");
     
@@ -87,7 +129,18 @@ TEST(AppDBGroup, InitializeNewDatabase)
 
 TEST(AppDBGroup, ValidateTasksTableExists)
 {
-    auto result = mysqlDB.select("select * from tasks");
+    auto result = testDB.getTasks();
     
     LONGS_EQUAL(0, result->size());
+}
+
+TEST(AppDBGroup, ValidateTaskInsert)
+{
+    Core::Task newTask;
+    
+    testDB.insertTask(newTask);
+    
+    auto result = testDB.getTasks();
+    
+    LONGS_EQUAL(1, result->size());
 }

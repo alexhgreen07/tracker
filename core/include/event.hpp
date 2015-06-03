@@ -5,6 +5,11 @@
 
 #include "task.hpp"
 
+namespace Tracker
+{
+namespace Core
+{
+ 
 class Event
 {
 public:
@@ -23,5 +28,8 @@ private:
     unsigned int duration;
     std::shared_ptr<const Task> parent;
 };
+    
+}
+}
 
 #endif

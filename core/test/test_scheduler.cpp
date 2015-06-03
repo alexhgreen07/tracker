@@ -2,6 +2,8 @@
 
 #include "scheduler.hpp"
 
+using namespace Tracker::Core;
+
 #define CHECK_EVENT(expectedParent,expectedStartTime,expectedDuration,event) \
     CHECK(expectedParent == event->getParent()); \
     LONGS_EQUAL(expectedStartTime, event->getStartTime()); \

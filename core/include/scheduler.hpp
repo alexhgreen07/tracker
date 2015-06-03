@@ -7,6 +7,11 @@
 #include "task.hpp"
 #include "event.hpp"
 
+namespace Tracker
+{
+namespace Core
+{
+
 class Scheduler
 {
 public:
@@ -31,5 +36,8 @@ private:
     static bool compareTasks(const std::shared_ptr<Task> & a, const std::shared_ptr<Task> & b);
     static bool compareEvents(const std::shared_ptr<Event> & a, const std::shared_ptr<Event> & b);
 };
+    
+}
+}
 
 #endif
