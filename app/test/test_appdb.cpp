@@ -1,4 +1,5 @@
 #include <string>
+#include <stdlib.h>
 
 #include <database.hpp>
 #include <task.hpp>
@@ -43,12 +44,14 @@ public:
     
     std::shared_ptr<std::vector<Core::Task>> getTasks()
     {
-        auto tasksTable = database.select("select * from tasks");
+        auto tasksTable = database.select("select earliestStartTime from tasks");
         auto tasks = std::make_shared<std::vector<Core::Task>>();
         
         for(unsigned int i = 0; i < tasksTable->size(); i++)
         {
             Core::Task nextTask;
+            
+            nextTask.setEarliestStartTime(atoi(tasksTable->at(i)[0].c_str()));
             
             tasks->push_back(nextTask);
         }
@@ -151,6 +154,17 @@ TEST(AppDBGroup, ValidateTaskInsert)
     auto result = testDB.getTasks();
     
     LONGS_EQUAL(1, result->size());
+}
+
+TEST(AppDBGroup, ValidateTaskInsertByEarliestStartTime)
+{
+    Core::Task newTask;
+    
+    newTask.setEarliestStartTime(2);
+    testDB.insertTask(newTask);
+    
+    auto result = testDB.getTasks();
+    LONGS_EQUAL(newTask.getEarliestStartTime(),result->at(0).getEarliestStartTime());
 }
 
 TEST(AppDBGroup, ValidateTaskDelete)
