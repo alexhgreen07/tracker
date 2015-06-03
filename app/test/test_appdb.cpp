@@ -44,7 +44,7 @@ public:
     
     std::shared_ptr<std::vector<Core::Task>> getTasks()
     {
-        auto tasksTable = database.select("select earliestStartTime from tasks");
+        auto tasksTable = database.select("select earliestStartTime, latestEndTime from tasks");
         auto tasks = std::make_shared<std::vector<Core::Task>>();
         
         for(unsigned int i = 0; i < tasksTable->size(); i++)
@@ -52,6 +52,7 @@ public:
             Core::Task nextTask;
             
             nextTask.setEarliestStartTime(atoi(tasksTable->at(i)[0].c_str()));
+            nextTask.setLatestEndTime(atoi(tasksTable->at(i)[1].c_str()));
             
             tasks->push_back(nextTask);
         }
@@ -165,6 +166,17 @@ TEST(AppDBGroup, ValidateTaskInsertByEarliestStartTime)
     
     auto result = testDB.getTasks();
     LONGS_EQUAL(newTask.getEarliestStartTime(),result->at(0).getEarliestStartTime());
+}
+
+TEST(AppDBGroup, ValidateTaskInsertByLatestEndTime)
+{
+    Core::Task newTask;
+    
+    newTask.setLatestEndTime(2);
+    testDB.insertTask(newTask);
+    
+    auto result = testDB.getTasks();
+    LONGS_EQUAL(newTask.getLatestEndTime(),result->at(0).getLatestEndTime());
 }
 
 TEST(AppDBGroup, ValidateTaskDelete)
