@@ -62,7 +62,7 @@ public:
         return tasks;
     }
     
-    void insertTask(Core::Task & newTask)
+    void insertTask(const Core::Task & newTask)
     {
         std::string columnsString = "";
         std::string valuesString = "";
