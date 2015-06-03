@@ -29,6 +29,7 @@ public:
     virtual bool isConnected() = 0;
     virtual void execute(std::string sqlString) = 0;
     virtual std::shared_ptr<std::vector<std::vector<std::string>>> select(std::string sqlString) = 0;
+    virtual uint64_t lastInsertRowId() = 0;
 };
 
 class DatabaseSqlite3 : public Database
@@ -41,6 +42,7 @@ public:
     bool isConnected() override;
     void execute(std::string sqlString) override;
     std::shared_ptr<std::vector<std::vector<std::string>>> select(std::string sqlString) override;
+    uint64_t lastInsertRowId() override;
 private:
     void * privData;
     bool connected;

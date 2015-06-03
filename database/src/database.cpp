@@ -98,6 +98,11 @@ std::shared_ptr<std::vector<std::vector<std::string>>> DatabaseSqlite3::select(s
     
     return returnValue;
 }
+    
+uint64_t DatabaseSqlite3::lastInsertRowId()
+{
+    return sqlite3_last_insert_rowid((sqlite3*)privData);
+}
 
 }
 }

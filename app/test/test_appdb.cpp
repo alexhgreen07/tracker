@@ -1,4 +1,5 @@
 #include <string>
+#include <map>
 #include <stdlib.h>
 
 #include <database.hpp>
@@ -42,27 +43,28 @@ public:
         database.execute(createSql);
     }
     
-    std::shared_ptr<std::vector<Core::Task>> getTasks()
+    std::shared_ptr<std::map<uint64_t, Core::Task>> getTasks()
     {
         auto tasksTable = database.select(
-            "select earliestStartTime, latestEndTime, duration from tasks");
-        auto tasks = std::make_shared<std::vector<Core::Task>>();
+            "select taskId, earliestStartTime, latestEndTime, duration from tasks");
+        auto tasks = std::make_shared<std::map<uint64_t, Core::Task>>();
         
         for(unsigned int i = 0; i < tasksTable->size(); i++)
         {
             Core::Task nextTask;
+            uint64_t taskId = (uint64_t)atoll(tasksTable->at(i)[0].c_str());
             
-            nextTask.setEarliestStartTime(atoi(tasksTable->at(i)[0].c_str()));
-            nextTask.setLatestEndTime(atoi(tasksTable->at(i)[1].c_str()));
-            nextTask.setDuration(atoi(tasksTable->at(i)[2].c_str()));
+            nextTask.setEarliestStartTime(atoi(tasksTable->at(i)[1].c_str()));
+            nextTask.setLatestEndTime(atoi(tasksTable->at(i)[2].c_str()));
+            nextTask.setDuration(atoi(tasksTable->at(i)[3].c_str()));
             
-            tasks->push_back(nextTask);
+            tasks->insert(std::pair<uint64_t, Core::Task>(taskId,nextTask));
         }
         
         return tasks;
     }
     
-    void insertTask(const Core::Task & newTask)
+    uint64_t insertTask(const Core::Task & newTask)
     {
         std::string columnsString = "";
         std::string valuesString = "";
@@ -79,9 +81,10 @@ public:
             columnsString + ") values(" + valuesString + ")";
         
         database.execute(insertString);
+        return database.lastInsertRowId();
     }
     
-    void removeTask(unsigned int taskId)
+    void removeTask(uint64_t taskId)
     {
         std::string deleteString =
         "delete from tasks where taskId = " + std::to_string(taskId);
@@ -167,7 +170,7 @@ TEST(AppDBGroup, ValidateTaskInsertByEarliestStartTime)
     testDB.insertTask(newTask);
     
     auto result = testDB.getTasks();
-    LONGS_EQUAL(newTask.getEarliestStartTime(),result->at(0).getEarliestStartTime());
+    LONGS_EQUAL(newTask.getEarliestStartTime(),result->at(1).getEarliestStartTime());
 }
 
 TEST(AppDBGroup, ValidateTaskInsertByLatestEndTime)
@@ -178,7 +181,7 @@ TEST(AppDBGroup, ValidateTaskInsertByLatestEndTime)
     testDB.insertTask(newTask);
     
     auto result = testDB.getTasks();
-    LONGS_EQUAL(newTask.getLatestEndTime(),result->at(0).getLatestEndTime());
+    LONGS_EQUAL(newTask.getLatestEndTime(),result->at(1).getLatestEndTime());
 }
 
 TEST(AppDBGroup, ValidateTaskInsertByDuration)
@@ -189,15 +192,15 @@ TEST(AppDBGroup, ValidateTaskInsertByDuration)
     testDB.insertTask(newTask);
     
     auto result = testDB.getTasks();
-    LONGS_EQUAL(newTask.getDuration(),result->at(0).getDuration());
+    LONGS_EQUAL(newTask.getDuration(),result->at(1).getDuration());
 }
 
 TEST(AppDBGroup, ValidateTaskDelete)
 {
     Core::Task newTask;
     
-    testDB.insertTask(newTask);
-    testDB.removeTask(1);
+    uint64_t taskId = testDB.insertTask(newTask);
+    testDB.removeTask(taskId);
     
     auto result = testDB.getTasks();
     
