@@ -84,6 +84,17 @@ public:
         return database.lastInsertRowId();
     }
     
+    void updateTask(uint64_t taskId, Core::Task & task)
+    {
+        std::string updateString = "update tasks set ";
+        
+        updateString += "earliestStartTime = " + std::to_string(task.getEarliestStartTime());
+        
+        updateString += " where taskId = " + std::to_string(taskId);
+        
+        database.execute(updateString);
+    }
+    
     void removeTask(uint64_t taskId)
     {
         std::string deleteString =
@@ -205,4 +216,18 @@ TEST(AppDBGroup, ValidateTaskDelete)
     auto result = testDB.getTasks();
     
     LONGS_EQUAL(0, result->size());
+}
+
+TEST(AppDBGroup, ValidateTaskUpdateByEarliestStartTime)
+{
+    Core::Task newTask;
+    
+    newTask.setEarliestStartTime(2);
+    auto taskId = testDB.insertTask(newTask);
+    
+    newTask.setEarliestStartTime(3);
+    testDB.updateTask(taskId, newTask);
+    
+    auto result = testDB.getTasks();
+    LONGS_EQUAL(newTask.getEarliestStartTime(),result->at(1).getEarliestStartTime());
 }
