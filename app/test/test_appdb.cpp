@@ -222,10 +222,9 @@ TEST(AppDBGroup, ValidateTaskUpdateByEarliestStartTime)
 {
     Core::Task newTask;
     
-    newTask.setEarliestStartTime(2);
     auto taskId = testDB.insertTask(newTask);
     
-    newTask.setEarliestStartTime(3);
+    newTask.setEarliestStartTime(2);
     testDB.updateTask(taskId, newTask);
     
     auto result = testDB.getTasks();
