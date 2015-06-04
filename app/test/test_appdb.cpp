@@ -89,6 +89,8 @@ public:
         std::string updateString = "update tasks set ";
         
         updateString += "earliestStartTime = " + std::to_string(task.getEarliestStartTime());
+        updateString += ",latestEndTime = " + std::to_string(task.getLatestEndTime());
+        updateString += ",duration = " + std::to_string(task.getDuration());
         
         updateString += " where taskId = " + std::to_string(taskId);
         
@@ -229,4 +231,30 @@ TEST(AppDBGroup, ValidateTaskUpdateByEarliestStartTime)
     
     auto result = testDB.getTasks();
     LONGS_EQUAL(newTask.getEarliestStartTime(),result->at(1).getEarliestStartTime());
+}
+
+TEST(AppDBGroup, ValidateTaskUpdateByLatestEndTime)
+{
+    Core::Task newTask;
+    
+    auto taskId = testDB.insertTask(newTask);
+    
+    newTask.setLatestEndTime(2);
+    testDB.updateTask(taskId, newTask);
+    
+    auto result = testDB.getTasks();
+    LONGS_EQUAL(newTask.getLatestEndTime(),result->at(1).getLatestEndTime());
+}
+
+TEST(AppDBGroup, ValidateTaskUpdateByDuration)
+{
+    Core::Task newTask;
+    
+    auto taskId = testDB.insertTask(newTask);
+    
+    newTask.setDuration(2);
+    testDB.updateTask(taskId, newTask);
+    
+    auto result = testDB.getTasks();
+    LONGS_EQUAL(newTask.getDuration(),result->at(1).getDuration());
 }
