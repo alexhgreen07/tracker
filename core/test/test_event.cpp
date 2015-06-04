@@ -2,6 +2,8 @@
 
 #include "event.hpp"
 
+using namespace Tracker::Core;
+
 TEST_GROUP(EventGroup)
 {
     std::shared_ptr<Event> testEvent;

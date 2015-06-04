@@ -2,6 +2,11 @@
 
 #include <cstddef>
 
+namespace Tracker
+{
+namespace Core
+{
+
 Task::Task() :
     earliestStartTime(0),
     latestEndTime(0),
@@ -127,4 +132,7 @@ void Task::setParent(const std::shared_ptr<Task> & parent)
 void Task::setRecurranceParent(const std::shared_ptr<Task> & parent)
 {
     this->recurrenceParent = parent;
+}
+    
+}
 }

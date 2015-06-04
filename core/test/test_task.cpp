@@ -2,6 +2,8 @@
 
 #include "task.hpp"
 
+using namespace Tracker::Core;
+
 TEST_GROUP(TaskGroup)
 {
     std::shared_ptr<Task> testTask;

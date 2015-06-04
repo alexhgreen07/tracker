@@ -85,11 +85,11 @@ std::shared_ptr<std::vector<std::vector<std::string>>> DatabaseSqlite3::select(s
             
             for(unsigned int i = 0; i < columnCount; i++)
             {
-                const unsigned char * colResult = sqlite3_column_text(res, 0);
-                newRow.push_back(std::string((const char*)colResult,strlen((const char*)colResult)));
-                
-                returnValue->push_back(newRow);
+                const unsigned char * colResult = sqlite3_column_text(res, i);
+                newRow.push_back(std::string((const char*)colResult,strlen((const char*)colResult)));                                
             }
+            
+            returnValue->push_back(newRow);
         }
         
     }while(rc == SQLITE_ROW);
@@ -97,6 +97,11 @@ std::shared_ptr<std::vector<std::vector<std::string>>> DatabaseSqlite3::select(s
     sqlite3_finalize(res);
     
     return returnValue;
+}
+    
+uint64_t DatabaseSqlite3::lastInsertRowId()
+{
+    return sqlite3_last_insert_rowid((sqlite3*)privData);
 }
 
 }

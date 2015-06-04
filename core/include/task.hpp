@@ -4,6 +4,11 @@
 #include <memory>
 #include <vector>
 
+namespace Tracker
+{
+namespace Core
+{
+
 class Task :
     public std::enable_shared_from_this<Task>
 {
@@ -48,5 +53,8 @@ private:
     unsigned int recurringLateOffset;
     std::weak_ptr<Task> recurrenceParent;
 };
+    
+}
+}
 
 #endif

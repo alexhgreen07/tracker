@@ -1,5 +1,10 @@
 #include "scheduler.hpp"
 
+namespace Tracker
+{
+namespace Core
+{
+
 std::shared_ptr<std::vector<std::shared_ptr<Task>>> Scheduler::getTaskList()
 {
     return taskList;
@@ -179,4 +184,7 @@ bool Scheduler::compareTasks(const std::shared_ptr<Task> & a, const std::shared_
 bool Scheduler::compareEvents(const std::shared_ptr<Event> & a, const std::shared_ptr<Event> & b)
 {
     return (a->getStartTime() < b->getStartTime());
+}
+    
+}
 }
