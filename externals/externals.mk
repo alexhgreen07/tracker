@@ -1,3 +1,4 @@
+# CppUTest Library
 include_dirs += \
 	externals/cpputest/include
 
@@ -23,3 +24,14 @@ cpputest_source_files = \
 cpputest_obj_files = $(patsubst %,$(BIN_DIR)/%,$(cpputest_source_files:.cpp=.o))
 
 $(BIN_DIR)/cpputest_lib.a: $(cpputest_obj_files)
+
+# Sqlite3 Library
+include_dirs += \
+	externals/sqllite3
+
+sqllite3_source_files = \
+	externals/sqllite3/sqlite3.c
+
+sqllite3_obj_files = $(patsubst %,$(BIN_DIR)/%,$(sqllite3_source_files:.c=.o))
+
+$(BIN_DIR)/sqllite3_lib.a: $(sqllite3_obj_files)
