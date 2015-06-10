@@ -2,20 +2,22 @@ CC = g++
 CFLAGS = -std=c++11
 BIN_DIR = bin
 
+.PHONY: all clean
+
 include_dirs = 
 
 include core/core.mk
 
 $(BIN_DIR)/%.o: %.cpp
-	mkdir -p $(dir $@)
-	$(CC) -c -o $@ $< -I $(include_dirs) $(CFLAGS)
+	@echo CC $@
+	@mkdir -p $(dir $@)
+	@$(CC) -c -o $@ $< -I $(include_dirs) $(CFLAGS)
 
 $(BIN_DIR)/%.a:
-	ar rcs $@ $^
+	@echo AR $@
+	@ar rcs $@ $^
 
-.PHONY: all
 all: core_lib.a
 
-.PHONY: clean
 clean:
 	rm -rf bin/
