@@ -6,7 +6,7 @@ BIN_DIR = bin
 
 .PHONY: all clean
 
-all: $(BIN_DIR)/core_test.exe $(BIN_DIR)/database_test.exe $(BIN_DIR)/network_test.exe
+all: $(BIN_DIR)/app_test.exe $(BIN_DIR)/core_test.exe $(BIN_DIR)/database_test.exe $(BIN_DIR)/network_test.exe
 
 clean:
 	rm -rf bin/
@@ -17,6 +17,7 @@ include externals/externals.mk
 include core/core.mk
 include database/database.mk
 include network/network.mk
+include app/app.mk
 
 master_includes = $(patsubst %,-I %,$(include_dirs))
 
