@@ -4,6 +4,11 @@ BIN_DIR = bin
 
 .PHONY: all clean
 
+all: $(BIN_DIR)/core_test.exe
+
+clean:
+	rm -rf bin/
+
 include_dirs = 
 
 include externals/externals.mk
@@ -23,8 +28,3 @@ $(BIN_DIR)/%.a:
 $(BIN_DIR)/%.exe:
 	@echo EXE $@
 	@$(CC) -o $@ $^ $(master_includes) $(CFLAGS)
-
-all: $(BIN_DIR)/core_test.exe
-
-clean:
-	rm -rf bin/
