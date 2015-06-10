@@ -6,18 +6,25 @@ BIN_DIR = bin
 
 include_dirs = 
 
+include externals/externals.mk
 include core/core.mk
+
+master_includes = $(patsubst %,-I %,$(include_dirs))
 
 $(BIN_DIR)/%.o: %.cpp
 	@echo CC $@
 	@mkdir -p $(dir $@)
-	@$(CC) -c -o $@ $< -I $(include_dirs) $(CFLAGS)
+	@$(CC) -c -o $@ $< $(master_includes) $(CFLAGS)
 
 $(BIN_DIR)/%.a:
 	@echo AR $@
 	@ar rcs $@ $^
 
-all: core_lib.a
+$(BIN_DIR)/%.exe:
+	@echo EXE $@
+	@$(CC) -o $@ $^ $(master_includes) $(CFLAGS)
+
+all: $(BIN_DIR)/core_test.exe
 
 clean:
 	rm -rf bin/
