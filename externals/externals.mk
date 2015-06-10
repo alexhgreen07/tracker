@@ -35,3 +35,31 @@ sqllite3_source_files = \
 sqllite3_obj_files = $(patsubst %,$(BIN_DIR)/%,$(sqllite3_source_files:.c=.o))
 
 $(BIN_DIR)/sqllite3_lib.a: $(sqllite3_obj_files)
+
+# JSON-RPC CPP
+
+include_dirs += \
+	externals/json-rpc-cpp
+
+json_rpc_cpp_source_files = \
+	externals/json-rpc-cpp/JsonRpcErrors.cpp \
+	externals/json-rpc-cpp/JsonRpcException.cpp \
+	externals/json-rpc-cpp/JsonRpcProcedure.cpp \
+	externals/json-rpc-cpp/JsonRpcRequestHandler.cpp \
+	externals/json-rpc-cpp/JsonRpcServer.cpp \
+	externals/json-rpc-cpp/json/json_reader.cpp \
+	externals/json-rpc-cpp/json/json_value.cpp \
+	externals/json-rpc-cpp/json/json_writer.cpp \
+	externals/json-rpc-cpp/connectors/JsonRpcConnector.cpp \
+	externals/json-rpc-cpp/connectors/http/HTTPConnector.cpp
+
+mongoose_source_files = \
+	externals/json-rpc-cpp/connectors/http/mongoose.c
+
+json_rpc_cpp_obj_files = $(patsubst %,$(BIN_DIR)/%,$(json_rpc_cpp_source_files:.cpp=.o))
+json_rpc_cpp_obj_files += $(patsubst %,$(BIN_DIR)/%,$(mongoose_source_files:.c=.o))
+
+$(BIN_DIR)/json_rpc_cpp_lib.a: $(json_rpc_cpp_obj_files)
+
+
+
