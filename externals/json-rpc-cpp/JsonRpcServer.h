@@ -14,8 +14,8 @@
 namespace jsonrpc {
 
 
-typedef map<string,jsonRequestPointer> JsonMethods;
-typedef map<string,jsonNotificationPointer> JsonNotifications;
+typedef map<string,JsonRequestProcedure*> JsonMethods;
+typedef map<string,JsonNotificationProcedure*> JsonNotifications;
 
 
 /**

@@ -27,7 +27,7 @@ void JsonRpcRequestHandler::processRequest(const Json::Value &request, Json::Val
 			this->procedures[request[KEY_REQUEST_METHODNAME].asString()];
 	Json::Value result;
 	if (method->getProcedureType() == RPC_METHOD) {
-		(*method->getMethodPointer())(request[KEY_REQUEST_PARAMETERS],result);
+		method->getMethodPointer()->call(request[KEY_REQUEST_PARAMETERS],result);
 		//cout << "got result" << endl;
 		response[KEY_REQUEST_VERSION] = JSON_RPC_VERSION;
 		response[KEY_RESPONSE_RESULT] = result;
@@ -36,7 +36,7 @@ void JsonRpcRequestHandler::processRequest(const Json::Value &request, Json::Val
 			this->authManager->processAuthentication(request[KEY_AUTHENTICATION],response[KEY_AUTHENTICATION]);
 		}
 	} else {
-		(*method->getNotificationPointer())(request[KEY_REQUEST_PARAMETERS]);
+		method->getNotificationPointer()->call(request[KEY_REQUEST_PARAMETERS]);
 		response = Json::Value::null;
 	}
 }
