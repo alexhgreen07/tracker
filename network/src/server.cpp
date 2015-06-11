@@ -1,22 +1,16 @@
 #include "server.hpp"
 
+#include "api.hpp"
+
 namespace Tracker
 {
 namespace Network
 {
 
-static void sayHello(const Json::Value& request, Json::Value& response) {
-    response = "Hello: " + request["name"].asString();
-}
-
-static void notifyServer(const Json::Value& request) {
-    cout << "server received some Notification" << endl;
-}
-
 Server::Procedures::Procedures()
 {
-    procedurePointers["sayHello"] = &sayHello;
-    notPointers["notifyServer"] = &notifyServer;
+	procedurePointers["sayHello"] = &Api::sayHello;
+    notPointers["notifyServer"] = &Api::notifyServer;
 }
 
 Server::Server() :
