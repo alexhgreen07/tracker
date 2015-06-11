@@ -6,11 +6,6 @@ BIN_DIR = bin
 
 .PHONY: all clean
 
-all: app_test.exe core_test.exe database_test.exe network_test.exe
-
-clean:
-	rm -rf bin/
-
 components =
 
 include_dirs = 

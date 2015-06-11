@@ -5,12 +5,14 @@ $(eval $(1)_obj_files_1 = $(patsubst %,$(BIN_DIR)/%,$($(1)_source_files:.c=.o)))
 $(eval $(1)_obj_files = $($(1)_obj_files_1:.cpp=.o))
 
 ifdef $(1)_lib
+all: $(BIN_DIR)/$(1)_lib.a
 .PHONY: $(1)_lib.a
 $(1)_lib.a: $(BIN_DIR)/$(1)_lib.a
 $(BIN_DIR)/$(1)_lib.a: $($(1)_obj_files) $($(1)_deps)
 endif
 
 ifdef $(1)_exe
+all: $(BIN_DIR)/$(1).exe
 .PHONY: $(1).exe
 $(1).exe: $(BIN_DIR)/$(1).exe
 $(BIN_DIR)/$(1).exe: $($(1)_obj_files) $($(1)_deps)
@@ -44,3 +46,6 @@ $(BIN_DIR)/%.a:
 $(BIN_DIR)/%.exe:
 	@echo EXE $@
 	@$(CPP) -o $@ $^ $(master_includes) $(CFLAGS)
+
+clean:
+	rm -rf bin/
