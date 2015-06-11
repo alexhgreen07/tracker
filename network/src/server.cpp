@@ -20,8 +20,8 @@ Server::Procedures::Procedures()
 }
 
 Server::Server() :
-    http(8080,"./res"),
-    serv("A Server Instancename", "res/procedures.json", procedures.procedurePointers, procedures.notPointers, &http)
+    http(8080,"./ui"),
+    serv("A Server Instancename", "ui/procedures.json", procedures.procedurePointers, procedures.notPointers, &http)
 {
     
 }
