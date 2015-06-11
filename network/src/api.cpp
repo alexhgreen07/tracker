@@ -6,6 +6,12 @@ namespace Network
 {
 namespace Api
 {
+
+Procedures::Procedures()
+{
+	procedurePointers["sayHello"] = &sayHello;
+	notPointers["notifyServer"] = &notifyServer;
+}
 	
 void sayHello(const Json::Value& request, Json::Value& response) {
 	response = "Hello: " + request["name"].asString();

@@ -3,6 +3,8 @@
 
 #include <json-rpc.h>
 
+#include "api.hpp"
+
 using namespace jsonrpc;
 
 namespace Tracker
@@ -16,13 +18,8 @@ public:
     Server();
     bool start();
 private:
-    struct Procedures{
-        Procedures();
-        JsonMethods procedurePointers;
-        JsonNotifications notPointers;
-    };
     
-    Procedures procedures;
+	Api::Procedures procedures;
     HTTPConnector http;
     JsonRpcServer serv;
 };

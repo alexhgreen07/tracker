@@ -12,6 +12,12 @@ namespace Network
 namespace Api
 {
 
+struct Procedures{
+	Procedures();
+	JsonMethods procedurePointers;
+	JsonNotifications notPointers;
+};
+	
 void sayHello(const Json::Value& request, Json::Value& response);
 
 void notifyServer(const Json::Value& request);
