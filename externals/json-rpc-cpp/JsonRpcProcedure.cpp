@@ -65,17 +65,17 @@ const string& JsonRpcProcedure::getProcedureName() const {
 	return this->procedureName;
 }
 
-jsonRequestPointer JsonRpcProcedure::getMethodPointer() {
+JsonRequestProcedure* JsonRpcProcedure::getMethodPointer() {
 	if (this->procedureType == RPC_METHOD) {
-		return (jsonRequestPointer) this->procedurePointer.rp;
+		return (JsonRequestProcedure*) this->procedurePointer.rp;
 	} else {
 		return NULL;
 	}
 }
 
-jsonNotificationPointer JsonRpcProcedure::getNotificationPointer() {
+JsonNotificationProcedure* JsonRpcProcedure::getNotificationPointer() {
 	if (this->procedureType == RPC_NOTIFICATION) {
-		return (jsonNotificationPointer) this->procedurePointer.np;
+		return (JsonNotificationProcedure*) this->procedurePointer.np;
 	} else {
 		return NULL;
 	}
@@ -142,7 +142,7 @@ JsonRpcProcedure::JsonRpcProcedure(const Json::Value &signature) {
 }
 
 bool JsonRpcProcedure::setNotificationPointer(
-		jsonNotificationPointer np) {
+		JsonNotificationProcedure* np) {
 	if(this->procedureType == RPC_NOTIFICATION) {
 		this->procedurePointer.np = np;
 		return true;
@@ -151,7 +151,7 @@ bool JsonRpcProcedure::setNotificationPointer(
 	}
 }
 
-bool JsonRpcProcedure::setMethodPointer(jsonRequestPointer rp) {
+bool JsonRpcProcedure::setMethodPointer(JsonRequestProcedure * rp) {
 	if(this->procedureType == RPC_METHOD) {
 		this->procedurePointer.rp = rp;
 		return true;

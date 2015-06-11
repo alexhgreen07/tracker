@@ -13,11 +13,11 @@ Procedures::Procedures()
 	notPointers["notifyServer"] = &notifyServer;
 }
 	
-void sayHello(const Json::Value& request, Json::Value& response) {
+void SayHelloProcedure::call(const Json::Value& request, Json::Value& response) {
 	response = "Hello: " + request["name"].asString();
 }
 
-void notifyServer(const Json::Value& request) {
+void NotifyServerProcedure::call(const Json::Value& request) {
 	cout << "server received some Notification" << endl;
 }
 

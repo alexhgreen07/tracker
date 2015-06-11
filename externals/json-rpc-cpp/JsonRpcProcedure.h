@@ -59,13 +59,21 @@ namespace jsonrpc {
  * Type declaration signature of an requestable Method
  * e.g. Json::Value doSomething(Json::Value parameter);
  */
-typedef void (*jsonRequestPointer)(const Json::Value&, Json::Value&);
+class JsonRequestProcedure
+{
+public:
+	virtual void call(const Json::Value&, Json::Value&) = 0;
+};
+
 /**
  * Type declaration signature of an notifyable Method
  * e.g. void doSomething(Json::Value parameter);
  */
-typedef void (*jsonNotificationPointer)(const Json::Value&);
-
+class JsonNotificationProcedure
+{
+public:
+	virtual void call(const Json::Value&) = 0;
+};
 
 /**
  * This enum describes whether a Procdeure is a notification procdeure or a method procdeure
@@ -115,8 +123,8 @@ private:
 	 * or getNotificationPointer can be called.
 	 */
 	union {
-		jsonRequestPointer rp;
-		jsonNotificationPointer np;
+		JsonRequestProcedure * rp;
+		JsonNotificationProcedure * np;
 	} procedurePointer;
 
 
@@ -168,27 +176,27 @@ public:
      * @see JsonProcedureType
      * @return returns a pointer to the corresponding function, or NULL if there is no pointer or the procedure is of type NOTIFICATION
      */
-    jsonRequestPointer getMethodPointer();
+    JsonRequestProcedure * getMethodPointer();
 
     /**
      * This method only returns a valid method Pointer if the corresponding procedure is of type NOTIFICATION
      * @see JsonProcedureType
      * @return returns a pointer to the corresponding function, or NULL if there is no pointer or the procedure is of type METHOD
      */
-    jsonNotificationPointer getNotificationPointer();
+    JsonNotificationProcedure* getNotificationPointer();
 
 
     /**
      * sets in case of an Method the methodPointer
      * @return false if this procedure is not declared as Method.
      */
-    bool setMethodPointer(jsonRequestPointer rp);
+    bool setMethodPointer(JsonRequestProcedure * rp);
 
     /**
      * sets in case of an Notification the notificationPointer
      * @return false if this procedure is declared as Notification.
      */
-    bool setNotificationPointer(jsonNotificationPointer np);
+    bool setNotificationPointer(JsonNotificationProcedure* np);
 
 
 
