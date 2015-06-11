@@ -9,34 +9,28 @@ namespace Tracker
 {
 namespace Network
 {
-namespace Api
-{
-
 	
-class SayHelloProcedure : public JsonRequestProcedure
+class Api
 {
 public:
-	void call(const Json::Value& request, Json::Value& response) override;
-};
-
-class NotifyServerProcedure : public JsonNotificationProcedure
-{
-public:
-	void call(const Json::Value& request) override;
-};
-	
-struct Procedures{
-	Procedures();
-	
-	SayHelloProcedure sayHello;
-	NotifyServerProcedure notifyServer;
+	Api();
 	
 	JsonMethods procedurePointers;
 	JsonNotifications notPointers;
+protected:
+	struct SayHelloProcedure : public JsonRequestProcedure
+	{
+		void call(const Json::Value& request, Json::Value& response) override;
+	};
+	
+	struct NotifyServerProcedure : public JsonNotificationProcedure
+	{
+		void call(const Json::Value& request) override;
+	};
+	
+	SayHelloProcedure sayHello;
+	NotifyServerProcedure notifyServer;
 };
-
-
-}
 	
 }
 }

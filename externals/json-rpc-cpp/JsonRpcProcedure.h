@@ -59,9 +59,8 @@ namespace jsonrpc {
  * Type declaration signature of an requestable Method
  * e.g. Json::Value doSomething(Json::Value parameter);
  */
-class JsonRequestProcedure
+struct JsonRequestProcedure
 {
-public:
 	virtual void call(const Json::Value&, Json::Value&) = 0;
 };
 
@@ -69,9 +68,8 @@ public:
  * Type declaration signature of an notifyable Method
  * e.g. void doSomething(Json::Value parameter);
  */
-class JsonNotificationProcedure
+struct JsonNotificationProcedure
 {
-public:
 	virtual void call(const Json::Value&) = 0;
 };
 

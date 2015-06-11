@@ -7,7 +7,7 @@ namespace Network
 
 Server::Server() :
     http(8080,"./ui"),
-    serv("A Server Instancename", "ui/procedures.json", procedures.procedurePointers, procedures.notPointers, &http)
+    serv("A Server Instancename", "ui/procedures.json", api.procedurePointers, api.notPointers, &http)
 {}
 
 bool Server::start()

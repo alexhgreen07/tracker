@@ -19,7 +19,7 @@ public:
     bool start();
 private:
     
-	Api::Procedures procedures;
+	Api api;
     HTTPConnector http;
     JsonRpcServer serv;
 };
