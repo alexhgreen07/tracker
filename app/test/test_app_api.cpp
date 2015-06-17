@@ -11,13 +11,17 @@ using namespace Application;
 TEST_BASE(AppApiGroupBase)
 {
 	AppApi testApi;
+	JsonMethods & procedures;
 	
-	AppApiGroupBase()
+	AppApiGroupBase() :
+		procedures(testApi.getProcedures())
 	{}
 };
 
 TEST_GROUP_BASE(AppApiGroup, AppApiGroupBase)
 {
+	Json::Value params;
+	Json::Value results;
 	
 	TEST_SETUP()
 	{
@@ -30,13 +34,17 @@ TEST_GROUP_BASE(AppApiGroup, AppApiGroupBase)
 
 TEST(AppApiGroup, ValidateSayHello)
 {
-	auto procedures = testApi.getProcedures();
-	Json::Value params;
-	Json::Value results;
-	
 	params["name"] = "test name";
 	procedures["sayHello"]->call(params,results);
 	
 	Json::Value desiredResult = "Hello: " + params["name"].asString();
+	CHECK(results == desiredResult);
+}
+
+TEST(AppApiGroup, ValidateGetEmptyTaskTable)
+{
+	procedures["getTasks"]->call(params,results);
+	
+	Json::Value desiredResult = "[]";
 	CHECK(results == desiredResult);
 }

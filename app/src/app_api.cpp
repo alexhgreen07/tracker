@@ -8,7 +8,7 @@ namespace Application
 AppApi::AppApi()
 {
 	procedurePointers["sayHello"] = &sayHello;
-	notPointers["notifyServer"] = &notifyServer;
+	procedurePointers["getTasks"] = &getTasks;
 }
 
 JsonMethods & AppApi::getProcedures()
@@ -24,10 +24,10 @@ void AppApi::SayHelloProcedure::call(const Json::Value& request, Json::Value& re
 {
 	response = "Hello: " + request["name"].asString();
 }
-
-void AppApi::NotifyServerProcedure::call(const Json::Value& request)
+	
+void AppApi::GetTasksProcedure::call(const Json::Value& request, Json::Value& response)
 {
-	cout << "server received some Notification" << endl;
+	response = "[]";
 }
 	
 }

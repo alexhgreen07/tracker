@@ -19,13 +19,13 @@ protected:
 		void call(const Json::Value& request, Json::Value& response) override;
 	};
 	
-	struct NotifyServerProcedure : public JsonNotificationProcedure
+	struct GetTasksProcedure : public JsonRequestProcedure
 	{
-		void call(const Json::Value& request) override;
+		void call(const Json::Value& request, Json::Value& response) override;
 	};
 	
 	SayHelloProcedure sayHello;
-	NotifyServerProcedure notifyServer;
+	GetTasksProcedure getTasks;
 	
 	JsonMethods procedurePointers;
 	JsonNotifications notPointers;
