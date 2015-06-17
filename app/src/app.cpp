@@ -6,6 +6,8 @@ namespace Application
 {
 
 TrackerApp::TrackerApp() :
+	db(mysqlDB),
+	api(db),
 	server(api)
 {
 	
