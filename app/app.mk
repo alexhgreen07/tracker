@@ -21,6 +21,7 @@ app_test_exe = true
 app_test_source_files = \
 	app/test/test_app.cpp \
 	app/test/test_app_db.cpp \
+	app/test/test_app_api.cpp \
 	app/unittests.cpp
 
 app_test_deps = \
