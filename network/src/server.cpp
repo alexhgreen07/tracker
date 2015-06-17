@@ -5,9 +5,10 @@ namespace Tracker
 namespace Network
 {
 
-Server::Server() :
+Server::Server(Api & api) :
+	api(api),
     http(8080,"./ui"),
-    serv("A Server Instancename", "ui/procedures.json", api.procedurePointers, api.notPointers, &http)
+    serv("A Server Instancename", "ui/procedures.json", api.getProcedures(), api.getNotifications(), &http)
 {}
 
 bool Server::start()
