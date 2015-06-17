@@ -1,7 +1,7 @@
 CC = gcc
 CPP = g++
-CFLAGS =
-CPPFLAGS = -std=c++11
+CFLAGS = -g
+CPPFLAGS = -g -std=c++11
 BIN_DIR = bin
 
 .PHONY: all clean
