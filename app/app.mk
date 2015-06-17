@@ -29,3 +29,12 @@ app_test_deps = \
 	$(BIN_DIR)/app_lib.a \
 	$(BIN_DIR)/cpputest_lib.a
 
+components += tracker
+tracker_exe = true
+
+tracker_source_files = \
+	app/main.cpp
+
+tracker_deps = \
+	$(app_deps) \
+	$(BIN_DIR)/app_lib.a
