@@ -9,35 +9,19 @@ using namespace Network;
 class AppApi : public Api
 {
 public:
-	AppApi()
-	{
-		procedurePointers["sayHello"] = &sayHello;
-		notPointers["notifyServer"] = &notifyServer;
-	}
+	AppApi();
 	
-	JsonMethods & getProcedures()
-	{
-		return procedurePointers;
-	}
-	JsonNotifications & getNotifications()
-	{
-		return notPointers;
-	}
+	JsonMethods & getProcedures();
+	JsonNotifications & getNotifications();
 protected:
 	struct SayHelloProcedure : public JsonRequestProcedure
 	{
-		void call(const Json::Value& request, Json::Value& response) override
-		{
-			response = "Hello: " + request["name"].asString();
-		}
+		void call(const Json::Value& request, Json::Value& response) override;
 	};
 	
 	struct NotifyServerProcedure : public JsonNotificationProcedure
 	{
-		void call(const Json::Value& request) override
-		{
-			cout << "server received some Notification" << endl;
-		}
+		void call(const Json::Value& request) override;
 	};
 	
 	SayHelloProcedure sayHello;

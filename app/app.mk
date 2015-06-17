@@ -6,6 +6,7 @@ include_dirs += \
 
 app_source_files = \
 	app/src/app_db.cpp \
+	app/src/app_api.cpp \
 	app/src/app.cpp
 
 app_deps = \
