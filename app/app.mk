@@ -5,7 +5,7 @@ include_dirs += \
 	app/include
 
 app_source_files = \
-	app/src/appdb.cpp \
+	app/src/app_db.cpp \
 	app/src/app.cpp
 
 app_deps = \
@@ -20,7 +20,7 @@ app_test_exe = true
 
 app_test_source_files = \
 	app/test/test_app.cpp \
-	app/test/test_appdb.cpp \
+	app/test/test_app_db.cpp \
 	app/unittests.cpp
 
 app_test_deps = \
