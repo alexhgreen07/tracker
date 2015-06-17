@@ -3,7 +3,7 @@
 
 #include <CppUTest/TestHarness.h>
 
-#include "appdb.hpp"
+#include "app_db.hpp"
 
 using namespace Tracker;
 using namespace Application;
