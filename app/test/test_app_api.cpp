@@ -59,13 +59,12 @@ TEST(AppApiGroup, ValidateGetEmptyTaskTable)
 TEST(AppApiGroup, ValidateGetTaskTableWithSingleEntry)
 {
 	Json::Value desiredResult;
-	Core::Task newTask;
-	newTask.setEarliestStartTime(2);
-	newTask.setLatestEndTime(3);
-	newTask.setDuration(4);
+	Core::Task newTask(2,3,4);
 	db.insertTask(newTask);
 	
 	procedures["getTasks"]->call(params,results);
+	
+	LONGS_EQUAL(1,results.size() - 1);
 	
 	LONGS_EQUAL(1,results[1]["taskId"].asInt());
 	LONGS_EQUAL(newTask.getEarliestStartTime(),results[1]["earliestStartTime"].asInt());
@@ -80,10 +79,7 @@ TEST(AppApiGroup, ValidateGetTaskTableWithMultipleEntries)
 	
 	for(unsigned int i = 1; i < (loopLimit + 1); i++)
 	{
-		Core::Task newTask;
-		newTask.setEarliestStartTime(i);
-		newTask.setLatestEndTime(i + 1);
-		newTask.setDuration(i + 2);
+		Core::Task newTask(i,i+1,i+2);
 		db.insertTask(newTask);
 	}
 
@@ -98,5 +94,23 @@ TEST(AppApiGroup, ValidateGetTaskTableWithMultipleEntries)
 		LONGS_EQUAL((i + 1),results[i]["latestEndTime"].asInt());
 		LONGS_EQUAL((i + 2),results[i]["duration"].asInt());
 	}
+}
+
+TEST(AppApiGroup, InsertTask)
+{
+	params["earliestStartTime"] = 1;
+	params["latestEndTime"] = 2;
+	params["duration"] = 3;
+	
+	procedures["insertTask"]->call(params,results);
+	
+	auto result = db.getTasks();
+	
+	LONGS_EQUAL(1,result->size());
+	
+	auto task = result->at(1);
+	LONGS_EQUAL(1,task.getEarliestStartTime());
+	LONGS_EQUAL(2,task.getLatestEndTime());
+	LONGS_EQUAL(3,task.getDuration());
 }
 
