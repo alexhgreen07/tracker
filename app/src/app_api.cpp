@@ -11,13 +11,15 @@ AppApi::AppApi(AppDB & db) :
 	getTasks(*this),
 	insertTask(*this),
 	updateTask(*this),
-	removeTask(*this)
+	removeTask(*this),
+	getEvents(*this)
 {
 	procedurePointers["sayHello"] = &sayHello;
 	procedurePointers["getTasks"] = &getTasks;
 	procedurePointers["insertTask"] = &insertTask;
 	procedurePointers["updateTask"] = &updateTask;
 	procedurePointers["removeTask"] = &removeTask;
+	procedurePointers["getEvents"] = &getEvents;
 }
 
 JsonMethods & AppApi::getProcedures()
@@ -76,6 +78,35 @@ void AppApi::UpdateTask::call(const Json::Value& request, Json::Value& response)
 void AppApi::RemoveTask::call(const Json::Value& request, Json::Value& response)
 {
 	parent.db.removeTask(request["taskId"].asInt());
+}
+	
+void AppApi::GetEvents::call(const Json::Value& request, Json::Value& response)
+{
+	auto taskList = std::make_shared<std::vector<std::shared_ptr<Core::Task>>>();
+	
+	auto result = parent.db.getTasks();
+	
+	for(auto outer_iter=result->begin(); outer_iter!=result->end(); ++outer_iter) {
+		
+		auto task = outer_iter->second;
+		auto listedTask = std::make_shared<Core::Task>(task);
+		
+		taskList->push_back(listedTask);
+	}
+	
+	parent.scheduler.setTaskList(taskList);
+	parent.scheduler.schedule();
+	
+	unsigned int eventCount = parent.scheduler.getScheduledEventCount();
+	
+	for(unsigned int i = 0; i < eventCount; i++)
+	{
+		auto & row = response[i + 1];
+		auto event = parent.scheduler.getScheduledEvent(i);
+		row["startTime"] = event->getStartTime();
+		row["duration"] = event->getDuration();
+	}
+
 }
 
 	

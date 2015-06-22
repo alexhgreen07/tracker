@@ -1,6 +1,7 @@
 #include <api.hpp>
 
 #include "app_db.hpp"
+#include <scheduler.hpp>
 
 namespace Tracker
 {
@@ -71,13 +72,26 @@ protected:
 		AppApi & parent;
 	};
 	
+	struct GetEvents : public JsonRequestProcedure
+	{
+		GetEvents(AppApi & parent) :
+			parent(parent)
+		{}
+		
+		void call(const Json::Value& request, Json::Value& response) override;
+		
+		AppApi & parent;
+	};
+	
 	AppDB & db;
+	Core::Scheduler scheduler;
 	
 	SayHelloProcedure sayHello;
 	GetTasksProcedure getTasks;
 	InsertTask insertTask;
 	UpdateTask updateTask;
 	RemoveTask removeTask;
+	GetEvents getEvents;
 	
 	JsonMethods procedurePointers;
 	JsonNotifications notPointers;

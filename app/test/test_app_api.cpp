@@ -148,3 +148,16 @@ TEST(AppApiGroup, RemoveTask)
 	LONGS_EQUAL(0,result->size());
 }
 
+TEST(AppApiGroup, GetEvents)
+{
+	Core::Task newTask(0,1,1);
+	db.insertTask(newTask);
+	
+	procedures["getEvents"]->call(params,results);
+	
+	LONGS_EQUAL(1,results.size() - 1);
+	
+	LONGS_EQUAL(newTask.getEarliestStartTime(),results[1]["startTime"].asInt());
+	LONGS_EQUAL(newTask.getDuration(),results[1]["duration"].asInt());
+}
+
