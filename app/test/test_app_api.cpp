@@ -67,9 +67,36 @@ TEST(AppApiGroup, ValidateGetTaskTableWithSingleEntry)
 	
 	procedures["getTasks"]->call(params,results);
 	
-	CHECK(results[1]["taskId"].asInt() == 1);
-	CHECK(results[1]["earliestStartTime"].asInt() == newTask.getEarliestStartTime());
-	CHECK(results[1]["latestEndTime"].asInt() == newTask.getLatestEndTime());
-	CHECK(results[1]["duration"].asInt() == newTask.getDuration());
+	LONGS_EQUAL(1,results[1]["taskId"].asInt());
+	LONGS_EQUAL(newTask.getEarliestStartTime(),results[1]["earliestStartTime"].asInt());
+	LONGS_EQUAL(newTask.getLatestEndTime(),results[1]["latestEndTime"].asInt());
+	LONGS_EQUAL(newTask.getDuration(),results[1]["duration"].asInt());
+}
+
+TEST(AppApiGroup, ValidateGetTaskTableWithMultipleEntries)
+{
+	Json::Value desiredResult;
+	constexpr unsigned int loopLimit = 5;
+	
+	for(unsigned int i = 1; i < (loopLimit + 1); i++)
+	{
+		Core::Task newTask;
+		newTask.setEarliestStartTime(i);
+		newTask.setLatestEndTime(i + 1);
+		newTask.setDuration(i + 2);
+		db.insertTask(newTask);
+	}
+
+	procedures["getTasks"]->call(params,results);
+	
+	LONGS_EQUAL(loopLimit,results.size() - 1);
+	
+	for(unsigned int i = 1; i < (loopLimit + 1); i++)
+	{
+		LONGS_EQUAL(i,results[i]["taskId"].asInt());
+		LONGS_EQUAL((i),results[i]["earliestStartTime"].asInt());
+		LONGS_EQUAL((i + 1),results[i]["latestEndTime"].asInt());
+		LONGS_EQUAL((i + 2),results[i]["duration"].asInt());
+	}
 }
 
