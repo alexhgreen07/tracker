@@ -15,11 +15,11 @@ namespace Network
 class Server
 {
 public:
-    Server();
+    Server(Api & api);
     bool start();
 private:
     
-	Api api;
+	Api & api;
     HTTPConnector http;
     JsonRpcServer serv;
 };

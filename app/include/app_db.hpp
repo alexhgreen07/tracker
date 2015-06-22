@@ -1,5 +1,5 @@
-#ifndef __APPDB_HPP__
-#define __APPDB_HPP__
+#ifndef __APP_DB_HPP__
+#define __APP_DB_HPP__
 
 #include <string>
 #include <map>

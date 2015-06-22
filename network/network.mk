@@ -5,8 +5,7 @@ include_dirs += \
 	network/include
 
 network_source_files = \
-	network/src/server.cpp \
-	network/src/api.cpp
+	network/src/server.cpp
 
 network_deps = \
 	$(BIN_DIR)/json_rpc_cpp_lib.a
