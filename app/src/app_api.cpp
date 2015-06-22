@@ -9,11 +9,13 @@ AppApi::AppApi(AppDB & db) :
 	db(db),
 	sayHello(*this),
 	getTasks(*this),
-	insertTask(*this)
+	insertTask(*this),
+	updateTask(*this)
 {
 	procedurePointers["sayHello"] = &sayHello;
 	procedurePointers["getTasks"] = &getTasks;
 	procedurePointers["insertTask"] = &insertTask;
+	procedurePointers["updateTask"] = &updateTask;
 }
 
 JsonMethods & AppApi::getProcedures()
@@ -57,6 +59,16 @@ void AppApi::InsertTask::call(const Json::Value& request, Json::Value& response)
 	   request["latestEndTime"].asInt(),
 	   request["duration"].asInt());
 	parent.db.insertTask(newTask);
+}
+	
+void AppApi::UpdateTask::call(const Json::Value& request, Json::Value& response)
+{
+	Core::Task updatedTask(
+	   request["earliestStartTime"].asInt(),
+	   request["latestEndTime"].asInt(),
+	   request["duration"].asInt());
+	
+	parent.db.updateTask(request["taskId"].asInt(),updatedTask);
 }
 
 	

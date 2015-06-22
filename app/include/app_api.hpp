@@ -49,11 +49,23 @@ protected:
 		AppApi & parent;
 	};
 	
+	struct UpdateTask : public JsonRequestProcedure
+	{
+		UpdateTask(AppApi & parent) :
+			parent(parent)
+		{}
+		
+		void call(const Json::Value& request, Json::Value& response) override;
+		
+		AppApi & parent;
+	};
+	
 	AppDB & db;
 	
 	SayHelloProcedure sayHello;
 	GetTasksProcedure getTasks;
 	InsertTask insertTask;
+	UpdateTask updateTask;
 	
 	JsonMethods procedurePointers;
 	JsonNotifications notPointers;

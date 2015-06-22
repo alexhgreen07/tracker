@@ -114,3 +114,24 @@ TEST(AppApiGroup, InsertTask)
 	LONGS_EQUAL(3,task.getDuration());
 }
 
+TEST(AppApiGroup, UpdateTask)
+{
+	Core::Task newTask(1,1,1);
+	db.insertTask(newTask);
+	
+	params["taskId"] = 1;
+	params["earliestStartTime"] = 2;
+	params["latestEndTime"] = 2;
+	params["duration"] = 2;
+	
+	procedures["updateTask"]->call(params,results);
+	
+	auto result = db.getTasks();
+	
+	auto task = result->at(1);
+	
+	LONGS_EQUAL(2,task.getEarliestStartTime());
+	LONGS_EQUAL(2,task.getLatestEndTime());
+	LONGS_EQUAL(2,task.getDuration());
+}
+
