@@ -135,3 +135,16 @@ TEST(AppApiGroup, UpdateTask)
 	LONGS_EQUAL(2,task.getDuration());
 }
 
+TEST(AppApiGroup, RemoveTask)
+{
+	Core::Task newTask(1,1,1);
+	db.insertTask(newTask);
+	
+	params["taskId"] = 1;
+	procedures["removeTask"]->call(params,results);
+	
+	auto result = db.getTasks();
+	
+	LONGS_EQUAL(0,result->size());
+}
+

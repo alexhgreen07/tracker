@@ -10,12 +10,14 @@ AppApi::AppApi(AppDB & db) :
 	sayHello(*this),
 	getTasks(*this),
 	insertTask(*this),
-	updateTask(*this)
+	updateTask(*this),
+	removeTask(*this)
 {
 	procedurePointers["sayHello"] = &sayHello;
 	procedurePointers["getTasks"] = &getTasks;
 	procedurePointers["insertTask"] = &insertTask;
 	procedurePointers["updateTask"] = &updateTask;
+	procedurePointers["removeTask"] = &removeTask;
 }
 
 JsonMethods & AppApi::getProcedures()
@@ -69,6 +71,11 @@ void AppApi::UpdateTask::call(const Json::Value& request, Json::Value& response)
 	   request["duration"].asInt());
 	
 	parent.db.updateTask(request["taskId"].asInt(),updatedTask);
+}
+	
+void AppApi::RemoveTask::call(const Json::Value& request, Json::Value& response)
+{
+	parent.db.removeTask(request["taskId"].asInt());
 }
 
 	
