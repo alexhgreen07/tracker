@@ -1,22 +1,11 @@
+<!DOCTYPE HTML>
+
 <html>
 <head>
 <title>JSON-RPC Tester</title>
 <script src="./jquery.js"></script>
-<script type="text/javascript">
-		idx = 1;
-	
-		function doAjaxRequest(m, parameters, target) {		
-			var tmpObject = {jsonrpc: 2.0, method: m, params: parameters, id: idx++};
-			var string = JSON.stringify(tmpObject);
-            
-			$.post("http://localhost:8080",string,function(data) {
-				var response = JSON.parse(data);
-				$(target).html(response.result);
-			},"text");
-		}
-</script>
+<script src="./main.js"></script>
 </head>
-
 <body>
 
 <h1>Testing JSON-RPC Server</h1>
@@ -25,9 +14,3 @@
 <p id="result">Result will be displayed here...</p>
 </body>
 </html>
-<script>
-$("#testform").submit(function() {
-	doAjaxRequest('sayHello',{name:$("#thename").val()},"#result");
-	return false;
-});
-</script>
