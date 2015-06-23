@@ -5,7 +5,14 @@
 // directory.
 requirejs.config({
 	paths: {
-		jquery: 'externals/jquery-2.1.4.min'
+		jquery: 'externals/jquery-2.1.4.min',
+		jqueryjsonrpc: 'externals/jquery.jsonrpc'
+	},
+	shim:
+	{
+		jqueryjsonrpc: {
+			deps: ['jquery']
+		}
 	}
 });
 
