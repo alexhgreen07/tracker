@@ -9,6 +9,8 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 	}
 	Api.prototype.sayHello = function(name,success,error)
 	{
+		error = error || function(data){};
+		
 		$.jsonRPC.request('sayHello', {
 			params : {name:name},
 			success : function(data){
