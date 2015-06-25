@@ -19,6 +19,14 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			error : error
 		});
 	};
+	Api.prototype.getTasks = function(success,error)
+	{
+		success([]);
+	};
+	Api.prototype.insertTask = function(earliestStartTime,latestEndTime,duration,success,error)
+	{
+		success(true);
+	};
 	
 	return {
 		Api: Api
