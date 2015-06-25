@@ -1,10 +1,26 @@
-define( [], function() {
+define( [ 'js/api' ], function(libapi) {
 
-	describe("test", function() {
-		describe("sayHello", function() {
-			it("should say Hello", function() {
-				expect("Hello").toEqual("Hello");
+	describe("ApiLib Suite", function() {
+		
+		var testApi = null;
+		
+		beforeEach(function() {
+			testApi = new libapi.Api();
+		});
+
+		it("should say hello", function(done) {
+			
+			testApi.sayHello("test",function(result){
+				
+				expect(result).toEqual("Hello: test");
+				done();
 			});
 		});
+
+		afterEach(function() {
+			testApi = null;
+		});
+
 	});
+
 });

@@ -1,29 +1,15 @@
-define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
-
-	function doAjaxRequest(m, parameters, target) {
-
-		$.jsonRPC.request(m, {
-			params : parameters,
-			success : function(data) {
-				$(target).html(data.result);
-			},
-			error : function(result) {
-				alert("Ajax failed to fetch data");
-			}
-		});
-	}
-
+define( [ 'jquery', './api' ], function($,libapi) {
+	
 	$(document).ready(function() {
-
-		$.jsonRPC.setup( {
-			endPoint : '/',
-			namespace : ''
-		});
-
+		
+		var api = new libapi.Api();
+		
 		$("#testform").submit(function() {
-			doAjaxRequest('sayHello', {
-				name : $("#thename").val()
-			}, "#result");
+			
+			api.sayHello($("#thename").val(),function(data){
+				$("#result").html(data.result);
+			});
+			
 			return false;
 		});
 	});
