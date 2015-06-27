@@ -3,8 +3,8 @@ define( [ 'js/api' ], function(libapi) {
 	describe("ApiLib Suite", function() {
 		
 		var earliestStartTime = 1;
-		var latestEndTime = 2;
-		var duration = 3;
+		var latestEndTime = 3;
+		var duration = 2;
 		
 		var testApi = null;
 		
@@ -122,6 +122,23 @@ define( [ 'js/api' ], function(libapi) {
 			testApi.getEvents(function(result){
 				expect(result).toEqual([]);
 				done();
+			});
+		});
+		
+		it("gets events table with single event", function(done) {
+			insertDummyTask(function(){
+				testApi.getEvents(function(result){
+					
+					var expectedTable = [
+	                     {
+	                    	 startTime: earliestStartTime,
+	                    	 duration: duration
+	                	 }
+	    			];
+					
+					expect(result).toEqual(expectedTable);
+					done();
+				});
 			});
 		});
 		
