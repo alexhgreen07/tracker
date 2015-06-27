@@ -44,6 +44,17 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 		});
 	};
 	
+	Api.prototype.getEvents = function(success,error)
+	{
+		$.jsonRPC.request('getEvents', {
+			params : {},
+			success : function(data){
+				success(data.result);
+			},
+			error : error
+		});
+	};
+	
 	return {
 		Api: Api
 	};

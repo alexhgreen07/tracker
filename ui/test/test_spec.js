@@ -22,6 +22,13 @@ define( [ 'js/api' ], function(libapi) {
 			});
 		});
 		
+		it("gets empty events table", function(done) {
+			testApi.getEvents(function(result){
+				expect(result).toEqual([]);
+				done();
+			});
+		});
+		
 		it("inserts single task", function(done) {
 			
 			var earliestStartTime = 1;
@@ -56,7 +63,6 @@ define( [ 'js/api' ], function(libapi) {
 					done();
 				});
 			});
-			
 		});
 
 		afterEach(function() {

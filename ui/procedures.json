@@ -16,6 +16,11 @@
         "isNotification": false,
         "params": {}
     },
+    {
+        "method": "getEvents",
+        "isNotification": false,
+        "params": {}
+    },
 	{
 		"method" : "notifyServer",
 		"isNotification": true,
