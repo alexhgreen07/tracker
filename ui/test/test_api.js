@@ -38,7 +38,7 @@ define( [ 'js/api' ], function(libapi) {
 			});
 		});
 		
-		it("gets a single task in table", function(done) {
+		it("gets an inserted task in table", function(done) {
 			
 			var expectedTable = [
                  {
@@ -51,8 +51,17 @@ define( [ 'js/api' ], function(libapi) {
 			
 			insertDummyTask(function(){
 				testApi.getTasks(function(result){
-					
 					expect(result).toEqual(expectedTable);
+					done();
+				});
+			});
+		});
+		
+		it("updates a single task", function(done) {
+
+			insertDummyTask(function(){
+				testApi.updateTask(1,earliestStartTime,latestEndTime,duration + 1,function(result){
+					expect(result).toEqual(true);
 					done();
 				});
 			});

@@ -54,7 +54,22 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			error : error
 		});
 	};
-	
+	Api.prototype.updateTask = function(taskId,earliestStartTime,latestEndTime,duration,success,error)
+	{
+		error = error || function(data){};
+		$.jsonRPC.request('updateTask', {
+			params : {
+				taskId: taskId,
+				earliestStartTime: earliestStartTime,
+				latestEndTime: latestEndTime,
+				duration: duration
+			},
+			success : function(data){
+				success(data.result);
+			},
+			error : error
+		});
+	};
 	Api.prototype.getEvents = function(success,error)
 	{
 		error = error || function(data){};

@@ -83,6 +83,8 @@ void AppApi::UpdateTask::call(const Json::Value& request, Json::Value& response)
 	   request["duration"].asInt());
 	
 	parent.db.updateTask(request["taskId"].asInt(),updatedTask);
+
+	response = true;
 }
 	
 void AppApi::RemoveTask::call(const Json::Value& request, Json::Value& response)

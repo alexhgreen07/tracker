@@ -22,6 +22,11 @@
         "params": {}
     },
     {
+        "method": "updateTask",
+        "isNotification": false,
+        "params": {}
+    },
+    {
         "method": "getEvents",
         "isNotification": false,
         "params": {}
