@@ -6,7 +6,16 @@
 			"name": "seppi"
 		}
 	},
-	
+	{
+        "method": "getTasks",
+        "isNotification": false,
+        "params": {}
+    },
+    {
+        "method": "insertTask",
+        "isNotification": false,
+        "params": {}
+    },
 	{
 		"method" : "notifyServer",
 		"isNotification": true,

@@ -15,6 +15,10 @@ TrackerApp::TrackerApp() :
 	
 bool TrackerApp::start()
 {
+	//TODO: remove, for testing only
+	mysqlDB.open(":memory:");
+	db.initializeNewDatabase();
+
     return server.start();
 }
 

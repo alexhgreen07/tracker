@@ -21,11 +21,27 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 	};
 	Api.prototype.getTasks = function(success,error)
 	{
-		success([]);
+		$.jsonRPC.request('getTasks', {
+			params : {},
+			success : function(data){
+				success(data.result);
+			},
+			error : error
+		});
 	};
 	Api.prototype.insertTask = function(earliestStartTime,latestEndTime,duration,success,error)
 	{
-		success(true);
+		$.jsonRPC.request('insertTask', {
+			params : {
+				earliestStartTime: earliestStartTime,
+				latestEndTime: latestEndTime,
+				duration: duration
+			},
+			success : function(data){
+				success(data.result);
+			},
+			error : error
+		});
 	};
 	
 	return {
