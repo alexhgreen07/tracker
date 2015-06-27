@@ -14,6 +14,7 @@ AppApi::AppApi(AppDB & db) :
 	removeTask(*this),
 	getEvents(*this)
 {
+	procedurePointers["exit"] = &exitProcedure;
 	procedurePointers["sayHello"] = &sayHello;
 	procedurePointers["getTasks"] = &getTasks;
 	procedurePointers["insertTask"] = &insertTask;
@@ -30,7 +31,12 @@ JsonNotifications & AppApi::getNotifications()
 {
 	return notPointers;
 }
-	
+
+void AppApi::ExitProcedure::call(const Json::Value& request, Json::Value& response)
+{
+	exit(0);
+}
+
 void AppApi::SayHelloProcedure::call(const Json::Value& request, Json::Value& response)
 {
 	response = "Hello: " + request["name"].asString();

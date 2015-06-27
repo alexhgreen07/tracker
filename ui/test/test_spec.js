@@ -21,14 +21,7 @@ define( [ 'js/api' ], function(libapi) {
 				done();
 			});
 		});
-		
-		it("gets empty events table", function(done) {
-			testApi.getEvents(function(result){
-				expect(result).toEqual([]);
-				done();
-			});
-		});
-		
+
 		it("inserts single task", function(done) {
 			
 			var earliestStartTime = 1;
@@ -59,13 +52,21 @@ define( [ 'js/api' ], function(libapi) {
                     	 }
 					];
 					
-					expect(result[0]).toEqual(expectedTable[0]);
+					expect(result).toEqual(expectedTable);
 					done();
 				});
 			});
 		});
 
-		afterEach(function() {
+		it("gets empty events table", function(done) {
+			testApi.getEvents(function(result){
+				expect(result).toEqual([]);
+				done();
+			});
+		});
+		
+		afterEach(function(done) {
+			testApi.exit(function(){done();},function(){done();});
 			testApi = null;
 		});
 

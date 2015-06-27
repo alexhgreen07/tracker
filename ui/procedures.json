@@ -1,4 +1,9 @@
 [
+    {
+        "method": "exit",
+        "isNotification": false,
+        "params": {}
+    },
 	{
 		"method": "sayHello",
 		"isNotification": false,

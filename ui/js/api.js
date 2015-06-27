@@ -7,10 +7,19 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			namespace : ''
 		});
 	}
+	Api.prototype.exit = function(success,error)
+	{
+		error = error || function(data){};
+		$.jsonRPC.request('exit', {
+			params : {},
+			success : function(data){
+			},
+			error : error
+		});
+	};
 	Api.prototype.sayHello = function(name,success,error)
 	{
 		error = error || function(data){};
-		
 		$.jsonRPC.request('sayHello', {
 			params : {name:name},
 			success : function(data){
@@ -21,6 +30,7 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 	};
 	Api.prototype.getTasks = function(success,error)
 	{
+		error = error || function(data){};
 		$.jsonRPC.request('getTasks', {
 			params : {},
 			success : function(data){
@@ -31,6 +41,7 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 	};
 	Api.prototype.insertTask = function(earliestStartTime,latestEndTime,duration,success,error)
 	{
+		error = error || function(data){};
 		$.jsonRPC.request('insertTask', {
 			params : {
 				earliestStartTime: earliestStartTime,
@@ -46,6 +57,7 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 	
 	Api.prototype.getEvents = function(success,error)
 	{
+		error = error || function(data){};
 		$.jsonRPC.request('getEvents', {
 			params : {},
 			success : function(data){
