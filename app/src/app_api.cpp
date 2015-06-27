@@ -103,9 +103,11 @@ void AppApi::GetEvents::call(const Json::Value& request, Json::Value& response)
 	
 	unsigned int eventCount = parent.scheduler.getScheduledEventCount();
 	
+	response = Json::Value(Json::arrayValue);
+
 	for(unsigned int i = 0; i < eventCount; i++)
 	{
-		auto & row = response[i + 1];
+		auto & row = response[i];
 		auto event = parent.scheduler.getScheduledEvent(i);
 		row["startTime"] = event->getStartTime();
 		row["duration"] = event->getDuration();
