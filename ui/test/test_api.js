@@ -13,6 +13,11 @@ define( [ 'js/api' ], function(libapi) {
 			testApi.insertTask(earliestStartTime,latestEndTime,duration,success,error);
 		}
 		
+		function updateDummyTask(success,error)
+		{
+			testApi.updateTask(1,earliestStartTime + 1,latestEndTime + 1,duration + 1,success,error);
+		}
+		
 		beforeEach(function() {
 			testApi = new libapi.Api();
 		});
@@ -60,9 +65,30 @@ define( [ 'js/api' ], function(libapi) {
 		it("updates a single task", function(done) {
 
 			insertDummyTask(function(){
-				testApi.updateTask(1,earliestStartTime,latestEndTime,duration + 1,function(result){
+				updateDummyTask(function(result){
 					expect(result).toEqual(true);
 					done();
+				});
+			});
+		});
+		
+		it("gets an updated task in table", function(done) {
+			
+			var expectedTable = [
+                 {
+                	 taskId: 1,
+                	 earliestStartTime: earliestStartTime + 1, 
+                	 latestEndTime: latestEndTime + 1, 
+                	 duration: duration + 1
+            	 }
+			];
+			
+			insertDummyTask(function(){
+				updateDummyTask(function(){
+					testApi.getTasks(function(result){
+						expect(result).toEqual(expectedTable);
+						done();
+					});
 				});
 			});
 		});
