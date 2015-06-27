@@ -18,6 +18,11 @@ define( [ 'js/api' ], function(libapi) {
 			testApi.updateTask(1,earliestStartTime + 1,latestEndTime + 1,duration + 1,success,error);
 		}
 		
+		function removeDummyTask(success,error)
+		{
+			testApi.removeTask(1,success,error);
+		}
+		
 		beforeEach(function() {
 			testApi = new libapi.Api();
 		});
@@ -94,11 +99,21 @@ define( [ 'js/api' ], function(libapi) {
 		});
 		
 		it("removes a single task", function(done) {
-
 			insertDummyTask(function(){
-				testApi.removeTask(1,function(result){
+				removeDummyTask(function(result){
 					expect(result).toEqual(true);
 					done();
+				});
+			});
+		});
+		
+		it("gets empty tasks table after remove", function(done) {
+			insertDummyTask(function(){
+				removeDummyTask(function(){
+					testApi.getTasks(function(result){
+						expect(result).toEqual([]);
+						done();
+					});
 				});
 			});
 		});
