@@ -2,7 +2,16 @@ define( [ 'js/api' ], function(libapi) {
 
 	describe("ApiLib Suite", function() {
 		
+		var earliestStartTime = 1;
+		var latestEndTime = 2;
+		var duration = 3;
+		
 		var testApi = null;
+		
+		function insertDummyTask(success,error)
+		{
+			testApi.insertTask(earliestStartTime,latestEndTime,duration,success,error);
+		}
 		
 		beforeEach(function() {
 			testApi = new libapi.Api();
@@ -23,12 +32,7 @@ define( [ 'js/api' ], function(libapi) {
 		});
 
 		it("inserts single task", function(done) {
-			
-			var earliestStartTime = 1;
-			var latestEndTime = 2;
-			var duration = 3;
-			
-			testApi.insertTask(earliestStartTime,latestEndTime,duration,function(result){
+			insertDummyTask(function(result){
 				expect(result).toEqual(true);
 				done();
 			});
@@ -36,21 +40,17 @@ define( [ 'js/api' ], function(libapi) {
 		
 		it("gets a single task in table", function(done) {
 			
-			var earliestStartTime = 1;
-			var latestEndTime = 2;
-			var duration = 3;
+			var expectedTable = [
+                 {
+                	 taskId: 1,
+                	 earliestStartTime: earliestStartTime, 
+                	 latestEndTime: latestEndTime, 
+                	 duration: duration
+            	 }
+			];
 			
-			testApi.insertTask(earliestStartTime,latestEndTime,duration,function(result){
+			insertDummyTask(function(){
 				testApi.getTasks(function(result){
-					
-					var expectedTable = [
-	                     {
-	                    	 taskId: 1,
-	                    	 earliestStartTime: earliestStartTime, 
-	                    	 latestEndTime: latestEndTime, 
-	                    	 duration: duration
-                    	 }
-					];
 					
 					expect(result).toEqual(expectedTable);
 					done();
