@@ -152,13 +152,15 @@ TEST(AppApiGroup, RemoveTask)
 TEST(AppApiGroup, GetEvents)
 {
 	Core::Task newTask(0,1,1);
+	unsigned int expectedIndex = 0;
+
 	db.insertTask(newTask);
 	
 	procedures["getEvents"]->call(params,results);
 	
-	LONGS_EQUAL(1,results.size() - 1);
+	LONGS_EQUAL(1,results.size());
 	
-	LONGS_EQUAL(newTask.getEarliestStartTime(),results[1]["startTime"].asInt());
-	LONGS_EQUAL(newTask.getDuration(),results[1]["duration"].asInt());
+	LONGS_EQUAL(newTask.getEarliestStartTime(),results[expectedIndex]["startTime"].asInt());
+	LONGS_EQUAL(newTask.getDuration(),results[expectedIndex]["duration"].asInt());
 }
 
