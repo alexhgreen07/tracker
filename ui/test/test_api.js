@@ -92,6 +92,16 @@ define( [ 'js/api' ], function(libapi) {
 				});
 			});
 		});
+		
+		it("removes a single task", function(done) {
+
+			insertDummyTask(function(){
+				testApi.removeTask(1,function(result){
+					expect(result).toEqual(true);
+					done();
+				});
+			});
+		});
 
 		it("gets empty events table", function(done) {
 			testApi.getEvents(function(result){

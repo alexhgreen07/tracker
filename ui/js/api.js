@@ -70,6 +70,19 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			error : error
 		});
 	};
+	Api.prototype.removeTask = function(taskId,success,error)
+	{
+		error = error || function(data){};
+		$.jsonRPC.request('removeTask', {
+			params : {
+				taskId: taskId
+			},
+			success : function(data){
+				success(data.result);
+			},
+			error : error
+		});
+	};
 	Api.prototype.getEvents = function(success,error)
 	{
 		error = error || function(data){};

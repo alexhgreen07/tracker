@@ -27,6 +27,11 @@
         "params": {}
     },
     {
+        "method": "removeTask",
+        "isNotification": false,
+        "params": {}
+    },
+    {
         "method": "getEvents",
         "isNotification": false,
         "params": {}
