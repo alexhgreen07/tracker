@@ -52,7 +52,7 @@ TEST(AppApiGroup, ValidateGetEmptyTaskTable)
 {
 	procedures["getTasks"]->call(params,results);
 	
-	Json::Value desiredResult;
+	Json::Value desiredResult = Json::Value(Json::arrayValue);
 	CHECK(results == desiredResult);
 }
 
@@ -60,16 +60,17 @@ TEST(AppApiGroup, ValidateGetTaskTableWithSingleEntry)
 {
 	Json::Value desiredResult;
 	Core::Task newTask(2,3,4);
+	unsigned int expectedIndex = 0;
 	db.insertTask(newTask);
 	
 	procedures["getTasks"]->call(params,results);
 	
-	LONGS_EQUAL(1,results.size() - 1);
+	LONGS_EQUAL(1,results.size());
 	
-	LONGS_EQUAL(1,results[1]["taskId"].asInt());
-	LONGS_EQUAL(newTask.getEarliestStartTime(),results[1]["earliestStartTime"].asInt());
-	LONGS_EQUAL(newTask.getLatestEndTime(),results[1]["latestEndTime"].asInt());
-	LONGS_EQUAL(newTask.getDuration(),results[1]["duration"].asInt());
+	LONGS_EQUAL(1,results[expectedIndex]["taskId"].asInt());
+	LONGS_EQUAL(newTask.getEarliestStartTime(),results[expectedIndex]["earliestStartTime"].asInt());
+	LONGS_EQUAL(newTask.getLatestEndTime(),results[expectedIndex]["latestEndTime"].asInt());
+	LONGS_EQUAL(newTask.getDuration(),results[expectedIndex]["duration"].asInt());
 }
 
 TEST(AppApiGroup, ValidateGetTaskTableWithMultipleEntries)
@@ -77,7 +78,7 @@ TEST(AppApiGroup, ValidateGetTaskTableWithMultipleEntries)
 	Json::Value desiredResult;
 	constexpr unsigned int loopLimit = 5;
 	
-	for(unsigned int i = 1; i < (loopLimit + 1); i++)
+	for(unsigned int i = 0; i < loopLimit; i++)
 	{
 		Core::Task newTask(i,i+1,i+2);
 		db.insertTask(newTask);
@@ -85,11 +86,11 @@ TEST(AppApiGroup, ValidateGetTaskTableWithMultipleEntries)
 
 	procedures["getTasks"]->call(params,results);
 	
-	LONGS_EQUAL(loopLimit,results.size() - 1);
+	LONGS_EQUAL(loopLimit,results.size());
 	
-	for(unsigned int i = 1; i < (loopLimit + 1); i++)
+	for(unsigned int i = 0; i < loopLimit; i++)
 	{
-		LONGS_EQUAL(i,results[i]["taskId"].asInt());
+		LONGS_EQUAL(i + 1,results[i]["taskId"].asInt());
 		LONGS_EQUAL((i),results[i]["earliestStartTime"].asInt());
 		LONGS_EQUAL((i + 1),results[i]["latestEndTime"].asInt());
 		LONGS_EQUAL((i + 2),results[i]["duration"].asInt());

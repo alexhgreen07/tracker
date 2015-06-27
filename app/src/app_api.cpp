@@ -40,7 +40,9 @@ void AppApi::GetTasksProcedure::call(const Json::Value& request, Json::Value& re
 {
 	auto result = parent.db.getTasks();
 	
-	unsigned int i = 1;
+	unsigned int i = 0;
+
+	response = Json::Value(Json::arrayValue);
 	
 	for(auto outer_iter=result->begin(); outer_iter!=result->end(); ++outer_iter) {
 		
@@ -63,6 +65,8 @@ void AppApi::InsertTask::call(const Json::Value& request, Json::Value& response)
 	   request["latestEndTime"].asInt(),
 	   request["duration"].asInt());
 	parent.db.insertTask(newTask);
+
+	response = true;
 }
 	
 void AppApi::UpdateTask::call(const Json::Value& request, Json::Value& response)
