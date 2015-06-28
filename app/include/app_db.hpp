@@ -18,6 +18,7 @@ class AppDB
 public:
     AppDB(Database::Database & database);
     
+    void updateDatabase();
     void initializeNewDatabase();
     void createVersionTable();
     void createTasksTable();

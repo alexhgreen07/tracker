@@ -15,9 +15,7 @@ TrackerApp::TrackerApp(string dbName) :
 bool TrackerApp::start()
 {
 	mysqlDB.open(dbName);
-
-	//TODO: remove, for testing only
-	db.initializeNewDatabase();
+	db.updateDatabase();
 
     return server.start();
 }
