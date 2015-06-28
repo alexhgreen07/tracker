@@ -17,6 +17,15 @@ Database::Database()
 Database::~Database()
 {}
 
+Database::DatabaseException::DatabaseException(std::string msg) :
+	msg(msg)
+{}
+
+const char* Database::DatabaseException::what() const throw()
+{
+	return msg.c_str();
+}
+
 DatabaseSqlite3::DatabaseSqlite3() :
     Database(),
     privData(NULL),
@@ -36,7 +45,7 @@ void DatabaseSqlite3::open(std::string connectionString)
     if(rc)
     {
         close();
-        throw std::runtime_error("Failed to open database");
+        throw DatabaseException("Failed to open database");
     }
 }
 
@@ -58,7 +67,7 @@ void DatabaseSqlite3::execute(std::string sqlString)
     sqlite3 *db = (sqlite3*)privData;
     int rc = sqlite3_exec(db, sqlString.c_str(), NULL, 0, NULL);
     if( rc != SQLITE_OK ){
-        throw std::runtime_error("Failed to execute query");
+        throw DatabaseException("Failed to execute query");
     }
 }
 
@@ -70,7 +79,7 @@ std::shared_ptr<std::vector<std::vector<std::string>>> DatabaseSqlite3::select(s
     int rc = sqlite3_prepare_v2(db,sqlString.c_str(), -1, &res, 0);
     
     if (rc != SQLITE_OK) {
-        throw std::runtime_error("Failed to execute query");
+        throw DatabaseException("Failed to execute query");
     }
     
     unsigned int columnCount = sqlite3_column_count(res);

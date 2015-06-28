@@ -30,6 +30,15 @@ public:
     virtual void execute(std::string sqlString) = 0;
     virtual std::shared_ptr<std::vector<std::vector<std::string>>> select(std::string sqlString) = 0;
     virtual uint64_t lastInsertRowId() = 0;
+
+    class DatabaseException: public std::exception
+	{
+    public:
+    	DatabaseException(std::string msg);
+    protected:
+		virtual const char* what() const throw() override;
+		std::string msg;
+	};
 };
 
 class DatabaseSqlite3 : public Database
