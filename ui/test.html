@@ -30,7 +30,10 @@ require.config( {
     }
 });
 
-specs = [ "test/test_api.js" ];
+specs = [ 
+    "test/test_api.js",
+    "test/test_main.js"
+];
 
 require( [ 'jasmine-boot' ], function() {
     require(specs, function() {
@@ -41,5 +44,6 @@ require( [ 'jasmine-boot' ], function() {
 </script>
 </head>
 <body>
+<div id="test_div"></div>
 </body>
 </html>
