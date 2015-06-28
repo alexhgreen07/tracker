@@ -1,5 +1,5 @@
 #!/bin/bash
 
 while true; do
-    ./bin/tracker.exe
+    ./bin/tracker.exe :memory:
 done

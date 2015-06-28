@@ -15,9 +15,10 @@ using namespace Network;
 class TrackerApp
 {
 public:
-	TrackerApp();
+	TrackerApp(string dbName);
     bool start();
 private:
+    string dbName;
 	Database::DatabaseSqlite3 mysqlDB;
 	AppDB db;
 	AppApi api;
