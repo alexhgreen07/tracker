@@ -6,7 +6,8 @@
 requirejs.config( {
 	paths : {
 		jquery : 'externals/jquery-2.1.4.min',
-		jqueryjsonrpc : 'externals/jquery.jsonrpc'
+		jqueryjsonrpc : 'externals/jquery.jsonrpc',
+		jqueryui : 'externals/jquery-ui-1.11.4/jquery-ui.min'
 	},
 	shim : {
 		jqueryjsonrpc : {

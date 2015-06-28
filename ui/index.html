@@ -2,7 +2,11 @@
 
 <html>
 <head>
-<title>JSON-RPC Tester</title>
+<title>Tracker</title>
+
+<link rel="stylesheet" type="text/css"
+	href="externals/jquery-ui-1.11.4/jquery-ui.min.css">
+
 <script>
 var isTest = false;
 </script>
@@ -10,9 +14,20 @@ var isTest = false;
 </head>
 <body>
 
-<h1>Testing JSON-RPC Server</h1>
-<form id="testform"><label>Enter your name:</label> 
-	<input type="text" id="thename" /></form>
+<div id="tabs">
+  <ul>
+    <li><a href="#tabs-1">Summary</a></li>
+    <li><a href="#tabs-2">Details</a></li>
+  </ul>
+  <div id="tabs-1">
+    <form id="testform"><label>Enter your name:</label> <input
+    type="text" id="thename" /></form>
 <p id="result">Result will be displayed here...</p>
+    </div>
+  <div id="tabs-2">
+    Under construction...
+    </div>
+</div>
+
 </body>
 </html>
