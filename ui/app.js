@@ -9,7 +9,8 @@ requirejs.config( {
 		jqueryjsonrpc : 'externals/jquery.jsonrpc',
 		jqueryui : 'externals/jquery-ui-1.11.4/jquery-ui.min',
 		moment: 'externals/fullcalendar/lib/moment.min',
-		fullcalendar : 'externals/fullcalendar/fullcalendar.min'
+		fullcalendar : 'externals/fullcalendar/fullcalendar.min',
+		datetimepicker : 'externals/datetimepicker/jquery-ui-timepicker-addon'
 	},
 	shim : {
 		jqueryjsonrpc : {
@@ -20,6 +21,12 @@ requirejs.config( {
 		},
 		fullcalendar: {
 			deps : [ 'jqueryui', 'moment' ]
+		}
+	},
+	map : {
+		'*' : {
+			//compatibility fix for datetimepicker
+			'jquery.ui' : 'jqueryui'
 		}
 	}
 });
