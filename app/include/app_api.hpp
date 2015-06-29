@@ -17,6 +17,14 @@ public:
 	JsonMethods & getProcedures();
 	JsonNotifications & getNotifications();
 protected:
+	struct ExitProcedure : public JsonRequestProcedure
+	{
+		ExitProcedure()
+		{}
+
+		void call(const Json::Value& request, Json::Value& response) override;
+	};
+
 	struct SayHelloProcedure : public JsonRequestProcedure
 	{
 		SayHelloProcedure(AppApi & parent) :
@@ -86,6 +94,7 @@ protected:
 	AppDB & db;
 	Core::Scheduler scheduler;
 	
+	ExitProcedure exitProcedure;
 	SayHelloProcedure sayHello;
 	GetTasksProcedure getTasks;
 	InsertTask insertTask;

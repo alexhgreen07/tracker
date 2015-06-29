@@ -13,7 +13,7 @@ TEST_GROUP(AppGroup)
 
 TEST(AppGroup, BasicInitialize)
 {
-    TrackerApp app;
+    TrackerApp app(":memory:");
     CHECK(app.start());
 }
 

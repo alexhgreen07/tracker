@@ -1,4 +1,9 @@
 [
+    {
+        "method": "exit",
+        "isNotification": false,
+        "params": {}
+    },
 	{
 		"method": "sayHello",
 		"isNotification": false,
@@ -6,7 +11,31 @@
 			"name": "seppi"
 		}
 	},
-	
+	{
+        "method": "getTasks",
+        "isNotification": false,
+        "params": {}
+    },
+    {
+        "method": "insertTask",
+        "isNotification": false,
+        "params": {}
+    },
+    {
+        "method": "updateTask",
+        "isNotification": false,
+        "params": {}
+    },
+    {
+        "method": "removeTask",
+        "isNotification": false,
+        "params": {}
+    },
+    {
+        "method": "getEvents",
+        "isNotification": false,
+        "params": {}
+    },
 	{
 		"method" : "notifyServer",
 		"isNotification": true,

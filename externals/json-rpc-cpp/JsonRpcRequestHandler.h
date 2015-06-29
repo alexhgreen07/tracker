@@ -20,7 +20,7 @@
 #define KEY_RESPONSE_RESULT "result"
 #define KEY_AUTHENTICATION "auth"
 
-#define JSON_RPC_VERSION 2.0
+#define JSON_RPC_VERSION "2.0"
 
 namespace jsonrpc {
 

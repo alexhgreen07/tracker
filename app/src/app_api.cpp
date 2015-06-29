@@ -14,6 +14,7 @@ AppApi::AppApi(AppDB & db) :
 	removeTask(*this),
 	getEvents(*this)
 {
+	procedurePointers["exit"] = &exitProcedure;
 	procedurePointers["sayHello"] = &sayHello;
 	procedurePointers["getTasks"] = &getTasks;
 	procedurePointers["insertTask"] = &insertTask;
@@ -30,7 +31,12 @@ JsonNotifications & AppApi::getNotifications()
 {
 	return notPointers;
 }
-	
+
+void AppApi::ExitProcedure::call(const Json::Value& request, Json::Value& response)
+{
+	exit(0);
+}
+
 void AppApi::SayHelloProcedure::call(const Json::Value& request, Json::Value& response)
 {
 	response = "Hello: " + request["name"].asString();
@@ -40,7 +46,9 @@ void AppApi::GetTasksProcedure::call(const Json::Value& request, Json::Value& re
 {
 	auto result = parent.db.getTasks();
 	
-	unsigned int i = 1;
+	unsigned int i = 0;
+
+	response = Json::Value(Json::arrayValue);
 	
 	for(auto outer_iter=result->begin(); outer_iter!=result->end(); ++outer_iter) {
 		
@@ -63,6 +71,8 @@ void AppApi::InsertTask::call(const Json::Value& request, Json::Value& response)
 	   request["latestEndTime"].asInt(),
 	   request["duration"].asInt());
 	parent.db.insertTask(newTask);
+
+	response = true;
 }
 	
 void AppApi::UpdateTask::call(const Json::Value& request, Json::Value& response)
@@ -73,11 +83,15 @@ void AppApi::UpdateTask::call(const Json::Value& request, Json::Value& response)
 	   request["duration"].asInt());
 	
 	parent.db.updateTask(request["taskId"].asInt(),updatedTask);
+
+	response = true;
 }
 	
 void AppApi::RemoveTask::call(const Json::Value& request, Json::Value& response)
 {
 	parent.db.removeTask(request["taskId"].asInt());
+
+	response = true;
 }
 	
 void AppApi::GetEvents::call(const Json::Value& request, Json::Value& response)
@@ -99,9 +113,11 @@ void AppApi::GetEvents::call(const Json::Value& request, Json::Value& response)
 	
 	unsigned int eventCount = parent.scheduler.getScheduledEventCount();
 	
+	response = Json::Value(Json::arrayValue);
+
 	for(unsigned int i = 0; i < eventCount; i++)
 	{
-		auto & row = response[i + 1];
+		auto & row = response[i];
 		auto event = parent.scheduler.getScheduledEvent(i);
 		row["startTime"] = event->getStartTime();
 		row["duration"] = event->getDuration();

@@ -10,6 +10,32 @@ AppDB::AppDB(Database::Database & database) :
     currentVersion("0")
 {}
 
+void AppDB::updateDatabase()
+{
+	bool shouldInitialize = false;
+
+	try
+	{
+		auto tasksTable = database.select("select version from version");
+
+		if(tasksTable->at(0).at(0) != currentVersion)
+		{
+			shouldInitialize = true;
+		}
+	}
+	catch(const std::exception& e)
+	{
+		//failed to query, initialize new database
+		shouldInitialize = true;
+	}
+
+	if(shouldInitialize)
+	{
+		initializeNewDatabase();
+	}
+
+}
+
 void AppDB::initializeNewDatabase()
 {
     database.execute("create table version (version int)");

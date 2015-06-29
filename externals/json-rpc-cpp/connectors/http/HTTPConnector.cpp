@@ -55,7 +55,7 @@ HTTPConnector::HTTPConnector(int port, const string& resPath) : JsonRpcConnector
 bool HTTPConnector::sendResponse(string & response, void *addInfo)
 {
 	struct mg_connection* conn = (struct mg_connection*)addInfo;
-	if(mg_printf(conn,"HTTP/1.1 200 OK\r\n\r\n %s",response.c_str()) > 0) {
+	if(mg_printf(conn,"HTTP/1.1 200 OK\r\nContent-Type:application/json\r\n\r\n%s",response.c_str()) > 0) {
 		return true;
 	} else {
 		return false;

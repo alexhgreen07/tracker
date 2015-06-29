@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Jasmine Spec Runner v2.0.0</title>
+
+<link rel="shortcut icon" type="image/png" href="externals/jasmine-2.3.4/jasmine_favicon.png">
+<link rel="stylesheet" type="text/css" href="externals/jasmine-2.3.4/jasmine.css">
+<script>
+var isTest = true;
+</script>
+<script data-main="app" src="externals/require.js"></script>
+<script>
+//Requirejs Configuration Options
+require.config( {
+    // paths: maps ids with paths (no extension)
+    paths : {
+        'jasmine' : [ 'externals/jasmine-2.3.4/jasmine' ],
+        'jasmine-html' : [ 'externals/jasmine-2.3.4/jasmine-html' ],
+        'jasmine-boot' : [ 'externals/jasmine-2.3.4/boot' ]
+    },
+    // shim: makes external libraries compatible with requirejs (AMD)
+    shim : {
+        'jasmine-html' : {
+            deps : [ 'jasmine' ]
+        },
+        'jasmine-boot' : {
+            deps : [ 'jasmine', 'jasmine-html' ]
+        }
+    }
+});
+
+specs = [ 
+    "test/test_api.js",
+    "test/test_main.js"
+];
+
+require( [ 'jasmine-boot' ], function() {
+    require(specs, function() {
+        // trigger Jasmine
+        window.onload();
+    })
+});
+</script>
+</head>
+<body>
+<div id="test_div"></div>
+</body>
+</html>
