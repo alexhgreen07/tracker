@@ -26,7 +26,11 @@ define( [ 'js/api' ], function(libapi) {
 		beforeEach(function() {
 			testApi = new libapi.Api();
 		});
-
+		
+		it("is allocated", function() {
+			expect(testApi).not.toEqual(null);
+		});
+		
 		it("says hello", function(done) {
 			testApi.sayHello("test",function(result){
 				expect(result).toEqual("Hello: test");

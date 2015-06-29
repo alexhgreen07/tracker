@@ -9,6 +9,10 @@ define( [ 'js/main',  'js/api', 'js/calendar_form' ], function(libMain,libApi,li
 			testApplication = libMain.buildApplication();
 		});
 		
+		it("is allocated", function() {
+			expect(testApplication).not.toEqual(null);
+		});
+		
 		it("renders main application", function() {
 			testApplication.render(testDiv);
 			expect(testDiv.innerHTML).not.toBe("");
