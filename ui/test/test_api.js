@@ -3,7 +3,7 @@ define( [ 'js/api' ], function(libapi) {
 	describe("ApiLib Suite", function() {
 		
 		var earliestStartTime = 1;
-		var latestEndTime = 3;
+		var latestEndTime = 5;
 		var duration = 2;
 		
 		var testApi = null;
