@@ -1,4 +1,4 @@
-define( [ 'js/task_forms' ], function(libTaskForms) {
+define( [ 'js/task_forms', 'test/dummy_api' ], function(libTaskForms,libDummyApi) {
 	
 	describe("TaskFormsLib Add Task Suite", function() {
 		
@@ -6,28 +6,13 @@ define( [ 'js/task_forms' ], function(libTaskForms) {
 		var testForm = null;
 		var testApi = null;
 		
-		function DummyApi()
-		{
-			this.lastAddedTask = null;
-		}
-		DummyApi.prototype.insertTask = function(earliestStartTime,latestEndTime,duration,success,error)
-		{
-			this.lastAddedTask = {
-				earliestStartTime: earliestStartTime,
-				latestEndTime: latestEndTime,
-				duration: duration
-			};
-			
-			success(true);
-		};
-		
 		function roundTimeToMinute(time)
 		{
 			return Math.floor(time.getTime() / 60 / 1000) * 60 * 1000;
 		}
 		
 		beforeEach(function() {
-			testApi = new DummyApi();
+			testApi = new libDummyApi.DummyApi();
 			testForm = new libTaskForms.AddTaskForm(testApi);
 		});
 		
