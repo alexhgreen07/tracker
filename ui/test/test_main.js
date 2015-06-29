@@ -1,4 +1,4 @@
-define( [ 'js/main' ], function(libmain) {
+define( [ 'js/main',  'js/api', 'js/calendar_form' ], function(libMain,libApi,libCalendarForm) {
 	
 	describe("MainLib Suite", function() {
 		
@@ -6,7 +6,7 @@ define( [ 'js/main' ], function(libmain) {
 		var testDiv = document.getElementById("test_div");
 		
 		beforeEach(function() {
-			testApplication = new libmain.Application();
+			testApplication = libMain.buildApplication();
 		});
 		
 		it("renders main application", function() {
