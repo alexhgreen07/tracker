@@ -47,6 +47,15 @@ TEST(TaskGroup, SetDuration)
     LONGS_EQUAL(testDuration, testTask->getDuration())
 }
 
+TEST(TaskGroup, SetInvalidParameters)
+{
+	testTask->setEarliestStartTime(10);
+	testTask->setLatestEndTime(15);
+	testTask->setDuration(10);
+
+	LONGS_EQUAL(testTask->getLatestStartTime(),testTask->getEarliestStartTime());
+}
+
 TEST(TaskGroup, AddChild)
 {
     std::shared_ptr<Task> newChild = std::make_shared<Task>();

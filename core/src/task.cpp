@@ -20,7 +20,9 @@ Task::Task(unsigned int earliestStartTime,unsigned int latestEndTime,unsigned in
     earliestStartTime(earliestStartTime),
     latestEndTime(latestEndTime),
     duration(duration)
-{}
+{
+	validateAndCorrectData();
+}
 
 unsigned int Task::getEarliestStartTime() const
 {
@@ -29,6 +31,7 @@ unsigned int Task::getEarliestStartTime() const
 void Task::setEarliestStartTime(unsigned int earliestStartTime)
 {
     this->earliestStartTime = earliestStartTime;
+    validateAndCorrectData();
 }
 unsigned int Task::getLatestEndTime() const
 {
@@ -37,6 +40,7 @@ unsigned int Task::getLatestEndTime() const
 void Task::setLatestEndTime(unsigned int latestEndTime)
 {
     this->latestEndTime = latestEndTime;
+    validateAndCorrectData();
 }
 unsigned int Task::getLatestStartTime() const
 {
@@ -49,6 +53,7 @@ unsigned int Task::getDuration() const
 void Task::setDuration(unsigned int duration)
 {
     this->duration = duration;
+    validateAndCorrectData();
 }
 void Task::addChild(std::shared_ptr<Task> child)
 {
@@ -132,6 +137,14 @@ void Task::setParent(const std::shared_ptr<Task> & parent)
 void Task::setRecurranceParent(const std::shared_ptr<Task> & parent)
 {
     this->recurrenceParent = parent;
+}
+
+void Task::validateAndCorrectData()
+{
+	if(earliestStartTime > getLatestStartTime())
+	{
+		latestEndTime = earliestStartTime + duration;
+	}
 }
     
 }

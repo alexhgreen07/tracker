@@ -52,6 +52,8 @@ private:
     unsigned int recurringPeriod;
     unsigned int recurringLateOffset;
     std::weak_ptr<Task> recurrenceParent;
+
+    void validateAndCorrectData();
 };
     
 }
