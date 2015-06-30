@@ -1,14 +1,19 @@
-define( [ './api', './calendar_form', 'jquery', 'jqueryui' ], function(libApi,libCalendarForm,$) {
+define( [ './api', './calendar_form', './task_forms', 'jquery', 'jqueryui' ], function(libApi,libCalendarForm,libTaskForms,$) {
 	
-	function Application(api,calendarForm)
+	function Application(api,calendarForm,addTaskForm)
 	{
 		this.api = api;
 		this.calendarForm = calendarForm;
+		this.addTaskForm = addTaskForm;
 		
 		this.tabsId = "tabs";
 		this.tabs = [
              {
             	 title: "Calendar",
+            	 tabDiv: null
+             },
+             {
+            	 title: "Add",
             	 tabDiv: null
              },
              {
@@ -43,19 +48,20 @@ define( [ './api', './calendar_form', 'jquery', 'jqueryui' ], function(libApi,li
 		
 		$(this.tabsDiv).tabs();
 		
-		this.tabs[1].tabDiv.innerHTML = "Under construction..."
-		
-		
-		
 		this.calendarForm.render(this.tabs[0].tabDiv);
+		this.addTaskForm.render(this.tabs[1].tabDiv);
+
+		this.tabs[2].tabDiv.innerHTML = "Under construction..."
+		
 	};
 	
 	function buildApplication()
 	{
 		var api = new libApi.Api();
 		var calendarForm = new libCalendarForm.CalendarForm();
+		var addTaskForm = new libTaskForms.AddTaskForm(api);
 		
-		return new Application(api,calendarForm);
+		return new Application(api,calendarForm,addTaskForm);
 	};
 
 	function main()

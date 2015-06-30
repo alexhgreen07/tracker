@@ -22,8 +22,8 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 	AddTaskForm.prototype.submitClickEvent = function()
 	{
 		this.api.insertTask(
-				$(this.earliestStartTimeInput).datetimepicker('getDate').getTime(),
-				$(this.latestEndTimeInput).datetimepicker('getDate').getTime(),
+				$(this.earliestStartTimeInput).datetimepicker('getDate').getTime() / 1000,
+				$(this.latestEndTimeInput).datetimepicker('getDate').getTime() / 1000,
 				parseInt(this.durationInput.value),
 				this.submitSuccess.bind(this),
 				this.submitError.bind(this));
@@ -55,11 +55,9 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 		this.durationInput.value = 0;
 		
 		div.appendChild(document.createElement("br"));
-		div.appendChild(document.createElement("br"));
 		
 		this.resultsDiv = div.appendChild(document.createElement("div"));
 		
-		div.appendChild(document.createElement("br"));
 		div.appendChild(document.createElement("br"));
 		
 		this.submitButton = div.appendChild(document.createElement("input"));
@@ -69,7 +67,9 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 		div.appendChild(document.createElement("br"));
 
 		$(this.earliestStartTimeInput).datetimepicker();
+		$(this.earliestStartTimeInput).datetimepicker('setDate',new Date());
 		$(this.latestEndTimeInput).datetimepicker();
+		$(this.latestEndTimeInput).datetimepicker('setDate',new Date());
 		$(this.submitButton).button();
 		$(this.submitButton).click(this.submitClickEvent.bind(this));
 	};

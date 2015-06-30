@@ -5,6 +5,7 @@ define( [ 'js/main',  'test/dummy_api' ], function(libMain,libDummyApi) {
 		var testApplication = null;
 		var dummyApi = null;
 		var dummyCalendarForm = null;
+		var dummyAddTaskForm = null;
 		var testDiv = document.getElementById("test_div");
 		
 		function DummyForm()
@@ -19,7 +20,8 @@ define( [ 'js/main',  'test/dummy_api' ], function(libMain,libDummyApi) {
 		beforeEach(function() {
 			dummyApi = new libDummyApi.DummyApi();
 			dummyCalendarForm = new DummyForm();
-			testApplication = new libMain.Application(dummyApi,dummyCalendarForm);
+			dummyAddTaskForm = new DummyForm();
+			testApplication = new libMain.Application(dummyApi,dummyCalendarForm,dummyAddTaskForm);
 		});
 		
 		it("is allocated", function() {
@@ -34,6 +36,11 @@ define( [ 'js/main',  'test/dummy_api' ], function(libMain,libDummyApi) {
 		it("renders calendar form", function() {
 			testApplication.render(testDiv);
 			expect(dummyCalendarForm.hasRendered).toBe(true);
+		});
+		
+		it("renders add task form", function() {
+			testApplication.render(testDiv);
+			expect(dummyAddTaskForm.hasRendered).toBe(true);
 		});
 		
 		afterEach(function() {
