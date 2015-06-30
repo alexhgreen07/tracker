@@ -14,6 +14,8 @@ define( [ 'js/task_forms', 'test/dummy_api' ], function(libTaskForms,libDummyApi
 		beforeEach(function() {
 			testApi = new libDummyApi.DummyApi();
 			testForm = new libTaskForms.AddTaskForm(testApi);
+			
+			spyOn(testApi,'insertTask');
 		});
 		
 		it("is allocated", function() {
@@ -37,11 +39,12 @@ define( [ 'js/task_forms', 'test/dummy_api' ], function(libTaskForms,libDummyApi
 			
 			testForm.submitButton.click();
 			
-			//round to minute
 			var expectedTime = roundTimeToMinute(now) / 1000;
-			expect(testApi.lastAddedTask.earliestStartTime).toEqual(expectedTime);
-			expect(testApi.lastAddedTask.latestEndTime).toEqual(expectedTime);
-			expect(testApi.lastAddedTask.duration).toEqual(0);
+			
+			var callArgs = testApi.insertTask.calls.argsFor(0);
+			expect(callArgs[0]).toBe(expectedTime);
+			expect(callArgs[1]).toBe(expectedTime);
+			expect(callArgs[2]).toBe(0);
 		});
 		
 		afterEach(function() {

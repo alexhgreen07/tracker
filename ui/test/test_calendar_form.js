@@ -9,6 +9,8 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 		beforeEach(function() {
 			testApi = new libDummyApi.DummyApi();
 			testForm = new libCalendarForm.CalendarForm(testApi);
+			
+			spyOn(testApi, 'getEvents');
 		});
 		
 		it("is allocated", function() {
@@ -20,12 +22,10 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 			expect(testDiv.innerHTML).not.toBe("");
 		});
 		
-		it("queries events on refresh", function(done) {
+		it("queries events on refresh", function() {
 			testForm.render(testDiv);
-			testForm.refresh(function(){
-				expect(testApi.getEventsCalled).toBe(true);
-				done();
-			});
+			testForm.refresh();
+			expect(testApi.getEvents).toHaveBeenCalled();
 		});
 		
 		afterEach(function() {
