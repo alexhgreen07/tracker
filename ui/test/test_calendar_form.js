@@ -1,12 +1,14 @@
-define( [ 'js/calendar_form' ], function(libCalendarForm) {
+define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDummyApi) {
 	
 	describe("CalendarFormLib Suite", function() {
 		
 		var testDiv = document.getElementById("test_div");
 		var testForm = null;
+		var testApi = null;
 		
 		beforeEach(function() {
-			testForm = new libCalendarForm.CalendarForm();
+			testApi = new libDummyApi.DummyApi();
+			testForm = new libCalendarForm.CalendarForm(testApi);
 		});
 		
 		it("is allocated", function() {
@@ -16,6 +18,14 @@ define( [ 'js/calendar_form' ], function(libCalendarForm) {
 		it("renders form", function() {
 			testForm.render(testDiv);
 			expect(testDiv.innerHTML).not.toBe("");
+		});
+		
+		it("queries events on refresh", function(done) {
+			testForm.render(testDiv);
+			testForm.refresh(function(){
+				expect(testApi.getEventsCalled).toBe(true);
+				done();
+			});
 		});
 		
 		afterEach(function() {

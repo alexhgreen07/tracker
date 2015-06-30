@@ -1,7 +1,8 @@
 define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 	
-	function CalendarForm()
+	function CalendarForm(api)
 	{
+		this.api = api;
 		this.calendarDiv = null;
 		this.calendar = null;
 
@@ -46,6 +47,15 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 			start : '2015-02-13T07:00:00'
 		} ];
 	}
+	CalendarForm.prototype.refresh = function(success,error)
+	{
+		this.api.getEvents((function(result){
+			
+			//TODO: fill calendar with events
+			success();
+			
+		}).bind(this),error);
+	};
 	CalendarForm.prototype.render = function(parent)
 	{
 		this.calendarDiv = parent.appendChild(document.createElement("div"));
