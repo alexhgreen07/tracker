@@ -38,7 +38,7 @@ define( [ 'js/task_forms', 'test/dummy_api' ], function(libTaskForms,libDummyApi
 			testForm.submitButton.click();
 			
 			//round to minute
-			var expectedTime = roundTimeToMinute(now);
+			var expectedTime = roundTimeToMinute(now) / 1000;
 			expect(testApi.lastAddedTask.earliestStartTime).toEqual(expectedTime);
 			expect(testApi.lastAddedTask.latestEndTime).toEqual(expectedTime);
 			expect(testApi.lastAddedTask.duration).toEqual(0);
