@@ -26,6 +26,7 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 				newEvents.push(calendarEvent);
 			}
 			
+			this.calendar.fullCalendar( 'removeEvents' );
 			this.calendar.fullCalendar( 'addEventSource', newEvents);
 			
 			success();

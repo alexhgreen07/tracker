@@ -46,7 +46,12 @@ define( [ './api', './calendar_form', './task_forms', 'jquery', 'jqueryui' ], fu
 			this.tabs[i].tabDiv.id = this.tabsId + "-" + i;
 		}
 		
-		$(this.tabsDiv).tabs();
+		$(this.tabsDiv).tabs({
+		    activate: (function(event, ui) {
+		    	//TODO: make this selective for only calendar tab
+		    	this.calendarForm.refresh(function(){});
+		    }).bind(this)
+		});
 		
 		this.calendarForm.render(this.tabs[0].tabDiv);
 		this.addTaskForm.render(this.tabs[1].tabDiv);
