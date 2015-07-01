@@ -48,8 +48,10 @@ define( [ './api', './calendar_form', './task_forms', 'jquery', 'jqueryui' ], fu
 		
 		$(this.tabsDiv).tabs({
 		    activate: (function(event, ui) {
-		    	//TODO: make this selective for only calendar tab
-		    	this.calendarForm.refresh(function(){});
+		    	if(ui.newPanel[0] == this.tabs[0].tabDiv)
+	    		{
+		    		this.calendarForm.refresh(function(){});
+	    		}
 		    }).bind(this)
 		});
 		
