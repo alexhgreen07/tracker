@@ -58,6 +58,17 @@ TEST(AppDBGroup, ValidateTaskInsert)
     LONGS_EQUAL(1, result->size());
 }
 
+TEST(AppDBGroup, ValidateTaskInsertByName)
+{
+	Core::Task newTask;
+
+	newTask.setName("test task");
+	testDB.insertTask(newTask);
+
+	auto result = testDB.getTasks();
+	STRCMP_EQUAL(newTask.getName().c_str(),result->at(1).getName().c_str());
+}
+
 TEST(AppDBGroup, ValidateTaskInsertByEarliestStartTime)
 {
     Core::Task newTask;
