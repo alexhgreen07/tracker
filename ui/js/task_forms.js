@@ -4,6 +4,7 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 	{
 		this.api = api;
 		
+		this.nameInput = null;
 		this.earliestStartTimeInput = null;
 		this.latestEndTimeInput = null;
 		this.durationInput = null;
@@ -28,6 +29,7 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 	AddTaskForm.prototype.submitClickEvent = function()
 	{
 		this.api.insertTask(
+				this.nameInput.value,
 				$(this.earliestStartTimeInput).datetimepicker('getDate').getTime() / 1000,
 				$(this.latestEndTimeInput).datetimepicker('getDate').getTime() / 1000,
 				parseInt(this.durationInput.value),
@@ -36,6 +38,14 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 	};
 	AddTaskForm.prototype.renderEntryInputs = function(div)
 	{
+		div.appendChild(document.createTextNode("Name"));
+		div.appendChild(document.createElement("br"));
+		this.nameInput = div.appendChild(document.createElement("input"));
+		this.nameInput.type = "text";
+		
+		div.appendChild(document.createElement("br"));
+		div.appendChild(document.createElement("br"));
+		
 		div.appendChild(document.createTextNode("Earliest Start Time"));
 		div.appendChild(document.createElement("br"));
 		this.earliestStartTimeInput = div.appendChild(document.createElement("input"));
@@ -99,6 +109,7 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 	{
 		this.api.updateTask(
 				parseInt(this.taskIdInput.value),
+				this.nameInput.value,
 				$(this.earliestStartTimeInput).datetimepicker('getDate').getTime() / 1000,
 				$(this.latestEndTimeInput).datetimepicker('getDate').getTime() / 1000,
 				parseInt(this.durationInput.value),
