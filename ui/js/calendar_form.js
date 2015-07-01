@@ -44,7 +44,9 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 				right: 'month,agendaWeek,agendaDay'
 			},
 			defaultView: 'agendaDay',
-			editable: true,
+			defaultDate: (new Date()),
+			height: 850,
+			editable: false,
 			eventLimit: true,
 			events: []
 		});
