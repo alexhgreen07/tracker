@@ -3,11 +3,11 @@ define( [ ], function() {
 	function DummyApi()
 	{
 	}
-	DummyApi.prototype.insertTask = function(earliestStartTime,latestEndTime,duration,success,error)
+	DummyApi.prototype.insertTask = function(name,earliestStartTime,latestEndTime,duration,success,error)
 	{
 		success(true);
 	};
-	DummyApi.prototype.updateTask = function(taskId,earliestStartTime,latestEndTime,duration,success,error)
+	DummyApi.prototype.updateTask = function(taskId,name,earliestStartTime,latestEndTime,duration,success,error)
 	{
 		success(true);
 	}
