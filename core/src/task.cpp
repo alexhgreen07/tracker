@@ -8,6 +8,7 @@ namespace Core
 {
 
 Task::Task() :
+	name(""),
     earliestStartTime(0),
     latestEndTime(0),
     duration(0),
@@ -22,6 +23,16 @@ Task::Task(unsigned int earliestStartTime,unsigned int latestEndTime,unsigned in
     duration(duration)
 {
 	validateAndCorrectData();
+}
+
+std::string Task::getName() const
+{
+	return name;
+}
+
+void Task::setName(std::string name)
+{
+	this->name = name;
 }
 
 unsigned int Task::getEarliestStartTime() const

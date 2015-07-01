@@ -16,11 +16,20 @@ TEST_GROUP(TaskGroup)
 
 TEST(TaskGroup, BasicInitialize)
 {
+	STRCMP_EQUAL("", testTask->getName().c_str());
     LONGS_EQUAL(0,testTask->getEarliestStartTime());
     LONGS_EQUAL(0,testTask->getLatestEndTime());
     LONGS_EQUAL(0,testTask->getDuration());
     LONGS_EQUAL(0,testTask->getChildrenCount());
     CHECK(testTask->getParent().expired());
+}
+
+TEST(TaskGroup, SetName)
+{
+	std::string testName = "test task";
+	testTask->setName(testName);
+
+	STRCMP_EQUAL(testName.c_str(), testTask->getName().c_str());
 }
 
 TEST(TaskGroup, SetEarliestStartTime)
