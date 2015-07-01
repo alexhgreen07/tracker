@@ -11,13 +11,19 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 		
 		this.submitButton = null;
 	}
+	AddTaskForm.prototype.clearResults = function()
+	{
+		this.resultsDiv.innerHTML = "";
+	};
 	AddTaskForm.prototype.submitSuccess = function()
 	{
 		this.resultsDiv.innerHTML = "Task submitted";
+		setTimeout(this.clearResults.bind(this),2000);
 	};
 	AddTaskForm.prototype.submitError = function()
 	{
 		this.resultsDiv.innerHTML = "Task submission error";
+		setTimeout(this.clearResults.bind(this),2000);
 	};
 	AddTaskForm.prototype.submitClickEvent = function()
 	{
