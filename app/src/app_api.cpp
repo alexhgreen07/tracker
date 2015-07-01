@@ -68,10 +68,10 @@ void AppApi::GetTasksProcedure::call(const Json::Value& request, Json::Value& re
 void AppApi::InsertTask::call(const Json::Value& request, Json::Value& response)
 {
 	Core::Task newTask(
-		"",
-	   request["earliestStartTime"].asInt(),
-	   request["latestEndTime"].asInt(),
-	   request["duration"].asInt());
+			request["name"].asString(),
+			request["earliestStartTime"].asInt(),
+			request["latestEndTime"].asInt(),
+			request["duration"].asInt());
 	parent.db.insertTask(newTask);
 
 	response = true;

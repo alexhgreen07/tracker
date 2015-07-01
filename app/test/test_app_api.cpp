@@ -81,7 +81,7 @@ TEST(AppApiGroup, ValidateGetTaskTableWithMultipleEntries)
 	
 	for(unsigned int i = 0; i < loopLimit; i++)
 	{
-		Core::Task newTask("",i,i+1,i+2);
+		Core::Task newTask(std::to_string(i),i,i+1,i+2);
 		db.insertTask(newTask);
 	}
 
@@ -92,6 +92,7 @@ TEST(AppApiGroup, ValidateGetTaskTableWithMultipleEntries)
 	for(unsigned int i = 0; i < loopLimit; i++)
 	{
 		LONGS_EQUAL(i + 1,results[i]["taskId"].asInt());
+		STRCMP_EQUAL(std::to_string(i).c_str(),results[i]["name"].asCString());
 		LONGS_EQUAL((i),results[i]["earliestStartTime"].asInt());
 		LONGS_EQUAL((i + 1),results[i]["latestEndTime"].asInt());
 		LONGS_EQUAL((i + 2),results[i]["duration"].asInt());
@@ -100,6 +101,8 @@ TEST(AppApiGroup, ValidateGetTaskTableWithMultipleEntries)
 
 TEST(AppApiGroup, InsertTask)
 {
+	std::string testName = "test name";
+	params["name"] = testName;
 	params["earliestStartTime"] = 1;
 	params["latestEndTime"] = 2;
 	params["duration"] = 3;
@@ -111,6 +114,7 @@ TEST(AppApiGroup, InsertTask)
 	LONGS_EQUAL(1,result->size());
 	
 	auto task = result->at(1);
+	STRCMP_EQUAL(testName.c_str(),task.getName().c_str());
 	LONGS_EQUAL(1,task.getEarliestStartTime());
 	LONGS_EQUAL(2,task.getLatestEndTime());
 	LONGS_EQUAL(3,task.getDuration());
