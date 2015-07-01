@@ -30,7 +30,7 @@ TEST_GROUP(SchedulerGroup)
         for(unsigned int i = 0; i < count; i++)
         {
             auto newTask =
-                std::make_shared<Task>(i * spacedDuration,i * spacedDuration + duration,duration);
+                std::make_shared<Task>("",i * spacedDuration,i * spacedDuration + duration,duration);
             newTaskList->push_back(newTask);
         }
         
@@ -53,11 +53,11 @@ TEST_GROUP(SchedulerGroup)
         auto newTaskList = std::make_shared<std::vector<std::shared_ptr<Task>>>();
         
         auto firstTask =
-        std::make_shared<Task>(firstEarlyStartTime,firstLatestEndTime,duration);
+        std::make_shared<Task>("",firstEarlyStartTime,firstLatestEndTime,duration);
         newTaskList->push_back(firstTask);
         
         auto lastTask =
-        std::make_shared<Task>(lastEarlyStartTime,lastLatestEndTime,duration);
+        std::make_shared<Task>("",lastEarlyStartTime,lastLatestEndTime,duration);
         newTaskList->push_back(lastTask);
         
         testScheduler->setTaskList(newTaskList);
@@ -73,11 +73,11 @@ TEST_GROUP(SchedulerGroup)
         auto newTaskList = std::make_shared<std::vector<std::shared_ptr<Task>>>();
         
         auto firstTask =
-        std::make_shared<Task>(firstEarlyStartTime,firstLatestEndTime,firstDuration);
+        std::make_shared<Task>("",firstEarlyStartTime,firstLatestEndTime,firstDuration);
         newTaskList->push_back(firstTask);
         
         auto lastTask =
-        std::make_shared<Task>(lastEarlyStartTime,lastLatestEndTime,lastDuration);
+        std::make_shared<Task>("",lastEarlyStartTime,lastLatestEndTime,lastDuration);
         newTaskList->push_back(lastTask);
         
         testScheduler->setTaskList(newTaskList);
@@ -199,15 +199,15 @@ TEST(SchedulerGroup, ScheduleThreeOverlappingEventsWithSplit)
     auto newTaskList = std::make_shared<std::vector<std::shared_ptr<Task>>>();
     
     auto firstTask =
-        std::make_shared<Task>(firstEarlyStartTime,firstLatestEndTime,firstDuration);
+        std::make_shared<Task>("",firstEarlyStartTime,firstLatestEndTime,firstDuration);
     newTaskList->push_back(firstTask);
     
     auto secondTask =
-        std::make_shared<Task>(secondEarlyStartTime,secondLatestEndTime,secondDuration);
+        std::make_shared<Task>("",secondEarlyStartTime,secondLatestEndTime,secondDuration);
     newTaskList->push_back(secondTask);
     
     auto lastTask =
-        std::make_shared<Task>(lastEarlyStartTime,lastLatestEndTime,lastDuration);
+        std::make_shared<Task>("",lastEarlyStartTime,lastLatestEndTime,lastDuration);
     newTaskList->push_back(lastTask);
     
     testScheduler->setTaskList(newTaskList);
@@ -237,11 +237,11 @@ TEST(SchedulerGroup, ScheduleConflictingTasks)
     auto newTaskList = std::make_shared<std::vector<std::shared_ptr<Task>>>();
     
     auto firstTask =
-        std::make_shared<Task>(0,10,10);
+        std::make_shared<Task>("",0,10,10);
     newTaskList->push_back(firstTask);
     
     auto lastTask =
-        std::make_shared<Task>(5,15,10);
+        std::make_shared<Task>("",5,15,10);
     newTaskList->push_back(lastTask);
     
     testScheduler->setTaskList(newTaskList);
@@ -266,15 +266,15 @@ TEST(SchedulerGroup, ScheduleThreeConflictingTasks)
     auto newTaskList = std::make_shared<std::vector<std::shared_ptr<Task>>>();
     
     auto firstTask =
-    std::make_shared<Task>(0,10,duration);
+    std::make_shared<Task>("",0,10,duration);
     newTaskList->push_back(firstTask);
     
     auto secondTask =
-    std::make_shared<Task>(5,15,duration);
+    std::make_shared<Task>("",5,15,duration);
     newTaskList->push_back(secondTask);
     
     auto lastTask =
-    std::make_shared<Task>(10,20,duration);
+    std::make_shared<Task>("",10,20,duration);
     newTaskList->push_back(lastTask);
     
     testScheduler->setTaskList(newTaskList);
@@ -301,7 +301,7 @@ TEST(SchedulerGroup, ScheduleBasicRecurringTask)
     const unsigned int period = 10;
     const unsigned int latestEndTime = (count) * period;
     auto newTaskList = std::make_shared<std::vector<std::shared_ptr<Task>>>();
-    auto newTask = std::make_shared<Task>(0,latestEndTime,duration);
+    auto newTask = std::make_shared<Task>("",0,latestEndTime,duration);
     
     newTask->setRecurranceParameters(period, duration);
     newTaskList->push_back(newTask);

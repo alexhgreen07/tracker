@@ -15,7 +15,7 @@ class Task :
 {
 public:
     Task();
-    Task(unsigned int earliestStartTime,unsigned int latestEndTime,unsigned int duration);
+    Task(std::string name, unsigned int earliestStartTime,unsigned int latestEndTime,unsigned int duration);
     
     std::string getName() const;
     void setName(std::string name);

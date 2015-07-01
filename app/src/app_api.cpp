@@ -56,6 +56,7 @@ void AppApi::GetTasksProcedure::call(const Json::Value& request, Json::Value& re
 		auto & row = response[i];
 		
 		row["taskId"] = (unsigned int)outer_iter->first;
+		row["name"] = task.getName();
 		row["earliestStartTime"] = task.getEarliestStartTime();
 		row["latestEndTime"] = task.getLatestEndTime();
 		row["duration"] = task.getDuration();
@@ -67,6 +68,7 @@ void AppApi::GetTasksProcedure::call(const Json::Value& request, Json::Value& re
 void AppApi::InsertTask::call(const Json::Value& request, Json::Value& response)
 {
 	Core::Task newTask(
+		"",
 	   request["earliestStartTime"].asInt(),
 	   request["latestEndTime"].asInt(),
 	   request["duration"].asInt());
@@ -78,6 +80,7 @@ void AppApi::InsertTask::call(const Json::Value& request, Json::Value& response)
 void AppApi::UpdateTask::call(const Json::Value& request, Json::Value& response)
 {
 	Core::Task updatedTask(
+		"",
 	   request["earliestStartTime"].asInt(),
 	   request["latestEndTime"].asInt(),
 	   request["duration"].asInt());
@@ -119,6 +122,7 @@ void AppApi::GetEvents::call(const Json::Value& request, Json::Value& response)
 	{
 		auto & row = response[i];
 		auto event = parent.scheduler.getScheduledEvent(i);
+		row["name"] = event->getParent()->getName();
 		row["startTime"] = event->getStartTime();
 		row["duration"] = event->getDuration();
 	}
