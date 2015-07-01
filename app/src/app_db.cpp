@@ -110,7 +110,8 @@ void AppDB::updateTask(uint64_t taskId, Core::Task & task)
 {
     std::string updateString = "update tasks set ";
     
-    updateString += "earliestStartTime = " + std::to_string(task.getEarliestStartTime());
+    updateString += "name = '" + task.getName() + "'";
+    updateString += ",earliestStartTime = " + std::to_string(task.getEarliestStartTime());
     updateString += ",latestEndTime = " + std::to_string(task.getLatestEndTime());
     updateString += ",duration = " + std::to_string(task.getDuration());
     

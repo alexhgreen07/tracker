@@ -114,6 +114,19 @@ TEST(AppDBGroup, ValidateTaskDelete)
     LONGS_EQUAL(0, result->size());
 }
 
+TEST(AppDBGroup, ValidateTaskUpdateByName)
+{
+	Core::Task newTask;
+
+	auto taskId = testDB.insertTask(newTask);
+
+	newTask.setName("test name");
+	testDB.updateTask(taskId, newTask);
+
+	auto result = testDB.getTasks();
+	STRCMP_EQUAL(newTask.getName().c_str(),result->at(1).getName().c_str());
+}
+
 TEST(AppDBGroup, ValidateTaskUpdateByEarliestStartTime)
 {
     Core::Task newTask;
