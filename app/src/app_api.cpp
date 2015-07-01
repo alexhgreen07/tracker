@@ -80,10 +80,10 @@ void AppApi::InsertTask::call(const Json::Value& request, Json::Value& response)
 void AppApi::UpdateTask::call(const Json::Value& request, Json::Value& response)
 {
 	Core::Task updatedTask(
-		"",
-	   request["earliestStartTime"].asInt(),
-	   request["latestEndTime"].asInt(),
-	   request["duration"].asInt());
+			request["name"].asString(),
+			request["earliestStartTime"].asInt(),
+			request["latestEndTime"].asInt(),
+			request["duration"].asInt());
 	
 	parent.db.updateTask(request["taskId"].asInt(),updatedTask);
 

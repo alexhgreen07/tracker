@@ -122,10 +122,12 @@ TEST(AppApiGroup, InsertTask)
 
 TEST(AppApiGroup, UpdateTask)
 {
+	std::string testName = "test name";
 	Core::Task newTask("",1,2,1);
 	db.insertTask(newTask);
 	
 	params["taskId"] = 1;
+	params["name"] = testName;
 	params["earliestStartTime"] = 2;
 	params["latestEndTime"] = 4;
 	params["duration"] = 2;
@@ -136,6 +138,7 @@ TEST(AppApiGroup, UpdateTask)
 	
 	auto task = result->at(1);
 	
+	STRCMP_EQUAL(testName.c_str(),task.getName().c_str());
 	LONGS_EQUAL(2,task.getEarliestStartTime());
 	LONGS_EQUAL(4,task.getLatestEndTime());
 	LONGS_EQUAL(2,task.getDuration());
