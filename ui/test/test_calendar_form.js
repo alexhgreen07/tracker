@@ -28,6 +28,22 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 			expect(testApi.getEvents).toHaveBeenCalled();
 		});
 		
+		it("converts server event to calendar event", function() {
+			
+			var startTime = new Date();
+			
+			var dummyEvent = {
+				startTime: startTime.getTime() / 1000,
+				duration: 60*60
+			};
+			
+			var convertedEvent = testForm.convertServerEventToCalendarEvent(dummyEvent);
+			
+			expect(convertedEvent.title).toBe("Event");
+			expect(convertedEvent.start.getTime()).toBe(dummyEvent.startTime * 1000);
+			expect(convertedEvent.end.getTime()).toBe((dummyEvent.startTime + dummyEvent.duration) * 1000);
+		});
+		
 		afterEach(function() {
 			testForm = null;
 			testDiv.innerHTML = "";

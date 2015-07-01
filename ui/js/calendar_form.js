@@ -5,53 +5,29 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 		this.api = api;
 		this.calendarDiv = null;
 		this.calendar = null;
-
-		//TODO: remove dummy events (only for testing)
-		this.dummyEvents = [ {
-			title : 'All Day Event',
-			start : '2015-02-01'
-		}, {
-			title : 'Long Event',
-			start : '2015-02-07',
-			end : '2015-02-10'
-		}, {
-			id : 999,
-			title : 'Repeating Event',
-			start : '2015-02-09T16:00:00'
-		}, {
-			id : 999,
-			title : 'Repeating Event',
-			start : '2015-02-16T16:00:00'
-		}, {
-			title : 'Conference',
-			start : '2015-02-11',
-			end : '2015-02-13'
-		}, {
-			title : 'Meeting',
-			start : '2015-02-12T10:30:00',
-			end : '2015-02-12T12:30:00'
-		}, {
-			title : 'Lunch',
-			start : '2015-02-12T12:00:00'
-		}, {
-			title : 'Meeting',
-			start : '2015-02-12T14:30:00'
-		}, {
-			title : 'Happy Hour',
-			start : '2015-02-12T17:30:00'
-		}, {
-			title : 'Dinner',
-			start : '2015-02-12T20:00:00'
-		}, {
-			title : 'Birthday Party',
-			start : '2015-02-13T07:00:00'
-		} ];
 	}
+	CalendarForm.prototype.convertServerEventToCalendarEvent = function(serverEvent)
+	{
+		return {
+			title: 'Event',
+			start: new Date(serverEvent.startTime * 1000),
+			end: new Date((serverEvent.startTime + serverEvent.duration) * 1000)
+		};
+	};
 	CalendarForm.prototype.refresh = function(success,error)
 	{
 		this.api.getEvents((function(result){
 			
-			//TODO: fill calendar with events
+			var newEvents = [];
+			
+			for(var key in result)
+			{
+				var calendarEvent = this.convertServerEventToCalendarEvent(result[key]);
+				newEvents.push(calendarEvent);
+			}
+			
+			this.calendar.fullCalendar( 'addEventSource', newEvents);
+			
 			success();
 			
 		}).bind(this),error);
@@ -66,11 +42,12 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 				center: 'title',
 				right: 'month,agendaWeek,agendaDay'
 			},
-			defaultDate: '2015-02-12',
 			editable: true,
 			eventLimit: true,
-			events: this.dummyEvents
+			events: []
 		});
+		
+		this.refresh(function(){});
 	};
 	
 	return {
