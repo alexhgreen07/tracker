@@ -34,10 +34,8 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 				this.submitSuccess.bind(this),
 				this.submitError.bind(this));
 	};
-	AddTaskForm.prototype.render = function(parent)
+	AddTaskForm.prototype.renderEntryInputs = function(div)
 	{
-		var div = parent.appendChild(document.createElement("div"));
-		
 		div.appendChild(document.createTextNode("Earliest Start Time"));
 		div.appendChild(document.createElement("br"));
 		this.earliestStartTimeInput = div.appendChild(document.createElement("input"));
@@ -66,22 +64,90 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 		
 		div.appendChild(document.createElement("br"));
 		
+		$(this.earliestStartTimeInput).datetimepicker();
+		$(this.earliestStartTimeInput).datetimepicker('setDate',new Date());
+		$(this.latestEndTimeInput).datetimepicker();
+		$(this.latestEndTimeInput).datetimepicker('setDate',new Date());
+	};
+	AddTaskForm.prototype.render = function(parent)
+	{
+		var div = parent.appendChild(document.createElement("div"));
+		
+		this.renderEntryInputs(div);
+		
 		this.submitButton = div.appendChild(document.createElement("input"));
 		this.submitButton.type = "submit";
 		this.submitButton.value = "Submit";
 		
 		div.appendChild(document.createElement("br"));
 
-		$(this.earliestStartTimeInput).datetimepicker();
-		$(this.earliestStartTimeInput).datetimepicker('setDate',new Date());
-		$(this.latestEndTimeInput).datetimepicker();
-		$(this.latestEndTimeInput).datetimepicker('setDate',new Date());
 		$(this.submitButton).button();
 		$(this.submitButton).click(this.submitClickEvent.bind(this));
 	};
 	
+	//UpdateTaskForm inherits from AddTaskForm
+	UpdateTaskForm.prototype = new AddTaskForm();
+	UpdateTaskForm.prototype.constructor = UpdateTaskForm;
+	function UpdateTaskForm(api)
+	{
+		this.api = api;
+		
+		this.taskIdInput = null;
+		this.deleteButton = null;
+	}
+	UpdateTaskForm.prototype.submitClickEvent = function()
+	{
+		this.api.updateTask(
+				parseInt(this.taskIdInput.value),
+				$(this.earliestStartTimeInput).datetimepicker('getDate').getTime() / 1000,
+				$(this.latestEndTimeInput).datetimepicker('getDate').getTime() / 1000,
+				parseInt(this.durationInput.value),
+				this.submitSuccess.bind(this),
+				this.submitError.bind(this));
+	};
+	UpdateTaskForm.prototype.deleteClickEvent = function()
+	{
+		this.api.removeTask(
+				parseInt(this.taskIdInput.value),
+				this.submitSuccess.bind(this),
+				this.submitError.bind(this));
+	};
+	UpdateTaskForm.prototype.render = function(parent)
+	{
+		var div = parent.appendChild(document.createElement("div"));
+		
+		div.appendChild(document.createTextNode("Task"));
+		div.appendChild(document.createElement("br"));
+		this.taskIdInput = div.appendChild(document.createElement("input"));
+		this.taskIdInput.type = "text";
+		
+		div.appendChild(document.createElement("br"));
+		div.appendChild(document.createElement("br"));
+		
+		this.renderEntryInputs(div);
+		
+		this.submitButton = div.appendChild(document.createElement("input"));
+		this.submitButton.type = "submit";
+		this.submitButton.value = "Submit";
+		
+		div.appendChild(document.createElement("br"));
+		div.appendChild(document.createElement("br"));
+		
+		this.deleteButton = div.appendChild(document.createElement("input"));
+		this.deleteButton.type = "submit";
+		this.deleteButton.value = "Delete";
+		
+		div.appendChild(document.createElement("br"));
+
+		$(this.submitButton).button();
+		$(this.submitButton).click(this.submitClickEvent.bind(this));
+		$(this.deleteButton).button();
+		$(this.deleteButton).click(this.deleteClickEvent.bind(this));
+	};
+	
 	return {
-		AddTaskForm: AddTaskForm
+		AddTaskForm: AddTaskForm,
+		UpdateTaskForm: UpdateTaskForm
 	};
 	
 });
