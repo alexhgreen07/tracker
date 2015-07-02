@@ -232,6 +232,38 @@ TEST(SchedulerGroup, ScheduleThreeOverlappingEventsWithSplit)
     CHECK_NO_OVERLAP();
 }
 
+TEST(SchedulerGroup, ScheduleLongEventWithMultipleOverlaps)
+{
+	auto newTaskList = std::make_shared<std::vector<std::shared_ptr<Task>>>();
+	auto firstTask = std::make_shared<Task>("",0,24,12);
+	auto secondTask = std::make_shared<Task>("",1,2,1);
+	auto lastTask = std::make_shared<Task>("",5,6,1);
+
+	newTaskList->push_back(firstTask);
+	newTaskList->push_back(secondTask);
+	newTaskList->push_back(lastTask);
+
+	testScheduler->setTaskList(newTaskList);
+	testScheduler->schedule();
+
+	LONGS_EQUAL(5,testScheduler->getScheduledEventCount());
+	
+	auto event = testScheduler->getScheduledEvent(0);
+	CHECK_EVENT(firstTask,0,1,event);
+
+	event = testScheduler->getScheduledEvent(1);
+	CHECK_EVENT(secondTask,1,1,event);
+
+	event = testScheduler->getScheduledEvent(2);
+	CHECK_EVENT(firstTask,2,3,event);
+
+	event = testScheduler->getScheduledEvent(3);
+	CHECK_EVENT(lastTask,5,1,event);
+
+	event = testScheduler->getScheduledEvent(4);
+	CHECK_EVENT(firstTask,6,8,event);
+}
+
 TEST(SchedulerGroup, ScheduleConflictingTasks)
 {
     auto newTaskList = std::make_shared<std::vector<std::shared_ptr<Task>>>();
@@ -247,14 +279,12 @@ TEST(SchedulerGroup, ScheduleConflictingTasks)
     testScheduler->setTaskList(newTaskList);
     testScheduler->schedule();
     
-    LONGS_EQUAL(3,testScheduler->getScheduledEventCount());
+    LONGS_EQUAL(2,testScheduler->getScheduledEventCount());
     
     auto event = testScheduler->getScheduledEvent(0);
     CHECK_EVENT(firstTask,0,10,event);
     event = testScheduler->getScheduledEvent(1);
-    CHECK_EVENT(lastTask,10,5,event);
-    event = testScheduler->getScheduledEvent(2);
-    CHECK_EVENT(lastTask,15,5,event);
+    CHECK_EVENT(lastTask,10,10,event);
     
     CHECK_NO_OVERLAP();
 }
@@ -280,15 +310,13 @@ TEST(SchedulerGroup, ScheduleThreeConflictingTasks)
     testScheduler->setTaskList(newTaskList);
     testScheduler->schedule();
     
-    LONGS_EQUAL(4,testScheduler->getScheduledEventCount());
+    LONGS_EQUAL(3,testScheduler->getScheduledEventCount());
     
     auto event = testScheduler->getScheduledEvent(0);
     CHECK_EVENT(firstTask,0,10,event);
     event = testScheduler->getScheduledEvent(1);
-    CHECK_EVENT(secondTask,10,5,event);
+    CHECK_EVENT(secondTask,10,10,event);
     event = testScheduler->getScheduledEvent(2);
-    CHECK_EVENT(secondTask,15,5,event);
-    event = testScheduler->getScheduledEvent(3);
     CHECK_EVENT(lastTask,20,10,event);
     
     CHECK_NO_OVERLAP();
