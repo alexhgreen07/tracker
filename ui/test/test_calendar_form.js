@@ -33,13 +33,14 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 			var startTime = new Date();
 			
 			var dummyEvent = {
+				name: "test task",
 				startTime: startTime.getTime() / 1000,
 				duration: 60*60
 			};
 			
 			var convertedEvent = testForm.convertServerEventToCalendarEvent(dummyEvent);
 			
-			expect(convertedEvent.title).toBe("Event");
+			expect(convertedEvent.title).toBe(dummyEvent.name);
 			expect(convertedEvent.start.getTime()).toBe(dummyEvent.startTime * 1000);
 			expect(convertedEvent.end.getTime()).toBe((dummyEvent.startTime + dummyEvent.duration) * 1000);
 		});

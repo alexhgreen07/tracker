@@ -9,7 +9,7 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 	CalendarForm.prototype.convertServerEventToCalendarEvent = function(serverEvent)
 	{
 		return {
-			title: 'Event',
+			title: serverEvent.name,
 			start: new Date(serverEvent.startTime * 1000),
 			end: new Date((serverEvent.startTime + serverEvent.duration) * 1000)
 		};
