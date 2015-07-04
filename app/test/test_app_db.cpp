@@ -58,6 +58,18 @@ TEST(AppDBGroup, ValidateTaskInsert)
     LONGS_EQUAL(1, result->size());
 }
 
+TEST(AppDBGroup, ValidateTaskInsertByTaskId)
+{
+	Core::Task newTask;
+
+	testDB.insertTask(newTask);
+
+	auto result = testDB.getTasks();
+	auto testTask = result->at(1);
+
+	LONGS_EQUAL(1,testTask.getTaskId());
+}
+
 TEST(AppDBGroup, ValidateTaskInsertByName)
 {
 	Core::Task newTask;

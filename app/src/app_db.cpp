@@ -73,6 +73,7 @@ std::shared_ptr<std::map<uint64_t, Core::Task>> AppDB::getTasks()
         auto row = tasksTable->at(i);
 
         uint64_t taskId = (uint64_t)atoll(row[0].c_str());
+        nextTask.setTaskId(taskId);
         nextTask.setName(row[1]);
         nextTask.setEarliestStartTime(atoi(row[2].c_str()));
         nextTask.setLatestEndTime(atoi(row[3].c_str()));

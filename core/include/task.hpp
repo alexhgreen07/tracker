@@ -17,6 +17,8 @@ public:
     Task();
     Task(std::string name, unsigned int earliestStartTime,unsigned int latestEndTime,unsigned int duration);
     
+    unsigned int getTaskId() const;
+    void setTaskId(unsigned int taskId);
     std::string getName() const;
     void setName(std::string name);
     unsigned int getEarliestStartTime() const;
@@ -45,6 +47,7 @@ protected:
     void setRecurranceParent(const std::shared_ptr<Task> & parent);
     
 private:
+    unsigned int taskId;
     std::string name;
     unsigned int earliestStartTime;
     unsigned int latestEndTime;
