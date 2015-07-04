@@ -16,7 +16,7 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 		$(this.editTaskFormDiv).hide();
 		$(this.calendarDiv).show();
 	};
-	CalendarForm.prototype.eventClick = function()
+	CalendarForm.prototype.eventClick = function(calEvent, jsEvent, view)
 	{
 		$(this.calendarDiv).hide();
 		$(this.editTaskFormDiv).show();
@@ -24,6 +24,7 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 	CalendarForm.prototype.convertServerEventToCalendarEvent = function(serverEvent)
 	{
 		return {
+			serverEvent: serverEvent,
 			title: serverEvent.name,
 			start: new Date(serverEvent.startTime * 1000),
 			end: new Date((serverEvent.startTime + serverEvent.duration) * 1000)
