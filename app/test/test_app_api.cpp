@@ -170,6 +170,7 @@ TEST(AppApiGroup, GetEvents)
 	
 	LONGS_EQUAL(1,results.size());
 	
+	LONGS_EQUAL(1,results[expectedIndex]["taskId"].asInt());
 	STRCMP_EQUAL(newTask.getName().c_str(),results[expectedIndex]["name"].asCString());
 	LONGS_EQUAL(newTask.getEarliestStartTime(),results[expectedIndex]["startTime"].asInt());
 	LONGS_EQUAL(newTask.getDuration(),results[expectedIndex]["duration"].asInt());

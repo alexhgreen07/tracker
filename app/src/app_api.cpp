@@ -122,6 +122,7 @@ void AppApi::GetEvents::call(const Json::Value& request, Json::Value& response)
 	{
 		auto & row = response[i];
 		auto event = parent.scheduler.getScheduledEvent(i);
+		row["taskId"] = event->getParent()->getTaskId();
 		row["name"] = event->getParent()->getName();
 		row["startTime"] = event->getStartTime();
 		row["duration"] = event->getDuration();
