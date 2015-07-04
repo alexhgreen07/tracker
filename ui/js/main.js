@@ -65,8 +65,9 @@ define( [ './api', './calendar_form', './task_forms', 'jquery', 'jqueryui' ], fu
 	function buildApplication()
 	{
 		var api = new libApi.Api();
-		var calendarForm = new libCalendarForm.CalendarForm(api);
 		var addTaskForm = new libTaskForms.AddTaskForm(api);
+		var editTaskForm = new libTaskForms.UpdateTaskForm(api);
+		var calendarForm = new libCalendarForm.CalendarForm(api,editTaskForm);
 		
 		return new Application(api,calendarForm,addTaskForm);
 	};

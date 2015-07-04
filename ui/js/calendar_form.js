@@ -8,7 +8,19 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 		this.calendarDiv = null;
 		this.calendar = null;
 		this.editTaskFormDiv = null;
+		
+		this.backButton = null;
 	}
+	CalendarForm.prototype.backButtonClick = function()
+	{
+		$(this.editTaskFormDiv).hide();
+		$(this.calendarDiv).show();
+	};
+	CalendarForm.prototype.eventClick = function()
+	{
+		$(this.calendarDiv).hide();
+		$(this.editTaskFormDiv).show();
+	};
 	CalendarForm.prototype.convertServerEventToCalendarEvent = function(serverEvent)
 	{
 		return {
@@ -51,11 +63,24 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 			height: 850,
 			editable: false,
 			eventLimit: true,
+			eventClick: this.eventClick.bind(this),
 			events: []
 		});
 		
 		this.editTaskFormDiv = parent.appendChild(document.createElement("div"));
+		$(this.editTaskFormDiv).hide();
+		
 		this.editTaskForm.render(this.editTaskFormDiv);
+		
+		this.editTaskFormDiv.appendChild(document.createElement("br"));
+		this.editTaskFormDiv.appendChild(document.createElement("br"));
+		
+		this.backButton = this.editTaskFormDiv.appendChild(document.createElement("input"));
+		this.backButton.type = "submit";
+		this.backButton.value = "Back";
+		
+		$(this.backButton).button();
+		$(this.backButton).click(this.backButtonClick.bind(this));
 		
 		this.refresh(function(){});
 	};
