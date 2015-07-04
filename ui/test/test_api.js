@@ -138,6 +138,7 @@ define( [ 'js/api' ], function(libapi) {
 					
 					var expectedTable = [
 	                     {
+	                    	 taskId: 1,
 	                    	 name: name,
 	                    	 startTime: earliestStartTime,
 	                    	 duration: duration
