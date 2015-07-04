@@ -1,10 +1,13 @@
 define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 	
-	function CalendarForm(api)
+	function CalendarForm(api,editTaskForm)
 	{
 		this.api = api;
+		this.editTaskForm = editTaskForm;
+		
 		this.calendarDiv = null;
 		this.calendar = null;
+		this.editTaskFormDiv = null;
 	}
 	CalendarForm.prototype.convertServerEventToCalendarEvent = function(serverEvent)
 	{
@@ -50,6 +53,9 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 			eventLimit: true,
 			events: []
 		});
+		
+		this.editTaskFormDiv = parent.appendChild(document.createElement("div"));
+		this.editTaskForm.render(this.editTaskFormDiv);
 		
 		this.refresh(function(){});
 	};

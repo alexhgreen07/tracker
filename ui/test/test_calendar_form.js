@@ -4,13 +4,19 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 		
 		var testDiv = document.getElementById("test_div");
 		var testForm = null;
+		var dummyEditTaskForm = null;
 		var testApi = null;
+		
+		function DummyForm(){}
+		DummyForm.prototype.render = function(parent){};
 		
 		beforeEach(function() {
 			testApi = new libDummyApi.DummyApi();
-			testForm = new libCalendarForm.CalendarForm(testApi);
+			dummyEditTaskForm = new DummyForm();
+			testForm = new libCalendarForm.CalendarForm(testApi,dummyEditTaskForm);
 			
 			spyOn(testApi, 'getEvents');
+			spyOn(dummyEditTaskForm,'render');
 		});
 		
 		it("is allocated", function() {
@@ -20,6 +26,11 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 		it("renders form", function() {
 			testForm.render(testDiv);
 			expect(testDiv.innerHTML).not.toBe("");
+		});
+		
+		it("renders edit task form", function(){
+			testForm.render(testDiv);
+			expect(dummyEditTaskForm.render).toHaveBeenCalled();
 		});
 		
 		it("queries events on refresh", function() {
