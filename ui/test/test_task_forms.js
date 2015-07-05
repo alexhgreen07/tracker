@@ -65,6 +65,8 @@ define( [ 'js/task_forms', 'test/dummy_api' ], function(libTaskForms,libDummyApi
 			
 			spyOn(testApi,'updateTask');
 			spyOn(testApi,'removeTask');
+			
+			testForm.render(testDiv);
 		});
 		
 		it("is allocated", function() {
@@ -72,13 +74,10 @@ define( [ 'js/task_forms', 'test/dummy_api' ], function(libTaskForms,libDummyApi
 		});
 		
 		it("renders form", function() {
-			testForm.render(testDiv);
 			expect(testDiv.innerHTML).not.toBe("");
 		});
 		
 		it("upates a task on submit button click", function() {
-			
-			testForm.render(testDiv);
 			
 			var now = new Date();
 			var dummyTaskId = 1;
@@ -103,8 +102,6 @@ define( [ 'js/task_forms', 'test/dummy_api' ], function(libTaskForms,libDummyApi
 		
 		it("removes a task on submit button click", function() {
 			
-			testForm.render(testDiv);
-			
 			var now = new Date();
 			var dummyTaskId = 1;
 			
@@ -116,6 +113,23 @@ define( [ 'js/task_forms', 'test/dummy_api' ], function(libTaskForms,libDummyApi
 			
 			var callArgs = testApi.removeTask.calls.argsFor(0);
 			expect(callArgs[0]).toBe(dummyTaskId);
+		});
+		
+		it("fills task data on set", function(){
+			
+			var taskId = 1;
+			var name = "test task";
+			var now = new Date();
+			var dummyTime = Math.round(roundTimeToMinute(now) / 1000);
+			var duration = 10;
+			
+			testForm.setTaskData(taskId,name,dummyTime,dummyTime,duration);
+			
+			expect(parseInt(testForm.taskIdInput.value)).toBe(taskId);
+			expect(testForm.nameInput.value).toBe(name);
+			expect($(testForm.earliestStartTimeInput).datetimepicker('getDate').getTime()).toBe(dummyTime * 1000);
+			expect($(testForm.latestEndTimeInput).datetimepicker('getDate').getTime()).toBe(dummyTime * 1000);
+			expect(parseInt(testForm.durationInput.value)).toBe(duration);
 		});
 		
 		afterEach(function() {
