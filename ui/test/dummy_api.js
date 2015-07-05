@@ -2,6 +2,7 @@ define( [ ], function() {
 	
 	function DummyApi()
 	{
+		this.taskLookup = {};
 	}
 	DummyApi.prototype.insertTask = function(name,earliestStartTime,latestEndTime,duration,success,error)
 	{

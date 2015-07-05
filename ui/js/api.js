@@ -6,7 +6,20 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			endPoint : '/',
 			namespace : ''
 		});
+		
+		this.taskLookup = {};
 	}
+	
+	Api.prototype.fillTaskLookup = function(results)
+	{
+		this.taskLookup = {};
+		for(var key in results)
+		{
+			var task = results[key];
+			this.taskLookup[task.taskId] = task;
+		}
+	};
+	
 	Api.prototype.exit = function(success,error)
 	{
 		error = error || function(data){};
@@ -34,8 +47,10 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 		this.rpc.request('getTasks', {
 			params : {},
 			success : function(data){
+				this.fillTaskLookup(data.result);
+				
 				success(data.result);
-			},
+			}.bind(this),
 			error : error
 		});
 	};
