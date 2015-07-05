@@ -1,14 +1,19 @@
-define( [ './api', './calendar_form', 'jquery', 'jqueryui' ], function(libApi,libCalendarForm,$) {
+define( [ './api', './calendar_form', './task_forms', 'jquery', 'jqueryui' ], function(libApi,libCalendarForm,libTaskForms,$) {
 	
-	function Application(api,calendarForm)
+	function Application(api,calendarForm,addTaskForm)
 	{
 		this.api = api;
 		this.calendarForm = calendarForm;
+		this.addTaskForm = addTaskForm;
 		
 		this.tabsId = "tabs";
 		this.tabs = [
              {
             	 title: "Calendar",
+            	 tabDiv: null
+             },
+             {
+            	 title: "Add",
             	 tabDiv: null
              },
              {
@@ -41,21 +46,30 @@ define( [ './api', './calendar_form', 'jquery', 'jqueryui' ], function(libApi,li
 			this.tabs[i].tabDiv.id = this.tabsId + "-" + i;
 		}
 		
-		$(this.tabsDiv).tabs();
-		
-		this.tabs[1].tabDiv.innerHTML = "Under construction..."
-		
-		
+		$(this.tabsDiv).tabs({
+		    activate: (function(event, ui) {
+		    	if(ui.newPanel[0] == this.tabs[0].tabDiv)
+	    		{
+		    		this.calendarForm.refresh(function(){});
+	    		}
+		    }).bind(this)
+		});
 		
 		this.calendarForm.render(this.tabs[0].tabDiv);
+		this.addTaskForm.render(this.tabs[1].tabDiv);
+
+		this.tabs[2].tabDiv.innerHTML = "Under construction..."
+		
 	};
 	
 	function buildApplication()
 	{
 		var api = new libApi.Api();
-		var calendarForm = new libCalendarForm.CalendarForm();
+		var addTaskForm = new libTaskForms.AddTaskForm(api);
+		var editTaskForm = new libTaskForms.UpdateTaskForm(api);
+		var calendarForm = new libCalendarForm.CalendarForm(api,editTaskForm);
 		
-		return new Application(api,calendarForm);
+		return new Application(api,calendarForm,addTaskForm);
 	};
 
 	function main()
@@ -64,7 +78,9 @@ define( [ './api', './calendar_form', 'jquery', 'jqueryui' ], function(libApi,li
 		{
 			$(document).ready(function() {
 				var application = buildApplication();
-				application.render(document.body);
+				application.api.getTasks(function(){
+					application.render(document.body);
+				});
 			});
 		}
 	}

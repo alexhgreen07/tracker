@@ -8,6 +8,8 @@ namespace Core
 {
 
 Task::Task() :
+	taskId(0),
+	name(""),
     earliestStartTime(0),
     latestEndTime(0),
     duration(0),
@@ -16,12 +18,34 @@ Task::Task() :
     recurringLateOffset(0)
 {}
 
-Task::Task(unsigned int earliestStartTime,unsigned int latestEndTime,unsigned int duration) :
+Task::Task(std::string name, unsigned int earliestStartTime,unsigned int latestEndTime,unsigned int duration) :
+	taskId(0),
+	name(name),
     earliestStartTime(earliestStartTime),
     latestEndTime(latestEndTime),
     duration(duration)
 {
 	validateAndCorrectData();
+}
+
+void Task::setTaskId(unsigned int taskId)
+{
+	this->taskId = taskId;
+}
+
+unsigned int Task::getTaskId() const
+{
+	return taskId;
+}
+
+std::string Task::getName() const
+{
+	return name;
+}
+
+void Task::setName(std::string name)
+{
+	this->name = name;
 }
 
 unsigned int Task::getEarliestStartTime() const
@@ -96,7 +120,7 @@ void Task::setRecurranceParameters(unsigned int period, unsigned int lateOffset)
         {
             unsigned int childEarliestStartTime = earliestStartTime + i * recurringPeriod;
             unsigned int childLatestEndTime = earliestStartTime + recurringLateOffset + i * recurringPeriod;
-            auto newChild = std::make_shared<Task>(childEarliestStartTime,childLatestEndTime,duration);
+            auto newChild = std::make_shared<Task>(name,childEarliestStartTime,childLatestEndTime,duration);
             newChild->setRecurranceParent(shared_from_this());
             recurringChildren.push_back(newChild);
         }

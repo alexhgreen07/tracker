@@ -2,20 +2,21 @@ define( [ 'js/api' ], function(libapi) {
 
 	describe("ApiLib Suite", function() {
 		
+		var name = "test name";
 		var earliestStartTime = 1;
-		var latestEndTime = 3;
+		var latestEndTime = 5;
 		var duration = 2;
 		
 		var testApi = null;
 		
 		function insertDummyTask(success,error)
 		{
-			testApi.insertTask(earliestStartTime,latestEndTime,duration,success,error);
+			testApi.insertTask(name,earliestStartTime,latestEndTime,duration,success,error);
 		}
 		
 		function updateDummyTask(success,error)
 		{
-			testApi.updateTask(1,earliestStartTime + 1,latestEndTime + 1,duration + 1,success,error);
+			testApi.updateTask(1,name + 1,earliestStartTime + 1,latestEndTime + 1,duration + 1,success,error);
 		}
 		
 		function removeDummyTask(success,error)
@@ -26,7 +27,11 @@ define( [ 'js/api' ], function(libapi) {
 		beforeEach(function() {
 			testApi = new libapi.Api();
 		});
-
+		
+		it("is allocated", function() {
+			expect(testApi).not.toEqual(null);
+		});
+		
 		it("says hello", function(done) {
 			testApi.sayHello("test",function(result){
 				expect(result).toEqual("Hello: test");
@@ -53,6 +58,7 @@ define( [ 'js/api' ], function(libapi) {
 			var expectedTable = [
                  {
                 	 taskId: 1,
+                	 name: name,
                 	 earliestStartTime: earliestStartTime, 
                 	 latestEndTime: latestEndTime, 
                 	 duration: duration
@@ -64,6 +70,24 @@ define( [ 'js/api' ], function(libapi) {
 					expect(result).toEqual(expectedTable);
 					done();
 				});
+			});
+		});
+		
+		it("stores a lookup of the last task table", function(done) {
+			
+			var expectedLookup = {
+                 1 : {
+                	 taskId: 1,
+                	 name: name,
+                	 earliestStartTime: earliestStartTime, 
+                	 latestEndTime: latestEndTime, 
+                	 duration: duration
+            	 }
+			};
+			
+			insertDummyTask(function(){
+				expect(testApi.taskLookup).toEqual(expectedLookup);
+				done();
 			});
 		});
 		
@@ -82,6 +106,7 @@ define( [ 'js/api' ], function(libapi) {
 			var expectedTable = [
                  {
                 	 taskId: 1,
+                	 name: name + 1,
                 	 earliestStartTime: earliestStartTime + 1, 
                 	 latestEndTime: latestEndTime + 1, 
                 	 duration: duration + 1
@@ -131,6 +156,8 @@ define( [ 'js/api' ], function(libapi) {
 					
 					var expectedTable = [
 	                     {
+	                    	 taskId: 1,
+	                    	 name: name,
 	                    	 startTime: earliestStartTime,
 	                    	 duration: duration
 	                	 }

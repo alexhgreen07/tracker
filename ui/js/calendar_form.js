@@ -1,51 +1,66 @@
 define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 	
-	function CalendarForm()
+	function CalendarForm(api,editTaskForm)
 	{
+		this.api = api;
+		this.editTaskForm = editTaskForm;
+		
 		this.calendarDiv = null;
 		this.calendar = null;
-
-		//TODO: remove dummy events (only for testing)
-		this.dummyEvents = [ {
-			title : 'All Day Event',
-			start : '2015-02-01'
-		}, {
-			title : 'Long Event',
-			start : '2015-02-07',
-			end : '2015-02-10'
-		}, {
-			id : 999,
-			title : 'Repeating Event',
-			start : '2015-02-09T16:00:00'
-		}, {
-			id : 999,
-			title : 'Repeating Event',
-			start : '2015-02-16T16:00:00'
-		}, {
-			title : 'Conference',
-			start : '2015-02-11',
-			end : '2015-02-13'
-		}, {
-			title : 'Meeting',
-			start : '2015-02-12T10:30:00',
-			end : '2015-02-12T12:30:00'
-		}, {
-			title : 'Lunch',
-			start : '2015-02-12T12:00:00'
-		}, {
-			title : 'Meeting',
-			start : '2015-02-12T14:30:00'
-		}, {
-			title : 'Happy Hour',
-			start : '2015-02-12T17:30:00'
-		}, {
-			title : 'Dinner',
-			start : '2015-02-12T20:00:00'
-		}, {
-			title : 'Birthday Party',
-			start : '2015-02-13T07:00:00'
-		} ];
+		this.editTaskFormDiv = null;
+		
+		this.backButton = null;
 	}
+	CalendarForm.prototype.backButtonClick = function()
+	{
+		$(this.editTaskFormDiv).hide();
+		$(this.calendarDiv).show();
+		
+		this.refresh(function(){});
+		
+	};
+	CalendarForm.prototype.eventClick = function(calEvent, jsEvent, view)
+	{
+		$(this.calendarDiv).hide();
+		$(this.editTaskFormDiv).show();
+		
+		var parentTask = this.api.taskLookup[calEvent.serverEvent.taskId];
+		
+		this.editTaskForm.setTaskData(
+				parentTask.taskId,
+				parentTask.name,
+				parentTask.earliestStartTime,
+				parentTask.latestEndTime,
+				parentTask.duration);
+	};
+	CalendarForm.prototype.convertServerEventToCalendarEvent = function(serverEvent)
+	{
+		return {
+			serverEvent: serverEvent,
+			title: serverEvent.name,
+			start: new Date(serverEvent.startTime * 1000),
+			end: new Date((serverEvent.startTime + serverEvent.duration) * 1000)
+		};
+	};
+	CalendarForm.prototype.refresh = function(success,error)
+	{
+		this.api.getEvents((function(result){
+			
+			var newEvents = [];
+			
+			for(var key in result)
+			{
+				var calendarEvent = this.convertServerEventToCalendarEvent(result[key]);
+				newEvents.push(calendarEvent);
+			}
+			
+			this.calendar.fullCalendar( 'removeEvents' );
+			this.calendar.fullCalendar( 'addEventSource', newEvents);
+			
+			success();
+			
+		}).bind(this),error);
+	};
 	CalendarForm.prototype.render = function(parent)
 	{
 		this.calendarDiv = parent.appendChild(document.createElement("div"));
@@ -54,13 +69,33 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 			header: {
 				left: 'prev,next today',
 				center: 'title',
-				right: 'month,agendaWeek,agendaDay'
+				right: 'month,basicWeek,basicDay'
 			},
-			defaultDate: '2015-02-12',
-			editable: true,
+			defaultView: 'basicDay',
+			defaultDate: (new Date()),
+			height: 850,
+			editable: false,
 			eventLimit: true,
-			events: this.dummyEvents
+			eventClick: this.eventClick.bind(this),
+			events: []
 		});
+		
+		this.editTaskFormDiv = parent.appendChild(document.createElement("div"));
+		$(this.editTaskFormDiv).hide();
+		
+		this.editTaskForm.render(this.editTaskFormDiv);
+		
+		this.editTaskFormDiv.appendChild(document.createElement("br"));
+		this.editTaskFormDiv.appendChild(document.createElement("br"));
+		
+		this.backButton = this.editTaskFormDiv.appendChild(document.createElement("input"));
+		this.backButton.type = "submit";
+		this.backButton.value = "Back";
+		
+		$(this.backButton).button();
+		$(this.backButton).click(this.backButtonClick.bind(this));
+		
+		this.refresh(function(){});
 	};
 	
 	return {

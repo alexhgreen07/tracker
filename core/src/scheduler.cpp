@@ -78,9 +78,9 @@ void Scheduler::scheduleOneOffInFreeSpace(std::shared_ptr<std::vector<std::share
         
         newEvent->setParent(currentTask);
         
-        auto spaceIsAvailable = findFreeSpaceBetween(
+        auto spaceIsAvailable = findFreeSpaceAfter(
                                                      nextStartTime,
-                                                     currentTask->getLatestEndTime(),
+                                                     remainingDuration,
                                                      freeStartTime,freeDuration);
         
         if(!spaceIsAvailable)
@@ -107,14 +107,14 @@ void Scheduler::scheduleOneOffInFreeSpace(std::shared_ptr<std::vector<std::share
     
 }
 
-bool Scheduler::findFreeSpaceBetween(unsigned int startTime, unsigned int endTime, unsigned int & freeStartTime, unsigned int & freeDuration)
+bool Scheduler::findFreeSpaceAfter(unsigned int startTime, unsigned int duration, unsigned int & freeStartTime, unsigned int & freeDuration)
 {
     bool found = true;
-    auto newEvent = std::make_shared<Event>(startTime,(endTime - startTime));
+    auto newEvent = std::make_shared<Event>(startTime,duration);
     
     if(scheduledEvents.size() == 0)
     {
-        freeDuration = endTime - startTime;
+        freeDuration = duration;
         freeStartTime = startTime;
     }
     else
@@ -140,33 +140,35 @@ bool Scheduler::findFreeSpaceBetween(unsigned int startTime, unsigned int endTim
                 lowerBound--;
                 auto closestEvent = *lowerBound;
                 
-                if((closestEvent->getEndTime() < endTime) && (closestEvent->getEndTime() >= startTime))
+                if(startTime < closestEvent->getEndTime())
                 {
-                    freeDuration = endTime - closestEvent->getEndTime();
-                    freeStartTime = closestEvent->getEndTime();
+                	freeStartTime = closestEvent->getEndTime();
                 }
                 else
                 {
-                    if(closestEvent->getEndTime() >= startTime)
-                    {
-                        freeStartTime = closestEvent->getEndTime();
-                    }
-                    else
-                    {
-                        freeStartTime = startTime;                        
-                    }
-                    
-                    found = false;
-                    break;
+                	freeStartTime = startTime;
                 }
+
+                freeDuration = duration;
+
             }
             else
             {
-                auto closestEvent = *lowerBound;
-                auto nextClosestEvent = *(++lowerBound);
-                
-                freeDuration = closestEvent->getEndTime() - nextClosestEvent->getStartTime();
-                freeStartTime = closestEvent->getEndTime();
+                auto nextClosestEvent = *(lowerBound);
+				auto closestEvent = *(--lowerBound);
+				
+				if(startTime < closestEvent->getEndTime())
+				{
+					freeStartTime = closestEvent->getEndTime();
+				}
+				else
+				{
+					freeStartTime = startTime;
+				}
+				
+                freeDuration = nextClosestEvent->getStartTime() - freeStartTime;
+
+                ++lowerBound;
             }
             
             lowerBound++;
@@ -175,6 +177,19 @@ bool Scheduler::findFreeSpaceBetween(unsigned int startTime, unsigned int endTim
     }
     
     return found;
+}
+
+bool getFreeSpaceBetweenEvents(std::shared_ptr<Event> & firstEvent, std::shared_ptr<Event> & secondEvent, unsigned int & duration)
+{
+	bool foundSpace = false;
+	duration = firstEvent->getEndTime() - secondEvent->getStartTime();
+
+	if(duration > 0)
+	{
+		foundSpace = true;
+	}
+
+	return foundSpace;
 }
 
 bool Scheduler::compareTasks(const std::shared_ptr<Task> & a, const std::shared_ptr<Task> & b)

@@ -59,7 +59,7 @@ TEST(AppApiGroup, ValidateGetEmptyTaskTable)
 TEST(AppApiGroup, ValidateGetTaskTableWithSingleEntry)
 {
 	Json::Value desiredResult;
-	Core::Task newTask(2,3,4);
+	Core::Task newTask("",2,3,4);
 	unsigned int expectedIndex = 0;
 	db.insertTask(newTask);
 	
@@ -68,6 +68,7 @@ TEST(AppApiGroup, ValidateGetTaskTableWithSingleEntry)
 	LONGS_EQUAL(1,results.size());
 	
 	LONGS_EQUAL(1,results[expectedIndex]["taskId"].asInt());
+	STRCMP_EQUAL(newTask.getName().c_str(),results[expectedIndex]["name"].asCString());
 	LONGS_EQUAL(newTask.getEarliestStartTime(),results[expectedIndex]["earliestStartTime"].asInt());
 	LONGS_EQUAL(newTask.getLatestEndTime(),results[expectedIndex]["latestEndTime"].asInt());
 	LONGS_EQUAL(newTask.getDuration(),results[expectedIndex]["duration"].asInt());
@@ -80,7 +81,7 @@ TEST(AppApiGroup, ValidateGetTaskTableWithMultipleEntries)
 	
 	for(unsigned int i = 0; i < loopLimit; i++)
 	{
-		Core::Task newTask(i,i+1,i+2);
+		Core::Task newTask(std::to_string(i),i,i+1,i+2);
 		db.insertTask(newTask);
 	}
 
@@ -91,6 +92,7 @@ TEST(AppApiGroup, ValidateGetTaskTableWithMultipleEntries)
 	for(unsigned int i = 0; i < loopLimit; i++)
 	{
 		LONGS_EQUAL(i + 1,results[i]["taskId"].asInt());
+		STRCMP_EQUAL(std::to_string(i).c_str(),results[i]["name"].asCString());
 		LONGS_EQUAL((i),results[i]["earliestStartTime"].asInt());
 		LONGS_EQUAL((i + 1),results[i]["latestEndTime"].asInt());
 		LONGS_EQUAL((i + 2),results[i]["duration"].asInt());
@@ -99,6 +101,8 @@ TEST(AppApiGroup, ValidateGetTaskTableWithMultipleEntries)
 
 TEST(AppApiGroup, InsertTask)
 {
+	std::string testName = "test name";
+	params["name"] = testName;
 	params["earliestStartTime"] = 1;
 	params["latestEndTime"] = 2;
 	params["duration"] = 3;
@@ -110,6 +114,7 @@ TEST(AppApiGroup, InsertTask)
 	LONGS_EQUAL(1,result->size());
 	
 	auto task = result->at(1);
+	STRCMP_EQUAL(testName.c_str(),task.getName().c_str());
 	LONGS_EQUAL(1,task.getEarliestStartTime());
 	LONGS_EQUAL(2,task.getLatestEndTime());
 	LONGS_EQUAL(3,task.getDuration());
@@ -117,10 +122,12 @@ TEST(AppApiGroup, InsertTask)
 
 TEST(AppApiGroup, UpdateTask)
 {
-	Core::Task newTask(1,2,1);
+	std::string testName = "test name";
+	Core::Task newTask("",1,2,1);
 	db.insertTask(newTask);
 	
 	params["taskId"] = 1;
+	params["name"] = testName;
 	params["earliestStartTime"] = 2;
 	params["latestEndTime"] = 4;
 	params["duration"] = 2;
@@ -131,6 +138,7 @@ TEST(AppApiGroup, UpdateTask)
 	
 	auto task = result->at(1);
 	
+	STRCMP_EQUAL(testName.c_str(),task.getName().c_str());
 	LONGS_EQUAL(2,task.getEarliestStartTime());
 	LONGS_EQUAL(4,task.getLatestEndTime());
 	LONGS_EQUAL(2,task.getDuration());
@@ -138,7 +146,7 @@ TEST(AppApiGroup, UpdateTask)
 
 TEST(AppApiGroup, RemoveTask)
 {
-	Core::Task newTask(1,1,1);
+	Core::Task newTask("",1,1,1);
 	db.insertTask(newTask);
 	
 	params["taskId"] = 1;
@@ -151,8 +159,10 @@ TEST(AppApiGroup, RemoveTask)
 
 TEST(AppApiGroup, GetEvents)
 {
-	Core::Task newTask(0,1,1);
+	Core::Task newTask("",0,1,1);
 	unsigned int expectedIndex = 0;
+
+	newTask.setName("test name");
 
 	db.insertTask(newTask);
 	
@@ -160,6 +170,8 @@ TEST(AppApiGroup, GetEvents)
 	
 	LONGS_EQUAL(1,results.size());
 	
+	LONGS_EQUAL(1,results[expectedIndex]["taskId"].asInt());
+	STRCMP_EQUAL(newTask.getName().c_str(),results[expectedIndex]["name"].asCString());
 	LONGS_EQUAL(newTask.getEarliestStartTime(),results[expectedIndex]["startTime"].asInt());
 	LONGS_EQUAL(newTask.getDuration(),results[expectedIndex]["duration"].asInt());
 }

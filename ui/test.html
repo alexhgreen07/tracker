@@ -6,6 +6,9 @@
 
 <link rel="shortcut icon" type="image/png" href="externals/jasmine-2.3.4/jasmine_favicon.png">
 <link rel="stylesheet" type="text/css" href="externals/jasmine-2.3.4/jasmine.css">
+
+<link rel="stylesheet" type="text/css" href="css/main.css">
+
 <script>
 var isTest = true;
 </script>
@@ -32,7 +35,9 @@ require.config( {
 
 specs = [ 
     "test/test_api.js",
-    "test/test_main.js"
+    "test/test_main.js",
+    "test/test_calendar_form.js",
+    "test/test_task_forms.js",
 ];
 
 require( [ 'jasmine-boot' ], function() {

@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <vector>
+#include <string>
 
 namespace Tracker
 {
@@ -14,8 +15,12 @@ class Task :
 {
 public:
     Task();
-    Task(unsigned int earliestStartTime,unsigned int latestEndTime,unsigned int duration);
+    Task(std::string name, unsigned int earliestStartTime,unsigned int latestEndTime,unsigned int duration);
     
+    unsigned int getTaskId() const;
+    void setTaskId(unsigned int taskId);
+    std::string getName() const;
+    void setName(std::string name);
     unsigned int getEarliestStartTime() const;
     void setEarliestStartTime(unsigned int earliestStartTime);
     unsigned int getLatestEndTime() const;
@@ -42,6 +47,8 @@ protected:
     void setRecurranceParent(const std::shared_ptr<Task> & parent);
     
 private:
+    unsigned int taskId;
+    std::string name;
     unsigned int earliestStartTime;
     unsigned int latestEndTime;
     unsigned int duration;

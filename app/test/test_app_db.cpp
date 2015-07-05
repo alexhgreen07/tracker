@@ -58,6 +58,29 @@ TEST(AppDBGroup, ValidateTaskInsert)
     LONGS_EQUAL(1, result->size());
 }
 
+TEST(AppDBGroup, ValidateTaskInsertByTaskId)
+{
+	Core::Task newTask;
+
+	testDB.insertTask(newTask);
+
+	auto result = testDB.getTasks();
+	auto testTask = result->at(1);
+
+	LONGS_EQUAL(1,testTask.getTaskId());
+}
+
+TEST(AppDBGroup, ValidateTaskInsertByName)
+{
+	Core::Task newTask;
+
+	newTask.setName("test task");
+	testDB.insertTask(newTask);
+
+	auto result = testDB.getTasks();
+	STRCMP_EQUAL(newTask.getName().c_str(),result->at(1).getName().c_str());
+}
+
 TEST(AppDBGroup, ValidateTaskInsertByEarliestStartTime)
 {
     Core::Task newTask;
@@ -101,6 +124,19 @@ TEST(AppDBGroup, ValidateTaskDelete)
     auto result = testDB.getTasks();
     
     LONGS_EQUAL(0, result->size());
+}
+
+TEST(AppDBGroup, ValidateTaskUpdateByName)
+{
+	Core::Task newTask;
+
+	auto taskId = testDB.insertTask(newTask);
+
+	newTask.setName("test name");
+	testDB.updateTask(taskId, newTask);
+
+	auto result = testDB.getTasks();
+	STRCMP_EQUAL(newTask.getName().c_str(),result->at(1).getName().c_str());
 }
 
 TEST(AppDBGroup, ValidateTaskUpdateByEarliestStartTime)
