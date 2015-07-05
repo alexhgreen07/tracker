@@ -69,9 +69,9 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 			header: {
 				left: 'prev,next today',
 				center: 'title',
-				right: 'month,agendaWeek,agendaDay'
+				right: 'month,basicWeek,basicDay'
 			},
-			defaultView: 'agendaDay',
+			defaultView: 'basicDay',
 			defaultDate: (new Date()),
 			height: 850,
 			editable: false,
