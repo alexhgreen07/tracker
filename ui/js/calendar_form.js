@@ -15,11 +15,23 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 	{
 		$(this.editTaskFormDiv).hide();
 		$(this.calendarDiv).show();
+		
+		this.refresh(function(){});
+		
 	};
 	CalendarForm.prototype.eventClick = function(calEvent, jsEvent, view)
 	{
 		$(this.calendarDiv).hide();
 		$(this.editTaskFormDiv).show();
+		
+		var parentTask = this.api.taskLookup[calEvent.serverEvent.taskId];
+		
+		this.editTaskForm.setTaskData(
+				parentTask.taskId,
+				parentTask.name,
+				parentTask.earliestStartTime,
+				parentTask.latestEndTime,
+				parentTask.duration);
 	};
 	CalendarForm.prototype.convertServerEventToCalendarEvent = function(serverEvent)
 	{

@@ -78,7 +78,9 @@ define( [ './api', './calendar_form', './task_forms', 'jquery', 'jqueryui' ], fu
 		{
 			$(document).ready(function() {
 				var application = buildApplication();
-				application.render(document.body);
+				application.api.getTasks(function(){
+					application.render(document.body);
+				});
 			});
 		}
 	}

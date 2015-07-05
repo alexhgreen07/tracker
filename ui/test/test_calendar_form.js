@@ -2,6 +2,21 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 	
 	describe("CalendarFormLib Suite", function() {
 		
+		var dummyCalEvent = {
+			serverEvent: {
+				taskId: 1
+			}
+		};
+		var dummyTaskLookup = {
+			1: {
+				taskId: 1,
+				name: "test task",
+				earliestStartTime: 0,
+				latestEndTime: 0,
+				duration: 0
+			}
+		};
+		
 		var testDiv = document.getElementById("test_div");
 		var testForm = null;
 		var dummyEditTaskForm = null;
@@ -9,14 +24,18 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 		
 		function DummyForm(){}
 		DummyForm.prototype.render = function(parent){};
+		DummyForm.prototype.setTaskData = function(){};
 		
 		beforeEach(function() {
 			testApi = new libDummyApi.DummyApi();
 			dummyEditTaskForm = new DummyForm();
 			testForm = new libCalendarForm.CalendarForm(testApi,dummyEditTaskForm);
 			
+			testApi.taskLookup = dummyTaskLookup;
+			
 			spyOn(testApi, 'getEvents');
 			spyOn(dummyEditTaskForm,'render');
+			spyOn(dummyEditTaskForm,'setTaskData');
 			
 			testForm.render(testDiv);
 		});
@@ -57,9 +76,14 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 		});
 		
 		it("displays edit task form on event click", function() {
-			testForm.eventClick();
+			testForm.eventClick(dummyCalEvent);
 			expect($(testForm.editTaskFormDiv).is(":visible")).toBe(true);
 			expect($(testForm.calendarDiv).is(":visible")).toBe(false);
+		});
+		
+		it("fills task data in edit task form on event click", function(){
+			testForm.eventClick(dummyCalEvent);
+			expect(dummyEditTaskForm.setTaskData).toHaveBeenCalled();
 		});
 		
 		it("displays calendar on back click", function() {
