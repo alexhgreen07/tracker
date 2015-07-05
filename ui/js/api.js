@@ -65,8 +65,10 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 				duration: duration
 			},
 			success : function(data){
-				success(data.result);
-			},
+				this.getTasks(function(){
+					success(data.result);
+				},error);
+			}.bind(this),
 			error : error
 		});
 	};
@@ -82,8 +84,10 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 				duration: duration
 			},
 			success : function(data){
-				success(data.result);
-			},
+				this.getTasks(function(){
+					success(data.result);
+				},error);
+			}.bind(this),
 			error : error
 		});
 	};
@@ -95,8 +99,10 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 				taskId: taskId
 			},
 			success : function(data){
-				success(data.result);
-			},
+				this.getTasks(function(){
+					success(data.result);
+				},error);
+			}.bind(this),
 			error : error
 		});
 	};

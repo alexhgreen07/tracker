@@ -86,11 +86,8 @@ define( [ 'js/api' ], function(libapi) {
 			};
 			
 			insertDummyTask(function(){
-				testApi.getTasks(function(result){
-					
-					expect(testApi.taskLookup).toEqual(expectedLookup);
-					done();
-				});
+				expect(testApi.taskLookup).toEqual(expectedLookup);
+				done();
 			});
 		});
 		
