@@ -58,7 +58,6 @@ TEST(AppApiGroup, ValidateGetEmptyTaskTable)
 
 TEST(AppApiGroup, ValidateGetTaskTableWithSingleEntry)
 {
-	Json::Value desiredResult;
 	Core::Task newTask("",2,3,4);
 	unsigned int expectedIndex = 0;
 	db.insertTask(newTask);
@@ -76,7 +75,6 @@ TEST(AppApiGroup, ValidateGetTaskTableWithSingleEntry)
 
 TEST(AppApiGroup, ValidateGetTaskTableWithMultipleEntries)
 {
-	Json::Value desiredResult;
 	constexpr unsigned int loopLimit = 5;
 	
 	for(unsigned int i = 0; i < loopLimit; i++)
@@ -96,6 +94,25 @@ TEST(AppApiGroup, ValidateGetTaskTableWithMultipleEntries)
 		LONGS_EQUAL((i),results[i]["earliestStartTime"].asInt());
 		LONGS_EQUAL((i + 1),results[i]["latestEndTime"].asInt());
 		LONGS_EQUAL((i + 2),results[i]["duration"].asInt());
+	}
+}
+
+TEST(AppApiGroup, ValidateGetTaskTableWithRecurringEntries)
+{
+	auto newTask = std::make_shared<Core::Task>("",0,50,5);
+	newTask->setRecurranceParameters(10,0);
+	unsigned int parentTaskId = db.insertTask(*newTask);
+
+	procedures["getTasks"]->call(params,results);
+
+	LONGS_EQUAL(newTask->getRecurringTaskCount() + 1,results.size());
+
+	for(unsigned int i = 0; i < results.size(); i++)
+	{
+		if(results[i]["taskId"].asInt() != parentTaskId)
+		{
+			LONGS_EQUAL(results[i]["recurringParentTaskId"].asInt(),parentTaskId);
+		}
 	}
 }
 

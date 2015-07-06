@@ -55,14 +55,43 @@ void AppApi::GetTasksProcedure::call(const Json::Value& request, Json::Value& re
 		auto task = outer_iter->second;
 		auto & row = response[i];
 		
-		row["taskId"] = (unsigned int)outer_iter->first;
-		row["name"] = task->getName();
-		row["earliestStartTime"] = task->getEarliestStartTime();
-		row["latestEndTime"] = task->getLatestEndTime();
-		row["duration"] = task->getDuration();
+		fillJsonValueFromTask(row,*task);
 		
 		i++;
+
+		unsigned int recurringTaskCount = task->getRecurringTaskCount();
+
+		for(unsigned int j = 0; j < recurringTaskCount; j++)
+		{
+			auto & row = response[i];
+
+			auto child = task->getRecurringChild(j);
+			fillJsonValueFromTask(row,*child);
+
+			i++;
+		}
 	}
+}
+
+void AppApi::GetTasksProcedure::fillJsonValueFromTask(Json::Value& row, const Core::Task & task)
+{
+	row["taskId"] = task.getTaskId();
+	row["name"] = task.getName();
+	row["earliestStartTime"] = task.getEarliestStartTime();
+	row["latestEndTime"] = task.getLatestEndTime();
+	row["duration"] = task.getDuration();
+
+	auto recurringParentPtr = task.getRecurranceParent();
+	if(recurringParentPtr.expired())
+	{
+		row["recurringParentTaskId"] = 0;
+	}
+	else
+	{
+		auto recurringParent = std::shared_ptr<Core::Task>(recurringParentPtr);
+		row["recurringParentTaskId"] = recurringParent->getTaskId();
+	}
+
 }
 	
 void AppApi::InsertTask::call(const Json::Value& request, Json::Value& response)
