@@ -132,7 +132,7 @@ size_t Task::getRecurringTaskCount() const
     return recurringChildren.size();
 }
 
-std::shared_ptr<const Task> Task::getRecurringChild(unsigned int index)
+std::shared_ptr<const Task> Task::getRecurringChild(unsigned int index) const
 {
     std::shared_ptr<const Task> returnValue = recurringChildren[index];
     return returnValue;

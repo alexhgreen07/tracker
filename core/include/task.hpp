@@ -40,7 +40,7 @@ public:
     bool getIsRecurringParent() const;
     void clearRecurranceParameters();
     
-    std::shared_ptr<const Task> getRecurringChild(unsigned int index);
+    std::shared_ptr<const Task> getRecurringChild(unsigned int index) const;
     
 protected:
     void setParent(const std::shared_ptr<Task> & parent);
