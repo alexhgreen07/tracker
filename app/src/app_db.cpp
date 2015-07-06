@@ -54,9 +54,11 @@ void AppDB::createTasksTable()
     std::string createSql = "create table tasks (";
     createSql += "taskId integer primary key asc";
     createSql += ",name text";
-    createSql += ",earliestStartTime real";
-    createSql += ",latestEndTime real";
-    createSql += ",duration real";
+    createSql += ",earliestStartTime integer";
+    createSql += ",latestEndTime integer";
+    createSql += ",duration integer";
+    createSql += ",recurringPeriod integer";
+    createSql += ",recurringLateOffset integer";
     createSql += ",recurringParentTaskId integer";
     createSql += ");";
     
@@ -65,7 +67,7 @@ void AppDB::createTasksTable()
 
 std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Task>>> AppDB::getTasks()
 {
-    auto tasksTable = database.select("select taskId, name, earliestStartTime, latestEndTime, duration from tasks");
+    auto tasksTable = database.select("select taskId, name, earliestStartTime, latestEndTime, duration, recurringPeriod, recurringLateOffset, recurringParentTaskId from tasks");
     auto tasks = std::make_shared<std::map<uint64_t, std::shared_ptr<Core::Task>>>();
     
     for(unsigned int i = 0; i < tasksTable->size(); i++)
@@ -79,6 +81,7 @@ std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Task>>> AppDB::getTasks
         nextTask->setEarliestStartTime(atoi(row[2].c_str()));
         nextTask->setLatestEndTime(atoi(row[3].c_str()));
         nextTask->setDuration(atoi(row[4].c_str()));
+        nextTask->setRecurranceParameters(atoi(row[5].c_str()),atoi(row[6].c_str()));
 		
 		(*tasks)[taskId] = nextTask;
     }
@@ -106,6 +109,10 @@ uint64_t AppDB::insertTask(const Core::Task & newTask, unsigned int recurringPar
     valuesString += "," + std::to_string(newTask.getLatestEndTime());
     columnsString += ",duration";
     valuesString += "," + std::to_string(newTask.getDuration());
+    columnsString += ",recurringPeriod";
+	valuesString += "," + std::to_string(newTask.getRecurringPeriod());
+	columnsString += ",recurringLateOffset";
+	valuesString += "," + std::to_string(newTask.getRecurringLateOffset());
     columnsString += ",recurringParentTaskId";
 	valuesString += "," + std::to_string(recurringParent);
     
@@ -115,17 +122,6 @@ uint64_t AppDB::insertTask(const Core::Task & newTask, unsigned int recurringPar
     
     database.execute(insertString);
     taskInsertedRowId = database.lastInsertRowId();
-
-    if(newTask.getIsRecurringParent())
-    {
-    	unsigned int recurringTaskCount = newTask.getRecurringTaskCount();
-
-    	for(unsigned int i = 0; i < recurringTaskCount; i++)
-    	{
-    		auto recurringChild = newTask.getRecurringChild(i);
-    		insertTask(*recurringChild,taskInsertedRowId);
-    	}
-    }
 
     return taskInsertedRowId;
 }

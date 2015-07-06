@@ -123,10 +123,11 @@ TEST(AppDBGroup, ValidateTaskInsertByRecurringChildrenCount)
 	auto newTask = std::make_shared<Core::Task>("",0,50,5);
 
 	newTask->setRecurranceParameters(10,5);
-	testDB.insertTask(*newTask);
+	unsigned int taskId = testDB.insertTask(*newTask);
 
 	auto result = testDB.getTasks();
-	LONGS_EQUAL(newTask->getRecurringTaskCount() + 1, result->size());
+	auto retrievedTask = result->at(taskId);
+	LONGS_EQUAL(newTask->getRecurringTaskCount(), retrievedTask->getRecurringTaskCount());
 }
 
 TEST(AppDBGroup, ValidateTaskDelete)

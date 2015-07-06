@@ -34,6 +34,8 @@ public:
     void removeChild(unsigned int index);
     std::weak_ptr<Task> getParent();
     
+    unsigned int getRecurringPeriod() const;
+    unsigned int getRecurringLateOffset() const;
     void setRecurranceParameters(unsigned int period, unsigned int lateOffset);
     size_t getRecurringTaskCount() const;
     std::weak_ptr<Task> getRecurranceParent() const;

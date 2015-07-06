@@ -107,6 +107,16 @@ std::weak_ptr<Task> Task::getParent()
     return parent;
 }
 
+unsigned int Task::getRecurringPeriod() const
+{
+	return recurringPeriod;
+}
+
+unsigned int Task::getRecurringLateOffset() const
+{
+	return recurringLateOffset;
+}
+
 void Task::setRecurranceParameters(unsigned int period, unsigned int lateOffset)
 {
     recurringPeriod = period;
