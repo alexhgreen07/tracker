@@ -57,6 +57,7 @@ void AppDB::createTasksTable()
     createSql += ",earliestStartTime real";
     createSql += ",latestEndTime real";
     createSql += ",duration real";
+    createSql += ",recurringParentTaskId integer";
     createSql += ");";
     
     database.execute(createSql);
@@ -87,6 +88,13 @@ std::shared_ptr<std::map<uint64_t, Core::Task>> AppDB::getTasks()
 
 uint64_t AppDB::insertTask(const Core::Task & newTask)
 {
+	return insertTask(newTask,0);
+}
+
+uint64_t AppDB::insertTask(const Core::Task & newTask, unsigned int recurringParent)
+{
+	uint64_t taskInsertedRowId = 0;
+
     std::string columnsString = "";
     std::string valuesString = "";
 	
@@ -98,13 +106,28 @@ uint64_t AppDB::insertTask(const Core::Task & newTask)
     valuesString += "," + std::to_string(newTask.getLatestEndTime());
     columnsString += ",duration";
     valuesString += "," + std::to_string(newTask.getDuration());
+    columnsString += ",recurringParentTaskId";
+	valuesString += "," + std::to_string(recurringParent);
     
     std::string insertString =
     "insert into tasks (" +
     columnsString + ") values(" + valuesString + ")";
     
     database.execute(insertString);
-    return database.lastInsertRowId();
+    taskInsertedRowId = database.lastInsertRowId();
+
+    if(newTask.getIsRecurringParent())
+    {
+    	unsigned int recurringTaskCount = newTask.getRecurringTaskCount();
+
+    	for(unsigned int i = 0; i < recurringTaskCount; i++)
+    	{
+    		auto recurringChild = newTask.getRecurringChild(i);
+    		insertTask(*recurringChild,taskInsertedRowId);
+    	}
+    }
+
+    return taskInsertedRowId;
 }
 
 void AppDB::updateTask(uint64_t taskId, Core::Task & task)

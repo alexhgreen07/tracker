@@ -30,6 +30,8 @@ public:
 private:
     Database::Database & database;
     std::string currentVersion;
+
+    uint64_t insertTask(const Core::Task & newTask, unsigned int recurringParent);
 };
 
 }

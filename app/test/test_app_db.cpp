@@ -114,6 +114,22 @@ TEST(AppDBGroup, ValidateTaskInsertByDuration)
     LONGS_EQUAL(newTask.getDuration(),result->at(1).getDuration());
 }
 
+TEST(AppDBGroup, ValidateTaskInsertByRecurringChildrenCount)
+{
+	unsigned int recurringTaskCount = 5;
+	unsigned int recurrancePeriod = 10;
+	auto newTask = std::make_shared<Core::Task>("",
+			0,
+			recurringTaskCount * recurrancePeriod,
+			5);
+
+	newTask->setRecurranceParameters(recurrancePeriod,5);
+	testDB.insertTask(*newTask);
+
+	auto result = testDB.getTasks();
+	LONGS_EQUAL(recurringTaskCount + 1, result->size());
+}
+
 TEST(AppDBGroup, ValidateTaskDelete)
 {
     Core::Task newTask;
