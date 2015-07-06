@@ -59,7 +59,6 @@ void AppDB::createTasksTable()
     createSql += ",duration integer";
     createSql += ",recurringPeriod integer";
     createSql += ",recurringLateOffset integer";
-    createSql += ",recurringParentTaskId integer";
     createSql += ");";
     
     database.execute(createSql);
@@ -67,7 +66,7 @@ void AppDB::createTasksTable()
 
 std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Task>>> AppDB::getTasks()
 {
-    auto tasksTable = database.select("select taskId, name, earliestStartTime, latestEndTime, duration, recurringPeriod, recurringLateOffset, recurringParentTaskId from tasks");
+    auto tasksTable = database.select("select taskId, name, earliestStartTime, latestEndTime, duration, recurringPeriod, recurringLateOffset from tasks");
     auto tasks = std::make_shared<std::map<uint64_t, std::shared_ptr<Core::Task>>>();
     
     for(unsigned int i = 0; i < tasksTable->size(); i++)
@@ -91,11 +90,6 @@ std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Task>>> AppDB::getTasks
 
 uint64_t AppDB::insertTask(const Core::Task & newTask)
 {
-	return insertTask(newTask,0);
-}
-
-uint64_t AppDB::insertTask(const Core::Task & newTask, unsigned int recurringParent)
-{
 	uint64_t taskInsertedRowId = 0;
 
     std::string columnsString = "";
@@ -113,8 +107,6 @@ uint64_t AppDB::insertTask(const Core::Task & newTask, unsigned int recurringPar
 	valuesString += "," + std::to_string(newTask.getRecurringPeriod());
 	columnsString += ",recurringLateOffset";
 	valuesString += "," + std::to_string(newTask.getRecurringLateOffset());
-    columnsString += ",recurringParentTaskId";
-	valuesString += "," + std::to_string(recurringParent);
     
     std::string insertString =
     "insert into tasks (" +
@@ -134,6 +126,8 @@ void AppDB::updateTask(uint64_t taskId, Core::Task & task)
     updateString += ",earliestStartTime = " + std::to_string(task.getEarliestStartTime());
     updateString += ",latestEndTime = " + std::to_string(task.getLatestEndTime());
     updateString += ",duration = " + std::to_string(task.getDuration());
+    updateString += ",recurringPeriod = " + std::to_string(task.getRecurringPeriod());
+    updateString += ",recurringLateOffset = " + std::to_string(task.getRecurringLateOffset());
     
     updateString += " where taskId = " + std::to_string(taskId);
     
