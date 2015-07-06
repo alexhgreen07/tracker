@@ -7,6 +7,15 @@ define( [ 'js/api' ], function(libapi) {
 		var latestEndTime = 5;
 		var duration = 2;
 		
+		var expectedDummyTask = {
+           	 taskId: 1,
+        	 name: name,
+        	 earliestStartTime: earliestStartTime, 
+        	 latestEndTime: latestEndTime, 
+        	 duration: duration,
+        	 recurringParentTaskId: 0
+    	 };
+		
 		var testApi = null;
 		
 		function insertDummyTask(success,error)
@@ -55,16 +64,7 @@ define( [ 'js/api' ], function(libapi) {
 		
 		it("gets an inserted task in table", function(done) {
 			
-			var expectedTable = [
-                 {
-                	 taskId: 1,
-                	 name: name,
-                	 earliestStartTime: earliestStartTime, 
-                	 latestEndTime: latestEndTime, 
-                	 duration: duration,
-                	 recurringParentTaskId: 0
-            	 }
-			];
+			var expectedTable = [expectedDummyTask];
 			
 			insertDummyTask(function(){
 				testApi.getTasks(function(result){
@@ -77,14 +77,7 @@ define( [ 'js/api' ], function(libapi) {
 		it("stores a lookup of the last task table", function(done) {
 			
 			var expectedLookup = {
-                 1 : {
-                	 taskId: 1,
-                	 name: name,
-                	 earliestStartTime: earliestStartTime, 
-                	 latestEndTime: latestEndTime, 
-                	 duration: duration,
-                	 recurringParentTaskId: 0
-            	 }
+                 1 : expectedDummyTask
 			};
 			
 			insertDummyTask(function(){
