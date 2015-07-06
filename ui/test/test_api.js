@@ -30,7 +30,12 @@ define( [ 'js/api' ], function(libapi) {
 		
 		function updateDummyTask(success,error)
 		{
-			testApi.updateTask(1,name + 1,earliestStartTime + 1,latestEndTime + 1,duration + 1,success,error);
+			testApi.updateTask(1,name + 1,earliestStartTime + 1,latestEndTime + 1,duration + 1,0,0,success,error);
+		}
+		
+		function updateDummyRecurringTask(success,error)
+		{
+			testApi.updateTask(1,name,0,50,5,10,0,success,error);
 		}
 		
 		function removeDummyTask(success,error)
@@ -128,6 +133,18 @@ define( [ 'js/api' ], function(libapi) {
 				updateDummyTask(function(){
 					testApi.getTasks(function(result){
 						expect(result).toEqual(expectedTable);
+						done();
+					});
+				});
+			});
+		});
+		
+		it("checks updated recurring task count in table", function(done) {
+			
+			insertDummyTask(function(){
+				updateDummyRecurringTask(function(){
+					testApi.getTasks(function(result){
+						expect(result.length).toEqual(6);
 						done();
 					});
 				});
