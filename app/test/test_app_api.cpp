@@ -162,9 +162,9 @@ TEST(AppApiGroup, UpdateTask)
 {
 	std::string testName = "test name";
 	Core::Task newTask("",1,2,1);
-	db.insertTask(newTask);
+	unsigned int parentTaskId = db.insertTask(newTask);
 	
-	params["taskId"] = 1;
+	params["taskId"] = parentTaskId;
 	params["name"] = testName;
 	params["earliestStartTime"] = 2;
 	params["latestEndTime"] = 4;
@@ -174,12 +174,38 @@ TEST(AppApiGroup, UpdateTask)
 	
 	auto result = db.getTasks();
 	
-	auto task = result->at(1);
+	auto task = result->at(parentTaskId);
 	
 	STRCMP_EQUAL(testName.c_str(),task->getName().c_str());
 	LONGS_EQUAL(2,task->getEarliestStartTime());
 	LONGS_EQUAL(4,task->getLatestEndTime());
 	LONGS_EQUAL(2,task->getDuration());
+}
+
+TEST(AppApiGroup, UpdateRecurringTask)
+{
+	auto newTask = std::make_shared<Core::Task>("",0,50,5);
+	newTask->setRecurranceParameters(10,0);
+	unsigned int parentTaskId = db.insertTask(*newTask);
+
+	params["taskId"] = parentTaskId;
+	params["name"] = "";
+	params["earliestStartTime"] = 0;
+	params["latestEndTime"] = 40;
+	params["duration"] = 5;
+
+	params["recurringPeriod"] = 5;
+	params["recurringLateOffset"] = 0;
+
+	procedures["updateTask"]->call(params,results);
+
+	auto result = db.getTasks();
+
+	auto task = result->at(parentTaskId);
+
+	LONGS_EQUAL(8,task->getRecurringTaskCount());
+	LONGS_EQUAL(params["recurringPeriod"].asInt(),task->getRecurringPeriod());
+	LONGS_EQUAL(params["recurringLateOffset"].asInt(),task->getRecurringLateOffset());
 }
 
 TEST(AppApiGroup, RemoveTask)
