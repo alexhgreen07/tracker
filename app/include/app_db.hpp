@@ -22,7 +22,7 @@ public:
     void initializeNewDatabase();
     void createVersionTable();
     void createTasksTable();
-    std::shared_ptr<std::map<uint64_t, Core::Task>> getTasks();
+    std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Task>>> getTasks();
     uint64_t insertTask(const Core::Task & newTask);
     void updateTask(uint64_t taskId, Core::Task & task);
     void removeTask(uint64_t taskId);

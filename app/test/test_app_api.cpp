@@ -114,10 +114,10 @@ TEST(AppApiGroup, InsertTask)
 	LONGS_EQUAL(1,result->size());
 	
 	auto task = result->at(1);
-	STRCMP_EQUAL(testName.c_str(),task.getName().c_str());
-	LONGS_EQUAL(1,task.getEarliestStartTime());
-	LONGS_EQUAL(2,task.getLatestEndTime());
-	LONGS_EQUAL(3,task.getDuration());
+	STRCMP_EQUAL(testName.c_str(),task->getName().c_str());
+	LONGS_EQUAL(1,task->getEarliestStartTime());
+	LONGS_EQUAL(2,task->getLatestEndTime());
+	LONGS_EQUAL(3,task->getDuration());
 }
 
 TEST(AppApiGroup, UpdateTask)
@@ -138,10 +138,10 @@ TEST(AppApiGroup, UpdateTask)
 	
 	auto task = result->at(1);
 	
-	STRCMP_EQUAL(testName.c_str(),task.getName().c_str());
-	LONGS_EQUAL(2,task.getEarliestStartTime());
-	LONGS_EQUAL(4,task.getLatestEndTime());
-	LONGS_EQUAL(2,task.getDuration());
+	STRCMP_EQUAL(testName.c_str(),task->getName().c_str());
+	LONGS_EQUAL(2,task->getEarliestStartTime());
+	LONGS_EQUAL(4,task->getLatestEndTime());
+	LONGS_EQUAL(2,task->getDuration());
 }
 
 TEST(AppApiGroup, RemoveTask)

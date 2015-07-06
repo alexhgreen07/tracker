@@ -63,24 +63,24 @@ void AppDB::createTasksTable()
     database.execute(createSql);
 }
 
-std::shared_ptr<std::map<uint64_t, Core::Task>> AppDB::getTasks()
+std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Task>>> AppDB::getTasks()
 {
     auto tasksTable = database.select("select taskId, name, earliestStartTime, latestEndTime, duration from tasks");
-    auto tasks = std::make_shared<std::map<uint64_t, Core::Task>>();
+    auto tasks = std::make_shared<std::map<uint64_t, std::shared_ptr<Core::Task>>>();
     
     for(unsigned int i = 0; i < tasksTable->size(); i++)
     {
-        Core::Task nextTask;
+        auto nextTask = std::make_shared<Core::Task>();
         auto row = tasksTable->at(i);
 
         uint64_t taskId = (uint64_t)atoll(row[0].c_str());
-        nextTask.setTaskId(taskId);
-        nextTask.setName(row[1]);
-        nextTask.setEarliestStartTime(atoi(row[2].c_str()));
-        nextTask.setLatestEndTime(atoi(row[3].c_str()));
-        nextTask.setDuration(atoi(row[4].c_str()));
-        
-        tasks->insert(std::pair<uint64_t, Core::Task>(taskId,nextTask));
+        nextTask->setTaskId(taskId);
+        nextTask->setName(row[1]);
+        nextTask->setEarliestStartTime(atoi(row[2].c_str()));
+        nextTask->setLatestEndTime(atoi(row[3].c_str()));
+        nextTask->setDuration(atoi(row[4].c_str()));
+		
+		(*tasks)[taskId] = nextTask;
     }
     
     return tasks;

@@ -67,7 +67,7 @@ TEST(AppDBGroup, ValidateTaskInsertByTaskId)
 	auto result = testDB.getTasks();
 	auto testTask = result->at(1);
 
-	LONGS_EQUAL(1,testTask.getTaskId());
+	LONGS_EQUAL(1,testTask->getTaskId());
 }
 
 TEST(AppDBGroup, ValidateTaskInsertByName)
@@ -75,10 +75,11 @@ TEST(AppDBGroup, ValidateTaskInsertByName)
 	Core::Task newTask;
 
 	newTask.setName("test task");
-	testDB.insertTask(newTask);
+	unsigned int taskId = testDB.insertTask(newTask);
 
 	auto result = testDB.getTasks();
-	STRCMP_EQUAL(newTask.getName().c_str(),result->at(1).getName().c_str());
+	auto retrievedTask = result->at(taskId);
+	STRCMP_EQUAL(newTask.getName().c_str(),retrievedTask->getName().c_str());
 }
 
 TEST(AppDBGroup, ValidateTaskInsertByEarliestStartTime)
@@ -86,10 +87,11 @@ TEST(AppDBGroup, ValidateTaskInsertByEarliestStartTime)
     Core::Task newTask;
     
     newTask.setEarliestStartTime(2);
-    testDB.insertTask(newTask);
+    unsigned int taskId = testDB.insertTask(newTask);
     
     auto result = testDB.getTasks();
-    LONGS_EQUAL(newTask.getEarliestStartTime(),result->at(1).getEarliestStartTime());
+    auto retrievedTask = result->at(taskId);
+    LONGS_EQUAL(newTask.getEarliestStartTime(),retrievedTask->getEarliestStartTime());
 }
 
 TEST(AppDBGroup, ValidateTaskInsertByLatestEndTime)
@@ -97,10 +99,11 @@ TEST(AppDBGroup, ValidateTaskInsertByLatestEndTime)
     Core::Task newTask;
     
     newTask.setLatestEndTime(2);
-    testDB.insertTask(newTask);
+    unsigned int taskId = testDB.insertTask(newTask);
     
     auto result = testDB.getTasks();
-    LONGS_EQUAL(newTask.getLatestEndTime(),result->at(1).getLatestEndTime());
+    auto retrievedTask = result->at(taskId);
+    LONGS_EQUAL(newTask.getLatestEndTime(),retrievedTask->getLatestEndTime());
 }
 
 TEST(AppDBGroup, ValidateTaskInsertByDuration)
@@ -108,26 +111,22 @@ TEST(AppDBGroup, ValidateTaskInsertByDuration)
     Core::Task newTask;
     
     newTask.setDuration(2);
-    testDB.insertTask(newTask);
+    unsigned int taskId = testDB.insertTask(newTask);
     
     auto result = testDB.getTasks();
-    LONGS_EQUAL(newTask.getDuration(),result->at(1).getDuration());
+    auto retrievedTask = result->at(taskId);
+    LONGS_EQUAL(newTask.getDuration(),retrievedTask->getDuration());
 }
 
 TEST(AppDBGroup, ValidateTaskInsertByRecurringChildrenCount)
 {
-	unsigned int recurringTaskCount = 5;
-	unsigned int recurrancePeriod = 10;
-	auto newTask = std::make_shared<Core::Task>("",
-			0,
-			recurringTaskCount * recurrancePeriod,
-			5);
+	auto newTask = std::make_shared<Core::Task>("",0,50,5);
 
-	newTask->setRecurranceParameters(recurrancePeriod,5);
+	newTask->setRecurranceParameters(10,5);
 	testDB.insertTask(*newTask);
 
 	auto result = testDB.getTasks();
-	LONGS_EQUAL(recurringTaskCount + 1, result->size());
+	LONGS_EQUAL(newTask->getRecurringTaskCount() + 1, result->size());
 }
 
 TEST(AppDBGroup, ValidateTaskDelete)
@@ -152,7 +151,8 @@ TEST(AppDBGroup, ValidateTaskUpdateByName)
 	testDB.updateTask(taskId, newTask);
 
 	auto result = testDB.getTasks();
-	STRCMP_EQUAL(newTask.getName().c_str(),result->at(1).getName().c_str());
+	auto retrievedTask = result->at(taskId);
+	STRCMP_EQUAL(newTask.getName().c_str(),retrievedTask->getName().c_str());
 }
 
 TEST(AppDBGroup, ValidateTaskUpdateByEarliestStartTime)
@@ -165,7 +165,8 @@ TEST(AppDBGroup, ValidateTaskUpdateByEarliestStartTime)
     testDB.updateTask(taskId, newTask);
     
     auto result = testDB.getTasks();
-    LONGS_EQUAL(newTask.getEarliestStartTime(),result->at(1).getEarliestStartTime());
+    auto retrievedTask = result->at(taskId);
+    LONGS_EQUAL(newTask.getEarliestStartTime(),retrievedTask->getEarliestStartTime());
 }
 
 TEST(AppDBGroup, ValidateTaskUpdateByLatestEndTime)
@@ -178,7 +179,8 @@ TEST(AppDBGroup, ValidateTaskUpdateByLatestEndTime)
     testDB.updateTask(taskId, newTask);
     
     auto result = testDB.getTasks();
-    LONGS_EQUAL(newTask.getLatestEndTime(),result->at(1).getLatestEndTime());
+    auto retrievedTask = result->at(taskId);
+    LONGS_EQUAL(newTask.getLatestEndTime(),retrievedTask->getLatestEndTime());
 }
 
 TEST(AppDBGroup, ValidateTaskUpdateByDuration)
@@ -191,5 +193,6 @@ TEST(AppDBGroup, ValidateTaskUpdateByDuration)
     testDB.updateTask(taskId, newTask);
     
     auto result = testDB.getTasks();
-    LONGS_EQUAL(newTask.getDuration(),result->at(1).getDuration());
+    auto retrievedTask = result->at(taskId);
+    LONGS_EQUAL(newTask.getDuration(),retrievedTask->getDuration());
 }

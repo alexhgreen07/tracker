@@ -56,10 +56,10 @@ void AppApi::GetTasksProcedure::call(const Json::Value& request, Json::Value& re
 		auto & row = response[i];
 		
 		row["taskId"] = (unsigned int)outer_iter->first;
-		row["name"] = task.getName();
-		row["earliestStartTime"] = task.getEarliestStartTime();
-		row["latestEndTime"] = task.getLatestEndTime();
-		row["duration"] = task.getDuration();
+		row["name"] = task->getName();
+		row["earliestStartTime"] = task->getEarliestStartTime();
+		row["latestEndTime"] = task->getLatestEndTime();
+		row["duration"] = task->getDuration();
 		
 		i++;
 	}
@@ -106,9 +106,8 @@ void AppApi::GetEvents::call(const Json::Value& request, Json::Value& response)
 	for(auto outer_iter=result->begin(); outer_iter!=result->end(); ++outer_iter) {
 		
 		auto task = outer_iter->second;
-		auto listedTask = std::make_shared<Core::Task>(task);
 		
-		taskList->push_back(listedTask);
+		taskList->push_back(task);
 	}
 	
 	parent.scheduler.setTaskList(taskList);
