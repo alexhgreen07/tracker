@@ -61,7 +61,8 @@ define( [ 'js/api' ], function(libapi) {
                 	 name: name,
                 	 earliestStartTime: earliestStartTime, 
                 	 latestEndTime: latestEndTime, 
-                	 duration: duration
+                	 duration: duration,
+                	 recurringParentTaskId: 0
             	 }
 			];
 			
@@ -81,7 +82,8 @@ define( [ 'js/api' ], function(libapi) {
                 	 name: name,
                 	 earliestStartTime: earliestStartTime, 
                 	 latestEndTime: latestEndTime, 
-                	 duration: duration
+                	 duration: duration,
+                	 recurringParentTaskId: 0
             	 }
 			};
 			
@@ -109,7 +111,8 @@ define( [ 'js/api' ], function(libapi) {
                 	 name: name + 1,
                 	 earliestStartTime: earliestStartTime + 1, 
                 	 latestEndTime: latestEndTime + 1, 
-                	 duration: duration + 1
+                	 duration: duration + 1,
+                	 recurringParentTaskId: 0
             	 }
 			];
 			
