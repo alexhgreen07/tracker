@@ -54,7 +54,7 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			error : error
 		});
 	};
-	Api.prototype.insertTask = function(name,earliestStartTime,latestEndTime,duration,success,error)
+	Api.prototype.insertTask = function(name,earliestStartTime,latestEndTime,duration,recurringPeriod,recurringLateOffset,success,error)
 	{
 		error = error || function(data){};
 		this.rpc.request('insertTask', {
@@ -62,7 +62,9 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 				name: name,
 				earliestStartTime: earliestStartTime,
 				latestEndTime: latestEndTime,
-				duration: duration
+				duration: duration,
+				recurringPeriod: recurringPeriod,
+				recurringLateOffset: recurringLateOffset
 			},
 			success : function(data){
 				this.getTasks(function(){
