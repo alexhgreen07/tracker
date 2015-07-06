@@ -137,6 +137,27 @@ TEST(AppApiGroup, InsertTask)
 	LONGS_EQUAL(3,task->getDuration());
 }
 
+TEST(AppApiGroup, InsertRecurringTask)
+{
+	std::string testName = "test name";
+	params["name"] = testName;
+	params["earliestStartTime"] = 0;
+	params["latestEndTime"] = 50;
+	params["duration"] = 5;
+
+	params["recurringPeriod"] = 10;
+	params["recurringLateOffset"] = 0;
+
+	procedures["insertTask"]->call(params,results);
+
+	auto result = db.getTasks();
+
+	auto task = result->at(1);
+	LONGS_EQUAL(5,task->getRecurringTaskCount());
+	LONGS_EQUAL(params["recurringPeriod"].asInt(),task->getRecurringPeriod());
+	LONGS_EQUAL(params["recurringLateOffset"].asInt(),task->getRecurringLateOffset());
+}
+
 TEST(AppApiGroup, UpdateTask)
 {
 	std::string testName = "test name";

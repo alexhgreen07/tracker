@@ -96,12 +96,14 @@ void AppApi::GetTasksProcedure::fillJsonValueFromTask(Json::Value& row, const Co
 	
 void AppApi::InsertTask::call(const Json::Value& request, Json::Value& response)
 {
-	Core::Task newTask(
+
+	auto newTask = std::make_shared<Core::Task>(
 			request["name"].asString(),
 			request["earliestStartTime"].asInt(),
 			request["latestEndTime"].asInt(),
 			request["duration"].asInt());
-	parent.db.insertTask(newTask);
+	newTask->setRecurranceParameters(request["recurringPeriod"].asInt(),request["recurringLateOffset"].asInt());
+	parent.db.insertTask(*newTask);
 
 	response = true;
 }
