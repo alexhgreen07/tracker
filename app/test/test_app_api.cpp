@@ -143,9 +143,9 @@ TEST(AppApiGroup, InsertTask)
 {
 	std::string testName = "test name";
 	params["name"] = testName;
-	params["earliestStartTime"] = 1;
-	params["latestEndTime"] = 2;
-	params["duration"] = 3;
+	params["earliestStartTime"] = "1";
+	params["latestEndTime"] = "2";
+	params["duration"] = "3";
 	
 	procedures["insertTask"]->call(params,results);
 	
@@ -164,12 +164,12 @@ TEST(AppApiGroup, InsertRecurringTask)
 {
 	std::string testName = "test name";
 	params["name"] = testName;
-	params["earliestStartTime"] = 0;
-	params["latestEndTime"] = 50;
-	params["duration"] = 5;
+	params["earliestStartTime"] = "0";
+	params["latestEndTime"] = "50";
+	params["duration"] = "5";
 
-	params["recurringPeriod"] = 10;
-	params["recurringLateOffset"] = 0;
+	params["recurringPeriod"] = "10";
+	params["recurringLateOffset"] = "0";
 
 	procedures["insertTask"]->call(params,results);
 
@@ -177,8 +177,8 @@ TEST(AppApiGroup, InsertRecurringTask)
 
 	auto task = result->at(1);
 	LONGS_EQUAL(5,task->getRecurringTaskCount());
-	LONGS_EQUAL(params["recurringPeriod"].asInt(),task->getRecurringPeriod());
-	LONGS_EQUAL(params["recurringLateOffset"].asInt(),task->getRecurringLateOffset());
+	LONGS_EQUAL(10,task->getRecurringPeriod());
+	LONGS_EQUAL(0,task->getRecurringLateOffset());
 }
 
 TEST(AppApiGroup, UpdateTask)

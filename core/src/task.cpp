@@ -18,7 +18,7 @@ Task::Task() :
     recurringLateOffset(0)
 {}
 
-Task::Task(std::string name, unsigned int earliestStartTime,unsigned int latestEndTime,unsigned int duration) :
+Task::Task(std::string name, uint64_t earliestStartTime, uint64_t latestEndTime, uint64_t duration) :
 	taskId(0),
 	name(name),
     earliestStartTime(earliestStartTime),

@@ -1,5 +1,7 @@
 #include "app_api.hpp"
 
+#include <sstream>
+
 namespace Tracker
 {
 namespace Application
@@ -96,13 +98,33 @@ void AppApi::GetTasksProcedure::fillJsonValueFromTask(Json::Value& row, const Co
 	
 void AppApi::InsertTask::call(const Json::Value& request, Json::Value& response)
 {
+	uint64_t earliestStartTime;
+	uint64_t latestEndTime;
+	uint64_t duration;
+	uint64_t recurringPeriod;
+	uint64_t recurringLateOffset;
+
+	std::istringstream input_stream(request["earliestStartTime"].asString());
+	input_stream >> earliestStartTime;
+
+	input_stream = std::istringstream(request["latestEndTime"].asString());
+	input_stream >> latestEndTime;
+
+	input_stream = std::istringstream(request["duration"].asString());
+	input_stream >> duration;
+
+	input_stream = std::istringstream(request["recurringPeriod"].asString());
+	input_stream >> recurringPeriod;
+
+	input_stream = std::istringstream(request["recurringLateOffset"].asString());
+	input_stream >> recurringLateOffset;
 
 	auto newTask = std::make_shared<Core::Task>(
 			request["name"].asString(),
-			request["earliestStartTime"].asInt(),
-			request["latestEndTime"].asInt(),
-			request["duration"].asInt());
-	newTask->setRecurranceParameters(request["recurringPeriod"].asInt(),request["recurringLateOffset"].asInt());
+			earliestStartTime,
+			latestEndTime,
+			duration);
+	newTask->setRecurranceParameters(recurringPeriod,recurringLateOffset);
 	parent.db.insertTask(*newTask);
 
 	response = true;
