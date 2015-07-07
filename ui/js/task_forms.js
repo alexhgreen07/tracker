@@ -8,6 +8,8 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 		this.earliestStartTimeInput = null;
 		this.latestEndTimeInput = null;
 		this.durationInput = null;
+		this.recurrancePeriodInput = null;
+		this.recurranceLateOffsetInput = null;
 		this.resultsDiv = null;
 		
 		this.submitButton = null;
@@ -33,6 +35,8 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 				$(this.earliestStartTimeInput).datetimepicker('getDate').getTime() / 1000,
 				$(this.latestEndTimeInput).datetimepicker('getDate').getTime() / 1000,
 				parseInt(this.durationInput.value),
+				parseInt(this.recurrancePeriodInput.value),
+				parseInt(this.recurranceLateOffsetInput.value),
 				this.submitSuccess.bind(this),
 				this.submitError.bind(this));
 	};
@@ -67,6 +71,24 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 		this.durationInput = div.appendChild(document.createElement("input"));
 		this.durationInput.type = "text";
 		this.durationInput.value = 0;
+		
+		div.appendChild(document.createElement("br"));
+		div.appendChild(document.createElement("br"));
+		
+		div.appendChild(document.createTextNode("Recurrance Period"));
+		div.appendChild(document.createElement("br"));
+		this.recurrancePeriodInput = div.appendChild(document.createElement("input"));
+		this.recurrancePeriodInput.type = "text";
+		this.recurrancePeriodInput.value = 0;
+		
+		div.appendChild(document.createElement("br"));
+		div.appendChild(document.createElement("br"));
+		
+		div.appendChild(document.createTextNode("Recurrance Late Offset"));
+		div.appendChild(document.createElement("br"));
+		this.recurranceLateOffsetInput = div.appendChild(document.createElement("input"));
+		this.recurranceLateOffsetInput.type = "text";
+		this.recurranceLateOffsetInput.value = 0;
 		
 		div.appendChild(document.createElement("br"));
 		
