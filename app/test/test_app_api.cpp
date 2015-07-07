@@ -1,5 +1,6 @@
 #include <string>
 #include <iostream>
+#include <sstream>
 
 #include <CppUTest/TestHarness.h>
 
@@ -68,9 +69,20 @@ TEST(AppApiGroup, ValidateGetTaskTableWithSingleEntry)
 	
 	LONGS_EQUAL(1,results[expectedIndex]["taskId"].asInt());
 	STRCMP_EQUAL(newTask.getName().c_str(),results[expectedIndex]["name"].asCString());
-	LONGS_EQUAL(newTask.getEarliestStartTime(),results[expectedIndex]["earliestStartTime"].asInt());
-	LONGS_EQUAL(newTask.getLatestEndTime(),results[expectedIndex]["latestEndTime"].asInt());
-	LONGS_EQUAL(newTask.getDuration(),results[expectedIndex]["duration"].asInt());
+
+	std::istringstream input_stream(results[expectedIndex]["earliestStartTime"].asString());
+	uint64_t value;
+
+	input_stream >> value;
+	LONGS_EQUAL(newTask.getEarliestStartTime(),value);
+
+	input_stream = std::istringstream(results[expectedIndex]["latestEndTime"].asString());
+	input_stream >> value;
+	LONGS_EQUAL(newTask.getLatestEndTime(),value);
+
+	input_stream = std::istringstream(results[expectedIndex]["duration"].asString());
+	input_stream >> value;
+	LONGS_EQUAL(newTask.getDuration(),value);
 }
 
 TEST(AppApiGroup, ValidateGetTaskTableWithMultipleEntries)
@@ -91,9 +103,20 @@ TEST(AppApiGroup, ValidateGetTaskTableWithMultipleEntries)
 	{
 		LONGS_EQUAL(i + 1,results[i]["taskId"].asInt());
 		STRCMP_EQUAL(std::to_string(i).c_str(),results[i]["name"].asCString());
-		LONGS_EQUAL((i),results[i]["earliestStartTime"].asInt());
-		LONGS_EQUAL((i + 1),results[i]["latestEndTime"].asInt());
-		LONGS_EQUAL((i + 2),results[i]["duration"].asInt());
+		
+		std::istringstream input_stream(results[i]["earliestStartTime"].asString());
+		uint64_t value;
+
+		input_stream >> value;
+		LONGS_EQUAL((i),value);
+		
+		input_stream = std::istringstream(results[i]["latestEndTime"].asString());
+		input_stream >> value;
+		LONGS_EQUAL((i + 1),value);
+
+		input_stream = std::istringstream(results[i]["duration"].asString());
+		input_stream >> value;
+		LONGS_EQUAL((i + 2),value);
 	}
 }
 

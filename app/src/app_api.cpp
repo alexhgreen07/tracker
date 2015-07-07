@@ -77,9 +77,9 @@ void AppApi::GetTasksProcedure::fillJsonValueFromTask(Json::Value& row, const Co
 {
 	row["taskId"] = task.getTaskId();
 	row["name"] = task.getName();
-	row["earliestStartTime"] = task.getEarliestStartTime();
-	row["latestEndTime"] = task.getLatestEndTime();
-	row["duration"] = task.getDuration();
+	row["earliestStartTime"] = std::to_string(task.getEarliestStartTime());
+	row["latestEndTime"] = std::to_string(task.getLatestEndTime());
+	row["duration"] = std::to_string(task.getDuration());
 
 	auto recurringParentPtr = task.getRecurranceParent();
 	if(recurringParentPtr.expired())

@@ -1,5 +1,7 @@
 #include "app_db.hpp"
 
+#include <sstream>
+
 namespace Tracker
 {
 namespace Application
@@ -74,13 +76,33 @@ std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Task>>> AppDB::getTasks
         auto nextTask = std::make_shared<Core::Task>();
         auto row = tasksTable->at(i);
 
-        uint64_t taskId = (uint64_t)atoll(row[0].c_str());
+        uint64_t value;
+        uint64_t taskId;
+
+        std::istringstream input_stream(row[0]);
+        input_stream >> taskId;
         nextTask->setTaskId(taskId);
+
         nextTask->setName(row[1]);
-        nextTask->setEarliestStartTime(atoi(row[2].c_str()));
-        nextTask->setLatestEndTime(atoi(row[3].c_str()));
-        nextTask->setDuration(atoi(row[4].c_str()));
-        nextTask->setRecurranceParameters(atoi(row[5].c_str()),atoi(row[6].c_str()));
+        input_stream = std::istringstream(row[2]);
+        input_stream >> value;
+        nextTask->setEarliestStartTime(value);
+
+        input_stream = std::istringstream(row[3]);
+        input_stream >> value;
+        nextTask->setLatestEndTime(value);
+
+        input_stream = std::istringstream(row[4]);
+		input_stream >> value;
+        nextTask->setDuration(value);
+
+        uint64_t recurrancePeriod;
+        uint64_t recurranceLateOffset;
+        input_stream = std::istringstream(row[5]);
+		input_stream >> recurrancePeriod;
+		input_stream = std::istringstream(row[6]);
+		input_stream >> recurranceLateOffset;
+        nextTask->setRecurranceParameters(recurrancePeriod,recurranceLateOffset);
 		
 		(*tasks)[taskId] = nextTask;
     }
