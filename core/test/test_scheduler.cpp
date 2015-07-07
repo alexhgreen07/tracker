@@ -344,6 +344,6 @@ TEST(SchedulerGroup, ScheduleBasicRecurringTask)
         auto taskToCheck = newTask->getRecurringChild(i);
         
         auto event = testScheduler->getScheduledEvent(i);
-        CHECK_EVENT(taskToCheck,taskToCheck->getEarliestStartTime(),taskToCheck->getDuration(),event);
+        CHECK_EVENT(newTask,taskToCheck->getEarliestStartTime(),taskToCheck->getDuration(),event);
     }
 }
