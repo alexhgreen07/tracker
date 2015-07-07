@@ -20,6 +20,17 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 		}
 	};
 	
+	Api.prototype.converTaskDateStringsToInts = function(results)
+	{
+		for(var key in results)
+		{
+			var task = results[key];
+			task.duration = parseInt(task.duration);
+			task.earliestStartTime = parseInt(task.earliestStartTime);
+			task.latestEndTime = parseInt(task.latestEndTime);
+		}
+	}
+	
 	Api.prototype.exit = function(success,error)
 	{
 		error = error || function(data){};
@@ -47,6 +58,7 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 		this.rpc.request('getTasks', {
 			params : {},
 			success : function(data){
+				this.converTaskDateStringsToInts(data.result);
 				this.fillTaskLookup(data.result);
 				
 				success(data.result);
