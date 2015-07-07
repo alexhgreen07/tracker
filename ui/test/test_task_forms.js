@@ -90,7 +90,9 @@ define( [ 'js/task_forms', 'test/dummy_api' ], function(libTaskForms,libDummyApi
 			testForm.nameInput.value = "test name";
 			$(testForm.earliestStartTimeInput).datetimepicker('setDate', now );
 			$(testForm.latestEndTimeInput).datetimepicker('setDate', now );
-			testForm.durationInput.value = 0;
+			testForm.durationInput.value = 1;
+			testForm.recurrancePeriodInput.value = 2;
+			testForm.recurranceLateOffsetInput.value = 3;
 			
 			testForm.submitButton.click();
 			
@@ -101,7 +103,9 @@ define( [ 'js/task_forms', 'test/dummy_api' ], function(libTaskForms,libDummyApi
 			expect(callArgs[1]).toBe(testForm.nameInput.value);
 			expect(callArgs[2]).toBe(expectedTime);
 			expect(callArgs[3]).toBe(expectedTime);
-			expect(callArgs[4]).toBe(0);
+			expect(callArgs[4]).toBe(1);
+			expect(callArgs[5]).toBe(2);
+			expect(callArgs[6]).toBe(3);
 		});
 		
 		it("removes a task on submit button click", function() {

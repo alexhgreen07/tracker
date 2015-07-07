@@ -146,6 +146,8 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 				$(this.earliestStartTimeInput).datetimepicker('getDate').getTime() / 1000,
 				$(this.latestEndTimeInput).datetimepicker('getDate').getTime() / 1000,
 				parseInt(this.durationInput.value),
+				parseInt(this.recurrancePeriodInput.value),
+				parseInt(this.recurranceLateOffsetInput.value),
 				this.submitSuccess.bind(this),
 				this.submitError.bind(this));
 	};
