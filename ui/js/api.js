@@ -93,11 +93,11 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			params : {
 				taskId: taskId,
 				name: name,
-				earliestStartTime: earliestStartTime,
-				latestEndTime: latestEndTime,
-				duration: duration,
-				recurringPeriod: recurringPeriod,
-				recurringLateOffset: recurringLateOffset
+				earliestStartTime: earliestStartTime.toString(),
+				latestEndTime: latestEndTime.toString(),
+				duration: duration.toString(),
+				recurringPeriod: recurringPeriod.toString(),
+				recurringLateOffset: recurringLateOffset.toString()
 			},
 			success : function(data){
 				this.getTasks(function(){
