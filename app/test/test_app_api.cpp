@@ -189,9 +189,9 @@ TEST(AppApiGroup, UpdateTask)
 	
 	params["taskId"] = parentTaskId;
 	params["name"] = testName;
-	params["earliestStartTime"] = 2;
-	params["latestEndTime"] = 4;
-	params["duration"] = 2;
+	params["earliestStartTime"] = "2";
+	params["latestEndTime"] = "4";
+	params["duration"] = "2";
 	
 	procedures["updateTask"]->call(params,results);
 	
@@ -213,12 +213,12 @@ TEST(AppApiGroup, UpdateRecurringTask)
 
 	params["taskId"] = parentTaskId;
 	params["name"] = "";
-	params["earliestStartTime"] = 0;
-	params["latestEndTime"] = 40;
-	params["duration"] = 5;
+	params["earliestStartTime"] = "0";
+	params["latestEndTime"] = "40";
+	params["duration"] = "5";
 
-	params["recurringPeriod"] = 5;
-	params["recurringLateOffset"] = 0;
+	params["recurringPeriod"] = "5";
+	params["recurringLateOffset"] = "0";
 
 	procedures["updateTask"]->call(params,results);
 
@@ -227,8 +227,8 @@ TEST(AppApiGroup, UpdateRecurringTask)
 	auto task = result->at(parentTaskId);
 
 	LONGS_EQUAL(8,task->getRecurringTaskCount());
-	LONGS_EQUAL(params["recurringPeriod"].asInt(),task->getRecurringPeriod());
-	LONGS_EQUAL(params["recurringLateOffset"].asInt(),task->getRecurringLateOffset());
+	LONGS_EQUAL(5,task->getRecurringPeriod());
+	LONGS_EQUAL(0,task->getRecurringLateOffset());
 }
 
 TEST(AppApiGroup, RemoveTask)

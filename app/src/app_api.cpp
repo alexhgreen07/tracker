@@ -132,12 +132,33 @@ void AppApi::InsertTask::call(const Json::Value& request, Json::Value& response)
 	
 void AppApi::UpdateTask::call(const Json::Value& request, Json::Value& response)
 {
+	uint64_t earliestStartTime;
+	uint64_t latestEndTime;
+	uint64_t duration;
+	uint64_t recurringPeriod;
+	uint64_t recurringLateOffset;
+
+	std::istringstream input_stream(request["earliestStartTime"].asString());
+	input_stream >> earliestStartTime;
+
+	input_stream = std::istringstream(request["latestEndTime"].asString());
+	input_stream >> latestEndTime;
+
+	input_stream = std::istringstream(request["duration"].asString());
+	input_stream >> duration;
+
+	input_stream = std::istringstream(request["recurringPeriod"].asString());
+	input_stream >> recurringPeriod;
+
+	input_stream = std::istringstream(request["recurringLateOffset"].asString());
+	input_stream >> recurringLateOffset;
+
 	auto updatedTask = std::make_shared<Core::Task>(
 				request["name"].asString(),
-				request["earliestStartTime"].asInt(),
-				request["latestEndTime"].asInt(),
-				request["duration"].asInt());
-	updatedTask->setRecurranceParameters(request["recurringPeriod"].asInt(),request["recurringLateOffset"].asInt());
+				earliestStartTime,
+				latestEndTime,
+				duration);
+	updatedTask->setRecurranceParameters(recurringPeriod,recurringLateOffset);
 	
 	parent.db.updateTask(request["taskId"].asInt(),*updatedTask);
 
