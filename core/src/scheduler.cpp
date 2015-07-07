@@ -76,7 +76,15 @@ void Scheduler::scheduleOneOffInFreeSpace(std::shared_ptr<std::vector<std::share
         unsigned int freeStartTime = 0;
         unsigned int freeDuration = 0;
         
-        newEvent->setParent(currentTask);
+        if(currentTask->getRecurranceParent().expired())
+        {
+        	newEvent->setParent(currentTask);
+        }
+        else
+        {
+        	auto parent = std::shared_ptr<Task>(currentTask->getRecurranceParent());
+        	newEvent->setParent(parent);
+        }
         
         auto spaceIsAvailable = findFreeSpaceAfter(
                                                      nextStartTime,
