@@ -60,18 +60,6 @@ void AppApi::GetTasksProcedure::call(const Json::Value& request, Json::Value& re
 		fillJsonValueFromTask(row,*task);
 		
 		i++;
-
-		unsigned int recurringTaskCount = task->getRecurringTaskCount();
-
-		for(unsigned int j = 0; j < recurringTaskCount; j++)
-		{
-			auto & row = response[i];
-
-			auto child = task->getRecurringChild(j);
-			fillJsonValueFromTask(row,*child);
-
-			i++;
-		}
 	}
 }
 
@@ -82,17 +70,8 @@ void AppApi::GetTasksProcedure::fillJsonValueFromTask(Json::Value& row, const Co
 	row["earliestStartTime"] = std::to_string(task.getEarliestStartTime());
 	row["latestEndTime"] = std::to_string(task.getLatestEndTime());
 	row["duration"] = std::to_string(task.getDuration());
-
-	auto recurringParentPtr = task.getRecurranceParent();
-	if(recurringParentPtr.expired())
-	{
-		row["recurringParentTaskId"] = 0;
-	}
-	else
-	{
-		auto recurringParent = std::shared_ptr<Core::Task>(recurringParentPtr);
-		row["recurringParentTaskId"] = recurringParent->getTaskId();
-	}
+	row["recurringPeriod"] = std::to_string(task.getRecurringPeriod());
+	row["recurringLateOffset"] = std::to_string(task.getRecurringLateOffset());
 
 }
 	

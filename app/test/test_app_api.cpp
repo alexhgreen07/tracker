@@ -59,30 +59,40 @@ TEST(AppApiGroup, ValidateGetEmptyTaskTable)
 
 TEST(AppApiGroup, ValidateGetTaskTableWithSingleEntry)
 {
-	Core::Task newTask("",2,3,4);
+	auto newTask = std::make_shared<Core::Task>("",2,3,4);
+	newTask->setRecurranceParameters(10,1);
 	unsigned int expectedIndex = 0;
-	db.insertTask(newTask);
 	
+	unsigned int taskId = db.insertTask(*newTask);
+
 	procedures["getTasks"]->call(params,results);
 	
 	LONGS_EQUAL(1,results.size());
 	
-	LONGS_EQUAL(1,results[expectedIndex]["taskId"].asInt());
-	STRCMP_EQUAL(newTask.getName().c_str(),results[expectedIndex]["name"].asCString());
+	LONGS_EQUAL(taskId,results[expectedIndex]["taskId"].asInt());
+	STRCMP_EQUAL(newTask->getName().c_str(),results[expectedIndex]["name"].asCString());
 
 	std::istringstream input_stream(results[expectedIndex]["earliestStartTime"].asString());
 	uint64_t value;
 
 	input_stream >> value;
-	LONGS_EQUAL(newTask.getEarliestStartTime(),value);
+	LONGS_EQUAL(newTask->getEarliestStartTime(),value);
 
 	input_stream = std::istringstream(results[expectedIndex]["latestEndTime"].asString());
 	input_stream >> value;
-	LONGS_EQUAL(newTask.getLatestEndTime(),value);
+	LONGS_EQUAL(newTask->getLatestEndTime(),value);
 
 	input_stream = std::istringstream(results[expectedIndex]["duration"].asString());
 	input_stream >> value;
-	LONGS_EQUAL(newTask.getDuration(),value);
+	LONGS_EQUAL(newTask->getDuration(),value);
+
+	input_stream = std::istringstream(results[expectedIndex]["recurringPeriod"].asString());
+	input_stream >> value;
+	LONGS_EQUAL(newTask->getRecurringPeriod(),value);
+
+	input_stream = std::istringstream(results[expectedIndex]["recurringLateOffset"].asString());
+	input_stream >> value;
+	LONGS_EQUAL(newTask->getRecurringLateOffset(),value);
 }
 
 TEST(AppApiGroup, ValidateGetTaskTableWithMultipleEntries)
@@ -117,25 +127,6 @@ TEST(AppApiGroup, ValidateGetTaskTableWithMultipleEntries)
 		input_stream = std::istringstream(results[i]["duration"].asString());
 		input_stream >> value;
 		LONGS_EQUAL((i + 2),value);
-	}
-}
-
-TEST(AppApiGroup, ValidateGetTaskTableWithRecurringEntries)
-{
-	auto newTask = std::make_shared<Core::Task>("",0,50,5);
-	newTask->setRecurranceParameters(10,0);
-	unsigned int parentTaskId = db.insertTask(*newTask);
-
-	procedures["getTasks"]->call(params,results);
-
-	LONGS_EQUAL(newTask->getRecurringTaskCount() + 1,results.size());
-
-	for(unsigned int i = 0; i < results.size(); i++)
-	{
-		if(results[i]["taskId"].asInt() != parentTaskId)
-		{
-			LONGS_EQUAL(results[i]["recurringParentTaskId"].asInt(),parentTaskId);
-		}
 	}
 }
 
