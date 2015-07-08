@@ -8,12 +8,25 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 		this.earliestStartTimeInput = null;
 		this.latestEndTimeInput = null;
 		this.durationInput = null;
+		this.durationDayInput = null;
 		this.recurrancePeriodInput = null;
+		this.recurrancePeriodDayInput = null;
 		this.recurranceLateOffsetInput = null;
+		this.recurranceLateOffsetDayInput = null;
 		this.resultsDiv = null;
 		
 		this.submitButton = null;
 	}
+	AddTaskForm.prototype.getTimestampFromInputs = function(dayInput, timeInput)
+	{
+		var returnTimeStamp = 0;
+		
+		returnTimeStamp = parseInt(dayInput.value) * 3600 * 24;
+		var time = $(timeInput).datetimepicker('getDate');
+		returnTimeStamp += time.getHours() * 3600 + time.getMinutes() * 60;
+		
+		return returnTimeStamp;
+	};
 	AddTaskForm.prototype.clearResults = function()
 	{
 		this.resultsDiv.innerHTML = "";
@@ -34,9 +47,9 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 				this.nameInput.value,
 				$(this.earliestStartTimeInput).datetimepicker('getDate').getTime() / 1000,
 				$(this.latestEndTimeInput).datetimepicker('getDate').getTime() / 1000,
-				parseInt(this.durationInput.value),
-				parseInt(this.recurrancePeriodInput.value),
-				parseInt(this.recurranceLateOffsetInput.value),
+				this.getTimestampFromInputs(this.durationDayInput,this.durationInput),
+				this.getTimestampFromInputs(this.recurrancePeriodDayInput,this.recurrancePeriodInput),
+				this.getTimestampFromInputs(this.recurranceLateOffsetDayInput,this.recurranceLateOffsetInput),
 				this.submitSuccess.bind(this),
 				this.submitError.bind(this));
 	};
@@ -46,6 +59,7 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 		div.appendChild(document.createElement("br"));
 		this.nameInput = div.appendChild(document.createElement("input"));
 		this.nameInput.type = "text";
+		this.nameInput.value = "Task Name";
 		
 		div.appendChild(document.createElement("br"));
 		div.appendChild(document.createElement("br"));
@@ -68,27 +82,33 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 		
 		div.appendChild(document.createTextNode("Duration"));
 		div.appendChild(document.createElement("br"));
+		this.durationDayInput = div.appendChild(document.createElement("input"));
+		this.durationDayInput.type = "text";
+		this.durationDayInput.value = 0;
 		this.durationInput = div.appendChild(document.createElement("input"));
 		this.durationInput.type = "text";
-		this.durationInput.value = 0;
 		
 		div.appendChild(document.createElement("br"));
 		div.appendChild(document.createElement("br"));
 		
 		div.appendChild(document.createTextNode("Recurrance Period"));
 		div.appendChild(document.createElement("br"));
+		this.recurrancePeriodDayInput = div.appendChild(document.createElement("input"));
+		this.recurrancePeriodDayInput.type = "text";
+		this.recurrancePeriodDayInput.value = 0;
 		this.recurrancePeriodInput = div.appendChild(document.createElement("input"));
 		this.recurrancePeriodInput.type = "text";
-		this.recurrancePeriodInput.value = 0;
 		
 		div.appendChild(document.createElement("br"));
 		div.appendChild(document.createElement("br"));
 		
 		div.appendChild(document.createTextNode("Recurrance Late Offset"));
 		div.appendChild(document.createElement("br"));
+		this.recurranceLateOffsetDayInput = div.appendChild(document.createElement("input"));
+		this.recurranceLateOffsetDayInput.type = "text";
+		this.recurranceLateOffsetDayInput.value = 0;
 		this.recurranceLateOffsetInput = div.appendChild(document.createElement("input"));
 		this.recurranceLateOffsetInput.type = "text";
-		this.recurranceLateOffsetInput.value = 0;
 		
 		div.appendChild(document.createElement("br"));
 		
@@ -100,6 +120,19 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 		$(this.earliestStartTimeInput).datetimepicker('setDate',new Date());
 		$(this.latestEndTimeInput).datetimepicker();
 		$(this.latestEndTimeInput).datetimepicker('setDate',new Date());
+
+		var d = new Date(1970,1,1,1,0,0,0); 
+		var timePickerOptions = {
+			timeOnly: true,
+			timeFormat: 'HH:mm',
+		};
+		$(this.durationInput).datetimepicker(timePickerOptions);
+		$(this.durationInput).datetimepicker('setDate',d);
+		$(this.recurrancePeriodInput).datetimepicker(timePickerOptions);
+		$(this.recurrancePeriodInput).datetimepicker('setDate','00:00');
+		$(this.recurranceLateOffsetInput).datetimepicker(timePickerOptions);
+		$(this.recurranceLateOffsetInput).datetimepicker('setDate','00:00');
+		
 	};
 	AddTaskForm.prototype.render = function(parent)
 	{
