@@ -127,7 +127,7 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 		this.taskIdInput = null;
 		this.deleteButton = null;
 	}
-	UpdateTaskForm.prototype.setTaskData = function(taskId, name, earliestStartTime, latestEndTime, duration){
+	UpdateTaskForm.prototype.setTaskData = function(taskId, name, earliestStartTime, latestEndTime, duration, recurrancePeriod, recurranceLateOffset){
 		
 		var newEarliestStartTime = new Date(earliestStartTime * 1000);
 		var newLatestEndTime = new Date(latestEndTime * 1000);
@@ -137,6 +137,8 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 		$(this.earliestStartTimeInput).datetimepicker('setDate', newEarliestStartTime );
 		$(this.latestEndTimeInput).datetimepicker('setDate', newLatestEndTime );
 		this.durationInput.value = duration;
+		this.recurrancePeriodInput.value = recurrancePeriod;
+		this.recurranceLateOffsetInput.value = recurranceLateOffset;
 	};
 	UpdateTaskForm.prototype.submitClickEvent = function()
 	{

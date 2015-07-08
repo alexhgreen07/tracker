@@ -129,15 +129,19 @@ define( [ 'js/task_forms', 'test/dummy_api' ], function(libTaskForms,libDummyApi
 			var name = "test task";
 			var now = new Date();
 			var dummyTime = Math.round(roundTimeToMinute(now) / 1000);
-			var duration = 10;
+			var duration = 9;
+			var recurrancePeriod = 10;
+			var recurranceLateOffset = 1;
 			
-			testForm.setTaskData(taskId,name,dummyTime,dummyTime,duration);
+			testForm.setTaskData(taskId,name,dummyTime,dummyTime,duration,recurrancePeriod,recurranceLateOffset);
 			
 			expect(parseInt(testForm.taskIdInput.value)).toBe(taskId);
 			expect(testForm.nameInput.value).toBe(name);
 			expect($(testForm.earliestStartTimeInput).datetimepicker('getDate').getTime()).toBe(dummyTime * 1000);
 			expect($(testForm.latestEndTimeInput).datetimepicker('getDate').getTime()).toBe(dummyTime * 1000);
 			expect(parseInt(testForm.durationInput.value)).toBe(duration);
+			expect(parseInt(testForm.recurrancePeriodInput.value)).toBe(recurrancePeriod);
+			expect(parseInt(testForm.recurranceLateOffsetInput.value)).toBe(recurranceLateOffset);
 		});
 		
 		afterEach(function() {
