@@ -13,29 +13,20 @@ define( [ 'js/api' ], function(libapi) {
         	 earliestStartTime: earliestStartTime, 
         	 latestEndTime: latestEndTime, 
         	 duration: duration,
-        	 recurringParentTaskId: 0
+        	 recurringLateOffset: 1, 
+        	 recurringPeriod: 10
     	 };
 		
 		var testApi = null;
 		
 		function insertDummyTask(success,error)
 		{
-			testApi.insertTask(name,earliestStartTime,latestEndTime,duration,0,0,success,error);
-		}
-		
-		function insertDummyRecurringTask(success,error)
-		{
-			testApi.insertTask("test recurring",0,50,5,10,0,success,error);
+			testApi.insertTask(name,earliestStartTime,latestEndTime,duration,10,1,success,error);
 		}
 		
 		function updateDummyTask(success,error)
 		{
-			testApi.updateTask(1,name + 1,earliestStartTime + 1,latestEndTime + 1,duration + 1,0,0,success,error);
-		}
-		
-		function updateDummyRecurringTask(success,error)
-		{
-			testApi.updateTask(1,name,0,50,5,10,0,success,error);
+			testApi.updateTask(1,name + 1,earliestStartTime + 1,latestEndTime + 1,duration + 1,11,2,success,error);
 		}
 		
 		function removeDummyTask(success,error)
@@ -83,17 +74,7 @@ define( [ 'js/api' ], function(libapi) {
 				});
 			});
 		});
-		
-		it("checks inserted recurring task count in table", function(done) {
-			
-			insertDummyRecurringTask(function(){
-				testApi.getTasks(function(result){
-					expect(result.length).toEqual(6);
-					done();
-				});
-			});
-		});
-		
+
 		it("stores a lookup of the last task table", function(done) {
 			
 			var expectedLookup = {
@@ -125,7 +106,8 @@ define( [ 'js/api' ], function(libapi) {
                 	 earliestStartTime: earliestStartTime + 1, 
                 	 latestEndTime: latestEndTime + 1, 
                 	 duration: duration + 1,
-                	 recurringParentTaskId: 0
+                	 recurringLateOffset: 2, 
+                	 recurringPeriod: 11
             	 }
 			];
 			
@@ -133,18 +115,6 @@ define( [ 'js/api' ], function(libapi) {
 				updateDummyTask(function(){
 					testApi.getTasks(function(result){
 						expect(result).toEqual(expectedTable);
-						done();
-					});
-				});
-			});
-		});
-		
-		it("checks updated recurring task count in table", function(done) {
-			
-			insertDummyTask(function(){
-				updateDummyRecurringTask(function(){
-					testApi.getTasks(function(result){
-						expect(result.length).toEqual(6);
 						done();
 					});
 				});

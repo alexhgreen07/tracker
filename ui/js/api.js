@@ -28,6 +28,8 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			task.duration = parseInt(task.duration);
 			task.earliestStartTime = parseInt(task.earliestStartTime);
 			task.latestEndTime = parseInt(task.latestEndTime);
+			task.recurringLateOffset = parseInt(task.recurringLateOffset);
+			task.recurringPeriod = parseInt(task.recurringPeriod);
 		}
 	}
 	
