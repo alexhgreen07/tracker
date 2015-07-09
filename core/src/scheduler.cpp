@@ -21,12 +21,32 @@ void Scheduler::schedule()
 {
     if(taskList)
     {
-        std::sort(taskList->begin(),taskList->end(),compareTasks);
+    	auto taskListToSchedule = std::make_shared<std::vector<std::shared_ptr<const Task>>>();
+    	for(unsigned int i = 0; i < taskList->size(); i++)
+    	{
+    		auto taskToCheck = taskList->at(i);
+
+    		if(taskToCheck->getRecurringTaskCount() == 0)
+    		{
+    			taskListToSchedule->push_back(taskToCheck);
+    		}
+    		else
+    		{
+    			for(unsigned int j = 0; j < taskToCheck->getRecurringTaskCount(); j++)
+    			{
+    				auto taskToAdd = taskToCheck->getRecurringChild(j);
+    				taskListToSchedule->push_back(taskToAdd);
+    			}
+    		}
+
+    	}
+
+        std::sort(taskListToSchedule->begin(),taskListToSchedule->end(),compareTasks);
         scheduledEvents.clear();
         
-        for(unsigned int i = 0; i < taskList->size(); i++)
+        for(unsigned int i = 0; i < taskListToSchedule->size(); i++)
         {
-            auto currentTask = taskList->at(i);
+            auto currentTask = taskListToSchedule->at(i);
             auto newEvents = scheduleInFreeSpace(currentTask);
             
             for(unsigned int j = 0; j < newEvents->size(); j++)
@@ -45,7 +65,7 @@ std::shared_ptr<Event> Scheduler::getScheduledEvent(unsigned int index) const
 }
 
 std::shared_ptr<std::vector<std::shared_ptr<Event>>>
-    Scheduler::scheduleInFreeSpace(const std::shared_ptr<Task> & currentTask)
+    Scheduler::scheduleInFreeSpace(const std::shared_ptr<const Task> & currentTask)
 {
     auto scheduledEvents = std::make_shared<std::vector<std::shared_ptr<Event>>>();
     
@@ -200,7 +220,7 @@ bool getFreeSpaceBetweenEvents(std::shared_ptr<Event> & firstEvent, std::shared_
 	return foundSpace;
 }
 
-bool Scheduler::compareTasks(const std::shared_ptr<Task> & a, const std::shared_ptr<Task> & b)
+bool Scheduler::compareTasks(const std::shared_ptr<const Task> & a, const std::shared_ptr<const Task> & b)
 {
     return (a->getLatestEndTime() < b->getLatestEndTime());
 }
