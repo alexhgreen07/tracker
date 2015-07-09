@@ -164,14 +164,23 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 		
 		var newEarliestStartTime = new Date(earliestStartTime * 1000);
 		var newLatestEndTime = new Date(latestEndTime * 1000);
+		var momentDuration = moment.duration(duration, 'seconds');
+		var newDuration = new Date(0,0,0,momentDuration.hours(),momentDuration.minutes(),0,0);
+		var recurrancePeriodDuration = moment.duration(recurrancePeriod, 'seconds');
+		var newRecurrancePeriod = new Date(0,0,0,recurrancePeriodDuration.hours(),recurrancePeriodDuration.minutes(),0,0);
+		var recurranceLateOffsetDuration = moment.duration(recurranceLateOffset, 'seconds');
+		var newRecurranceLateOffset = new Date(0,0,0,recurranceLateOffsetDuration.hours(),recurranceLateOffsetDuration.minutes(),0,0);
 		
 		this.taskIdInput.value = taskId;
 		this.nameInput.value = name;
 		$(this.earliestStartTimeInput).datetimepicker('setDate', newEarliestStartTime );
 		$(this.latestEndTimeInput).datetimepicker('setDate', newLatestEndTime );
-		this.durationInput.value = duration;
-		this.recurrancePeriodInput.value = recurrancePeriod;
-		this.recurranceLateOffsetInput.value = recurranceLateOffset;
+		this.durationDayInput.value = momentDuration.days();
+		$(this.durationInput).datetimepicker('setDate', newDuration );
+		this.recurrancePeriodDayInput.value = recurrancePeriodDuration.days();
+		$(this.recurrancePeriodInput).datetimepicker('setDate', newRecurrancePeriod );
+		this.recurranceLateOffsetDayInput.value = recurranceLateOffsetDuration.days();
+		$(this.recurranceLateOffsetInput).datetimepicker('setDate', newRecurranceLateOffset );
 	};
 	UpdateTaskForm.prototype.submitClickEvent = function()
 	{
@@ -180,9 +189,9 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 				this.nameInput.value,
 				$(this.earliestStartTimeInput).datetimepicker('getDate').getTime() / 1000,
 				$(this.latestEndTimeInput).datetimepicker('getDate').getTime() / 1000,
-				parseInt(this.durationInput.value),
-				parseInt(this.recurrancePeriodInput.value),
-				parseInt(this.recurranceLateOffsetInput.value),
+				this.getTimestampFromInputs(this.durationDayInput,this.durationInput),
+				this.getTimestampFromInputs(this.recurrancePeriodDayInput,this.recurrancePeriodInput),
+				this.getTimestampFromInputs(this.recurranceLateOffsetDayInput,this.recurranceLateOffsetInput),
 				this.submitSuccess.bind(this),
 				this.submitError.bind(this));
 	};
