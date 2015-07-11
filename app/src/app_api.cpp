@@ -7,8 +7,9 @@ namespace Tracker
 namespace Application
 {
 	
-AppApi::AppApi(AppDB & db) :
+AppApi::AppApi(AppDB & db, Clock & clock) :
 	db(db),
+	clock(clock),
 	sayHello(*this),
 	getTasks(*this),
 	insertTask(*this),
@@ -165,7 +166,7 @@ void AppApi::GetEvents::call(const Json::Value& request, Json::Value& response)
 	}
 	
 	parent.scheduler.setTaskList(taskList);
-	parent.scheduler.schedule();
+	parent.scheduler.schedule(parent.clock.getNowTimestamp());
 	
 	unsigned int eventCount = parent.scheduler.getScheduledEventCount();
 	

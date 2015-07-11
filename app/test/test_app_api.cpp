@@ -9,16 +9,25 @@
 using namespace Tracker;
 using namespace Application;
 
+class TestClock : public AppApi::Clock
+{
+	uint64_t getNowTimestamp() override
+	{
+		return 0;
+	}
+};
+
 TEST_BASE(AppApiGroupBase)
 {
 	Database::DatabaseSqlite3 sqlDB;
 	AppDB db;
+	TestClock testClock;
 	AppApi testApi;
 	JsonMethods & procedures;
 	
 	AppApiGroupBase() :
 		db(sqlDB),
-		testApi(db),
+		testApi(db,testClock),
 		procedures(testApi.getProcedures())
 	{}
 };

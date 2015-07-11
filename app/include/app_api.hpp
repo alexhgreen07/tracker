@@ -12,10 +12,18 @@ using namespace Network;
 class AppApi : public Api
 {
 public:
-	AppApi(AppDB & db);
 	
+	class Clock
+	{
+	public:
+		virtual uint64_t getNowTimestamp() = 0;
+	};
+
+	AppApi(AppDB & db, Clock & clock);
+
 	JsonMethods & getProcedures();
 	JsonNotifications & getNotifications();
+
 protected:
 	struct ExitProcedure : public JsonRequestProcedure
 	{
@@ -94,6 +102,7 @@ protected:
 	};
 	
 	AppDB & db;
+	Clock & clock;
 	Core::Scheduler scheduler;
 	
 	ExitProcedure exitProcedure;
