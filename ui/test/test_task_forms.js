@@ -36,9 +36,15 @@ define( [ 'js/task_forms', 'test/dummy_api' ], function(libTaskForms,libDummyApi
 			testForm.nameInput.value = "test name";
 			$(testForm.earliestStartTimeInput).datetimepicker('setDate', now );
 			$(testForm.latestEndTimeInput).datetimepicker('setDate', now );
-			testForm.durationInput.value = 1;
-			testForm.recurrancePeriodInput.value = 2;
-			testForm.recurranceLateOffsetInput.value = 3;
+			
+			var dummyDuration = new Date(0,0,0,1,1,0,0);
+			
+			testForm.durationDayInput.value = 1;
+			$(testForm.durationInput).datetimepicker('setDate', dummyDuration );
+			testForm.recurrancePeriodDayInput.value = 2;
+			$(testForm.recurrancePeriodInput).datetimepicker('setDate', dummyDuration );
+			testForm.recurranceLateOffsetDayInput.value = 3;
+			$(testForm.recurranceLateOffsetInput).datetimepicker('setDate', dummyDuration );
 			
 			testForm.submitButton.click();
 			
@@ -48,9 +54,9 @@ define( [ 'js/task_forms', 'test/dummy_api' ], function(libTaskForms,libDummyApi
 			expect(callArgs[0]).toBe(testForm.nameInput.value);
 			expect(callArgs[1]).toBe(expectedTime);
 			expect(callArgs[2]).toBe(expectedTime);
-			expect(callArgs[3]).toBe(1);
-			expect(callArgs[4]).toBe(2);
-			expect(callArgs[5]).toBe(3);
+			expect(callArgs[3]).toBe(1 * 3600 * 24 + 1 * 3600 + 60);
+			expect(callArgs[4]).toBe(2 * 3600 * 24 + 1 * 3600 + 60);
+			expect(callArgs[5]).toBe(3 * 3600 * 24 + 1 * 3600 + 60);
 		});
 		
 		afterEach(function() {
@@ -90,9 +96,15 @@ define( [ 'js/task_forms', 'test/dummy_api' ], function(libTaskForms,libDummyApi
 			testForm.nameInput.value = "test name";
 			$(testForm.earliestStartTimeInput).datetimepicker('setDate', now );
 			$(testForm.latestEndTimeInput).datetimepicker('setDate', now );
-			testForm.durationInput.value = 1;
-			testForm.recurrancePeriodInput.value = 2;
-			testForm.recurranceLateOffsetInput.value = 3;
+			
+			var dummyDuration = new Date(0,0,0,1,1,0,0);
+			
+			testForm.durationDayInput.value = 1;
+			$(testForm.durationInput).datetimepicker('setDate', dummyDuration );
+			testForm.recurrancePeriodDayInput.value = 2;
+			$(testForm.recurrancePeriodInput).datetimepicker('setDate', dummyDuration );
+			testForm.recurranceLateOffsetDayInput.value = 3;
+			$(testForm.recurranceLateOffsetInput).datetimepicker('setDate', dummyDuration );
 			
 			testForm.submitButton.click();
 			
@@ -103,9 +115,9 @@ define( [ 'js/task_forms', 'test/dummy_api' ], function(libTaskForms,libDummyApi
 			expect(callArgs[1]).toBe(testForm.nameInput.value);
 			expect(callArgs[2]).toBe(expectedTime);
 			expect(callArgs[3]).toBe(expectedTime);
-			expect(callArgs[4]).toBe(1);
-			expect(callArgs[5]).toBe(2);
-			expect(callArgs[6]).toBe(3);
+			expect(callArgs[4]).toBe(1 * 3600 * 24 + 1 * 3600 + 60);
+			expect(callArgs[5]).toBe(2 * 3600 * 24 + 1 * 3600 + 60);
+			expect(callArgs[6]).toBe(3 * 3600 * 24 + 1 * 3600 + 60);
 		});
 		
 		it("removes a task on submit button click", function() {
@@ -129,9 +141,9 @@ define( [ 'js/task_forms', 'test/dummy_api' ], function(libTaskForms,libDummyApi
 			var name = "test task";
 			var now = new Date();
 			var dummyTime = Math.round(roundTimeToMinute(now) / 1000);
-			var duration = 9;
-			var recurrancePeriod = 10;
-			var recurranceLateOffset = 1;
+			var duration = 1 * 3600 * 24 + 1 * 3600 + 60;
+			var recurrancePeriod = 2 * 3600 * 24 + 2 * 3600 + 60;
+			var recurranceLateOffset = 3 * 3600 * 24 + 3 * 3600 + 60;
 			
 			testForm.setTaskData(taskId,name,dummyTime,dummyTime,duration,recurrancePeriod,recurranceLateOffset);
 			
@@ -139,9 +151,12 @@ define( [ 'js/task_forms', 'test/dummy_api' ], function(libTaskForms,libDummyApi
 			expect(testForm.nameInput.value).toBe(name);
 			expect($(testForm.earliestStartTimeInput).datetimepicker('getDate').getTime()).toBe(dummyTime * 1000);
 			expect($(testForm.latestEndTimeInput).datetimepicker('getDate').getTime()).toBe(dummyTime * 1000);
-			expect(parseInt(testForm.durationInput.value)).toBe(duration);
-			expect(parseInt(testForm.recurrancePeriodInput.value)).toBe(recurrancePeriod);
-			expect(parseInt(testForm.recurranceLateOffsetInput.value)).toBe(recurranceLateOffset);
+			expect(parseInt(testForm.durationDayInput.value)).toBe(1);
+			expect(testForm.durationInput.value).toBe("01:01");
+			expect(parseInt(testForm.recurrancePeriodDayInput.value)).toBe(2);
+			expect(testForm.recurrancePeriodInput.value).toBe("02:01");
+			expect(parseInt(testForm.recurranceLateOffsetDayInput.value)).toBe(3);
+			expect(testForm.recurranceLateOffsetInput.value).toBe("03:01");
 		});
 		
 		afterEach(function() {
