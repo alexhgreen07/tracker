@@ -17,7 +17,7 @@ size_t Scheduler::getScheduledEventCount() const
 {
     return scheduledEvents.size();
 }
-void Scheduler::schedule()
+void Scheduler::schedule(uint64_t minStartTime)
 {
     if(taskList)
     {
@@ -47,7 +47,7 @@ void Scheduler::schedule()
         for(unsigned int i = 0; i < taskListToSchedule->size(); i++)
         {
             auto currentTask = taskListToSchedule->at(i);
-            auto newEvents = scheduleInFreeSpace(currentTask);
+            auto newEvents = scheduleInFreeSpace(currentTask,minStartTime);
             
             for(unsigned int j = 0; j < newEvents->size(); j++)
             {
@@ -65,31 +65,25 @@ std::shared_ptr<Event> Scheduler::getScheduledEvent(unsigned int index) const
 }
 
 std::shared_ptr<std::vector<std::shared_ptr<Event>>>
-    Scheduler::scheduleInFreeSpace(const std::shared_ptr<const Task> & currentTask)
+    Scheduler::scheduleInFreeSpace(const std::shared_ptr<const Task> & currentTask, uint64_t minStartTime)
 {
     auto scheduledEvents = std::make_shared<std::vector<std::shared_ptr<Event>>>();
     
-    if(currentTask->getIsRecurringParent())
-    {
-        for(unsigned int i = 0 ; i < currentTask->getRecurringTaskCount(); i++)
-        {
-            auto recurringChild = currentTask->getRecurringChild(i);
-            scheduleOneOffInFreeSpace(scheduledEvents,recurringChild);
-        }
-    }
-    else
-    {
-        scheduleOneOffInFreeSpace(scheduledEvents,currentTask);
-    }
+    scheduleOneOffInFreeSpace(scheduledEvents,currentTask,minStartTime);
     
     return scheduledEvents;
 }
 
-void Scheduler::scheduleOneOffInFreeSpace(std::shared_ptr<std::vector<std::shared_ptr<Event>>> & scheduledEvents, const std::shared_ptr<const Task> & currentTask)
+void Scheduler::scheduleOneOffInFreeSpace(std::shared_ptr<std::vector<std::shared_ptr<Event>>> & scheduledEvents, const std::shared_ptr<const Task> & currentTask, uint64_t minStartTime)
 {
     unsigned int remainingDuration = currentTask->getDuration();
     unsigned int nextStartTime = currentTask->getEarliestStartTime();
     
+    if(nextStartTime < minStartTime)
+    {
+    	nextStartTime = minStartTime;
+    }
+
     while(remainingDuration > 0)
     {
         auto newEvent = std::make_shared<Event>();

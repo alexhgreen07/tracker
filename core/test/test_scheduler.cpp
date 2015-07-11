@@ -37,12 +37,12 @@ TEST_GROUP(SchedulerGroup)
         return newTaskList;
     }
     
-    void scheduleNonOverlappingTasks(unsigned int duration, unsigned int count, unsigned int space = 0)
+    void scheduleNonOverlappingTasks(unsigned int duration, unsigned int count, unsigned int space = 0, unsigned int startTime = 0)
     {
         auto newTaskList = createNonOverlappingTasks(duration,count,space);
         
         testScheduler->setTaskList(newTaskList);
-        testScheduler->schedule();
+        testScheduler->schedule(startTime);
     }
     
     void scheduleBasicOverlappingTasks(unsigned int firstEarlyStartTime, unsigned int duration)
@@ -346,4 +346,19 @@ TEST(SchedulerGroup, ScheduleBasicRecurringTask)
         auto event = testScheduler->getScheduledEvent(i);
         CHECK_EVENT(newTask,taskToCheck->getEarliestStartTime(),taskToCheck->getDuration(),event);
     }
+}
+
+TEST(SchedulerGroup, ScheduleSingleEventAfterTime)
+{
+	const unsigned int duration = 10;
+	const unsigned int count = 1;
+	const unsigned int schedulerStartTime = 1;
+	scheduleNonOverlappingTasks(duration,count,0,schedulerStartTime);
+
+	LONGS_EQUAL(count,testScheduler->getScheduledEventCount());
+
+	auto newTask = testScheduler->getTaskList()->at(0);
+
+	auto event = testScheduler->getScheduledEvent(0);
+	CHECK_EVENT(newTask,schedulerStartTime,newTask->getDuration(),event);
 }
