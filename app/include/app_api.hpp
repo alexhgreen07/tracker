@@ -61,6 +61,8 @@ protected:
 		std::string statusToString(Core::Task::Status status);
 	};
 	
+	static Core::Task::Status taskStatusFromString(std::string status);
+
 	struct InsertTask : public AppApiProcedure
 	{
 		InsertTask(AppApi & parent) : AppApiProcedure(parent)

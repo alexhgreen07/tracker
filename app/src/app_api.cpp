@@ -99,7 +99,27 @@ std::string AppApi::GetTasksProcedure::statusToString(Core::Task::Status status)
 
 	return statusString;
 }
+
+Core::Task::Status AppApi::taskStatusFromString(std::string status)
+{
+	Core::Task::Status returnStatus;
+
+	if(status == "Complete")
+	{
+		returnStatus = Core::Task::Status::Complete;
+	}
+	else if(status == "Missed")
+	{
+		returnStatus = Core::Task::Status::Missed;
+	}
+	else
+	{
+		returnStatus = Core::Task::Status::Incomplete;
+	}
 	
+	return returnStatus;
+}
+
 void AppApi::InsertTask::call(const Json::Value& request, Json::Value& response)
 {
 	uint64_t earliestStartTime;
@@ -107,6 +127,7 @@ void AppApi::InsertTask::call(const Json::Value& request, Json::Value& response)
 	uint64_t duration;
 	uint64_t recurringPeriod;
 	uint64_t recurringLateOffset;
+	Core::Task::Status status;
 
 	std::istringstream input_stream(request["earliestStartTime"].asString());
 	input_stream >> earliestStartTime;
@@ -116,6 +137,8 @@ void AppApi::InsertTask::call(const Json::Value& request, Json::Value& response)
 
 	input_stream = std::istringstream(request["duration"].asString());
 	input_stream >> duration;
+
+	status = taskStatusFromString(request["status"].asString());
 
 	input_stream = std::istringstream(request["recurringPeriod"].asString());
 	input_stream >> recurringPeriod;
@@ -128,6 +151,7 @@ void AppApi::InsertTask::call(const Json::Value& request, Json::Value& response)
 			earliestStartTime,
 			latestEndTime,
 			duration);
+	newTask->setStatus(status);
 	newTask->setRecurranceParameters(recurringPeriod,recurringLateOffset);
 	parent.db->insertTask(*newTask);
 
@@ -141,6 +165,7 @@ void AppApi::UpdateTask::call(const Json::Value& request, Json::Value& response)
 	uint64_t duration;
 	uint64_t recurringPeriod;
 	uint64_t recurringLateOffset;
+	Core::Task::Status status;
 
 	std::istringstream input_stream(request["earliestStartTime"].asString());
 	input_stream >> earliestStartTime;
@@ -150,6 +175,8 @@ void AppApi::UpdateTask::call(const Json::Value& request, Json::Value& response)
 
 	input_stream = std::istringstream(request["duration"].asString());
 	input_stream >> duration;
+
+	status = taskStatusFromString(request["status"].asString());
 
 	input_stream = std::istringstream(request["recurringPeriod"].asString());
 	input_stream >> recurringPeriod;
@@ -162,6 +189,7 @@ void AppApi::UpdateTask::call(const Json::Value& request, Json::Value& response)
 				earliestStartTime,
 				latestEndTime,
 				duration);
+	updatedTask->setStatus(status);
 	updatedTask->setRecurranceParameters(recurringPeriod,recurringLateOffset);
 	
 	parent.db->updateTask(request["taskId"].asInt(),*updatedTask);

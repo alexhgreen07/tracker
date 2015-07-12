@@ -151,6 +151,7 @@ TEST(AppApiGroup, InsertTask)
 	params["earliestStartTime"] = "1";
 	params["latestEndTime"] = "2";
 	params["duration"] = "3";
+	params["status"] = "Complete";
 	
 	procedures["insertTask"]->call(params,results);
 	
@@ -163,6 +164,7 @@ TEST(AppApiGroup, InsertTask)
 	LONGS_EQUAL(1,task->getEarliestStartTime());
 	LONGS_EQUAL(2,task->getLatestEndTime());
 	LONGS_EQUAL(3,task->getDuration());
+	CHECK(task->getStatus() == Core::Task::Status::Complete);
 }
 
 TEST(AppApiGroup, InsertRecurringTask)
@@ -197,6 +199,7 @@ TEST(AppApiGroup, UpdateTask)
 	params["earliestStartTime"] = "2";
 	params["latestEndTime"] = "4";
 	params["duration"] = "2";
+	params["status"] = "Complete";
 	
 	procedures["updateTask"]->call(params,results);
 	
@@ -208,6 +211,7 @@ TEST(AppApiGroup, UpdateTask)
 	LONGS_EQUAL(2,task->getEarliestStartTime());
 	LONGS_EQUAL(4,task->getLatestEndTime());
 	LONGS_EQUAL(2,task->getDuration());
+	CHECK(task->getStatus() == Core::Task::Status::Complete);
 }
 
 TEST(AppApiGroup, UpdateRecurringTask)
