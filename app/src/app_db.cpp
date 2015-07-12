@@ -44,6 +44,7 @@ void AppDB::initializeNewDatabase()
     
     createVersionTable();
     createTasksTable();
+    createEventsTable();
 }
 
 void AppDB::createVersionTable()
@@ -65,6 +66,18 @@ void AppDB::createTasksTable()
     createSql += ");";
     
     database->execute(createSql);
+}
+
+void AppDB::createEventsTable()
+{
+	std::string createSql = "create table events (";
+	createSql += "eventId integer primary key asc";
+	createSql += ",startTime integer";
+	createSql += ",duration integer";
+	createSql += ",taskId integer";
+	createSql += ");";
+
+	database->execute(createSql);
 }
 
 std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Task>>> AppDB::getTasks()
@@ -174,9 +187,60 @@ void AppDB::removeTask(uint64_t taskId)
 
 std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Event>>> AppDB::getLoggedEvents()
 {
+	auto eventsTable = database->select("select eventId, startTime, duration, taskId from events");
 	auto loggedEvents = std::make_shared<std::map<uint64_t, std::shared_ptr<Core::Event>>>();
 
+	for(unsigned int i = 0; i < eventsTable->size(); i++)
+	{
+		auto nextEvent = std::make_shared<Core::Event>();
+		auto row = eventsTable->at(i);
+
+		uint64_t value;
+		uint64_t eventId;
+
+		//TODO: add eventId and task parent
+
+		std::istringstream input_stream(row[0]);
+		input_stream >> eventId;
+
+		input_stream = std::istringstream(row[1]);
+		input_stream >> value;
+		nextEvent->setStartTime(value);
+
+		input_stream = std::istringstream(row[2]);
+		input_stream >> value;
+		nextEvent->setDuration(value);
+
+		nextEvent->setStatus(Core::Event::Status::Logged);
+
+		(*loggedEvents)[eventId] = nextEvent;
+	}
+
 	return loggedEvents;
+}
+
+uint64_t AppDB::insertEvent(const Core::Event & newEvent)
+{
+	uint64_t eventInsertedRowId = 0;
+
+	std::string columnsString = "";
+	std::string valuesString = "";
+
+	columnsString += "startTime";
+	valuesString += std::to_string(newEvent.getStartTime());
+	columnsString += ",duration";
+	valuesString += "," + std::to_string(newEvent.getDuration());
+	columnsString += ",taskId";
+	valuesString += "," + std::to_string(newEvent.getParent()->getTaskId());
+
+	std::string insertString =
+	"insert into events (" +
+	columnsString + ") values(" + valuesString + ")";
+
+	database->execute(insertString);
+	eventInsertedRowId = database->lastInsertRowId();
+
+	return eventInsertedRowId;
 }
 
 std::string AppDB::getCurrentVersion()

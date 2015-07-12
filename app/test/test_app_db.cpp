@@ -247,3 +247,18 @@ TEST(AppDBGroup, ValidateEventsTableExists)
 
 	LONGS_EQUAL(0, result->size());
 }
+
+
+TEST(AppDBGroup, ValidateEventInsert)
+{
+	auto parent = std::make_shared<Core::Task>();
+	parent->setTaskId(1);
+    Core::Event newEvent;
+    newEvent.setParent(parent);
+
+    testDB.insertEvent(newEvent);
+
+    auto result = testDB.getLoggedEvents();
+
+    LONGS_EQUAL(1, result->size());
+}
