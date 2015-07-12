@@ -7,6 +7,7 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 		this.nameInput = null;
 		this.earliestStartTimeInput = null;
 		this.latestEndTimeInput = null;
+		this.statusInput = null;
 		this.durationInput = null;
 		this.durationDayInput = null;
 		this.recurrancePeriodInput = null;
@@ -48,6 +49,7 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 				$(this.earliestStartTimeInput).datetimepicker('getDate').getTime() / 1000,
 				$(this.latestEndTimeInput).datetimepicker('getDate').getTime() / 1000,
 				this.getTimestampFromInputs(this.durationDayInput,this.durationInput),
+				this.statusInput.value,
 				this.getTimestampFromInputs(this.recurrancePeriodDayInput,this.recurrancePeriodInput),
 				this.getTimestampFromInputs(this.recurranceLateOffsetDayInput,this.recurranceLateOffsetInput),
 				this.submitSuccess.bind(this),
@@ -87,6 +89,16 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 		this.durationDayInput.value = 0;
 		this.durationInput = div.appendChild(document.createElement("input"));
 		this.durationInput.type = "text";
+
+		div.appendChild(document.createElement("br"));
+		div.appendChild(document.createElement("br"));
+		
+		div.appendChild(document.createTextNode("Status"));
+		div.appendChild(document.createElement("br"));
+		this.statusInput = div.appendChild(document.createElement("select"));
+		this.statusInput.options[this.statusInput.options.length] = new Option("Incomplete","Incomplete");
+		this.statusInput.options[this.statusInput.options.length] = new Option("Complete","Complete");
+		this.statusInput.options[this.statusInput.options.length] = new Option("Missed","Missed");
 		
 		div.appendChild(document.createElement("br"));
 		div.appendChild(document.createElement("br"));
@@ -190,6 +202,7 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 				$(this.earliestStartTimeInput).datetimepicker('getDate').getTime() / 1000,
 				$(this.latestEndTimeInput).datetimepicker('getDate').getTime() / 1000,
 				this.getTimestampFromInputs(this.durationDayInput,this.durationInput),
+				this.statusInput.value,
 				this.getTimestampFromInputs(this.recurrancePeriodDayInput,this.recurrancePeriodInput),
 				this.getTimestampFromInputs(this.recurranceLateOffsetDayInput,this.recurranceLateOffsetInput),
 				this.submitSuccess.bind(this),
