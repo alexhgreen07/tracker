@@ -13,6 +13,7 @@ define( [ 'js/api' ], function(libapi) {
         	 earliestStartTime: earliestStartTime, 
         	 latestEndTime: latestEndTime, 
         	 duration: duration,
+        	 status: 'Incomplete',
         	 recurringLateOffset: 1, 
         	 recurringPeriod: 10
     	 };
@@ -106,6 +107,7 @@ define( [ 'js/api' ], function(libapi) {
                 	 earliestStartTime: earliestStartTime + 1, 
                 	 latestEndTime: latestEndTime + 1, 
                 	 duration: duration + 1,
+                	 status: 'Incomplete',
                 	 recurringLateOffset: 2, 
                 	 recurringPeriod: 11
             	 }
