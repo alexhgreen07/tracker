@@ -19,14 +19,16 @@ class TestClock : public AppApi::Clock
 
 TEST_BASE(AppApiGroupBase)
 {
-	Database::DatabaseSqlite3 sqlDB;
-	AppDB db;
-	TestClock testClock;
+	std::shared_ptr<Database::DatabaseSqlite3> sqlDB;
+	std::shared_ptr<AppDB> db;
+	std::shared_ptr<TestClock> testClock;
 	AppApi testApi;
 	JsonMethods & procedures;
 	
 	AppApiGroupBase() :
-		db(sqlDB),
+		sqlDB(std::make_shared<Database::DatabaseSqlite3>()),
+		db(std::make_shared<AppDB>(sqlDB)),
+		testClock(std::make_shared<TestClock>()),
 		testApi(db,testClock),
 		procedures(testApi.getProcedures())
 	{}
@@ -39,13 +41,13 @@ TEST_GROUP_BASE(AppApiGroup, AppApiGroupBase)
 	
 	TEST_SETUP()
 	{
-		sqlDB.open(":memory:");
-		db.initializeNewDatabase();
+		sqlDB->open(":memory:");
+		db->initializeNewDatabase();
 	}
 	
 	TEST_TEARDOWN()
 	{
-		sqlDB.close();
+		sqlDB->close();
 	}
 };
 
@@ -72,7 +74,7 @@ TEST(AppApiGroup, ValidateGetTaskTableWithSingleEntry)
 	newTask->setRecurranceParameters(10,1);
 	unsigned int expectedIndex = 0;
 	
-	unsigned int taskId = db.insertTask(*newTask);
+	unsigned int taskId = db->insertTask(*newTask);
 
 	procedures["getTasks"]->call(params,results);
 	
@@ -111,7 +113,7 @@ TEST(AppApiGroup, ValidateGetTaskTableWithMultipleEntries)
 	for(unsigned int i = 0; i < loopLimit; i++)
 	{
 		Core::Task newTask(std::to_string(i),i,i+1,i+2);
-		db.insertTask(newTask);
+		db->insertTask(newTask);
 	}
 
 	procedures["getTasks"]->call(params,results);
@@ -149,7 +151,7 @@ TEST(AppApiGroup, InsertTask)
 	
 	procedures["insertTask"]->call(params,results);
 	
-	auto result = db.getTasks();
+	auto result = db->getTasks();
 	
 	LONGS_EQUAL(1,result->size());
 	
@@ -173,7 +175,7 @@ TEST(AppApiGroup, InsertRecurringTask)
 
 	procedures["insertTask"]->call(params,results);
 
-	auto result = db.getTasks();
+	auto result = db->getTasks();
 
 	auto task = result->at(1);
 	LONGS_EQUAL(5,task->getRecurringTaskCount());
@@ -185,7 +187,7 @@ TEST(AppApiGroup, UpdateTask)
 {
 	std::string testName = "test name";
 	Core::Task newTask("",1,2,1);
-	unsigned int parentTaskId = db.insertTask(newTask);
+	unsigned int parentTaskId = db->insertTask(newTask);
 	
 	params["taskId"] = parentTaskId;
 	params["name"] = testName;
@@ -195,7 +197,7 @@ TEST(AppApiGroup, UpdateTask)
 	
 	procedures["updateTask"]->call(params,results);
 	
-	auto result = db.getTasks();
+	auto result = db->getTasks();
 	
 	auto task = result->at(parentTaskId);
 	
@@ -209,7 +211,7 @@ TEST(AppApiGroup, UpdateRecurringTask)
 {
 	auto newTask = std::make_shared<Core::Task>("",0,50,5);
 	newTask->setRecurranceParameters(10,0);
-	unsigned int parentTaskId = db.insertTask(*newTask);
+	unsigned int parentTaskId = db->insertTask(*newTask);
 
 	params["taskId"] = parentTaskId;
 	params["name"] = "";
@@ -222,7 +224,7 @@ TEST(AppApiGroup, UpdateRecurringTask)
 
 	procedures["updateTask"]->call(params,results);
 
-	auto result = db.getTasks();
+	auto result = db->getTasks();
 
 	auto task = result->at(parentTaskId);
 
@@ -234,12 +236,12 @@ TEST(AppApiGroup, UpdateRecurringTask)
 TEST(AppApiGroup, RemoveTask)
 {
 	Core::Task newTask("",1,1,1);
-	db.insertTask(newTask);
+	db->insertTask(newTask);
 	
 	params["taskId"] = 1;
 	procedures["removeTask"]->call(params,results);
 	
-	auto result = db.getTasks();
+	auto result = db->getTasks();
 	
 	LONGS_EQUAL(0,result->size());
 }
@@ -251,7 +253,7 @@ TEST(AppApiGroup, GetEvents)
 
 	newTask.setName("test name");
 
-	db.insertTask(newTask);
+	db->insertTask(newTask);
 	
 	procedures["getEvents"]->call(params,results);
 	

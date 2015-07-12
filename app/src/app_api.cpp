@@ -7,7 +7,7 @@ namespace Tracker
 namespace Application
 {
 	
-AppApi::AppApi(AppDB & db, Clock & clock) :
+AppApi::AppApi(const std::shared_ptr<AppDB> & db, const std::shared_ptr<Clock> & clock) :
 	db(db),
 	clock(clock),
 	sayHello(*this),
@@ -47,7 +47,7 @@ void AppApi::SayHelloProcedure::call(const Json::Value& request, Json::Value& re
 	
 void AppApi::GetTasksProcedure::call(const Json::Value& request, Json::Value& response)
 {
-	auto result = parent.db.getTasks();
+	auto result = parent.db->getTasks();
 	
 	unsigned int i = 0;
 
@@ -105,7 +105,7 @@ void AppApi::InsertTask::call(const Json::Value& request, Json::Value& response)
 			latestEndTime,
 			duration);
 	newTask->setRecurranceParameters(recurringPeriod,recurringLateOffset);
-	parent.db.insertTask(*newTask);
+	parent.db->insertTask(*newTask);
 
 	response = true;
 }
@@ -140,14 +140,14 @@ void AppApi::UpdateTask::call(const Json::Value& request, Json::Value& response)
 				duration);
 	updatedTask->setRecurranceParameters(recurringPeriod,recurringLateOffset);
 	
-	parent.db.updateTask(request["taskId"].asInt(),*updatedTask);
+	parent.db->updateTask(request["taskId"].asInt(),*updatedTask);
 
 	response = true;
 }
 	
 void AppApi::RemoveTask::call(const Json::Value& request, Json::Value& response)
 {
-	parent.db.removeTask(request["taskId"].asInt());
+	parent.db->removeTask(request["taskId"].asInt());
 
 	response = true;
 }
@@ -156,7 +156,7 @@ void AppApi::GetEvents::call(const Json::Value& request, Json::Value& response)
 {
 	auto taskList = std::make_shared<std::vector<std::shared_ptr<Core::Task>>>();
 	
-	auto result = parent.db.getTasks();
+	auto result = parent.db->getTasks();
 	
 	for(auto outer_iter=result->begin(); outer_iter!=result->end(); ++outer_iter) {
 		
@@ -166,7 +166,7 @@ void AppApi::GetEvents::call(const Json::Value& request, Json::Value& response)
 	}
 	
 	parent.scheduler.setTaskList(taskList);
-	parent.scheduler.schedule(parent.clock.getNowTimestamp());
+	parent.scheduler.schedule(parent.clock->getNowTimestamp());
 	
 	unsigned int eventCount = parent.scheduler.getScheduledEventCount();
 	

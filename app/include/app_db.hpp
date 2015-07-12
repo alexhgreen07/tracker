@@ -17,7 +17,7 @@ namespace Application
 class AppDB
 {
 public:
-    AppDB(Database::Database & database);
+    AppDB(const std::shared_ptr<Database::Database> & database);
     
     void updateDatabase();
     void initializeNewDatabase();
@@ -30,7 +30,7 @@ public:
     std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Event>>> getLoggedEvents();
     std::string getCurrentVersion();
 private:
-    Database::Database & database;
+    std::shared_ptr<Database::Database> database;
     std::string currentVersion;
 };
 

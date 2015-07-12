@@ -19,7 +19,7 @@ public:
 		virtual uint64_t getNowTimestamp() = 0;
 	};
 
-	AppApi(AppDB & db, Clock & clock);
+	AppApi(const std::shared_ptr<AppDB> & db, const std::shared_ptr<Clock> & clock);
 
 	JsonMethods & getProcedures();
 	JsonNotifications & getNotifications();
@@ -101,8 +101,8 @@ protected:
 		AppApi & parent;
 	};
 	
-	AppDB & db;
-	Clock & clock;
+	std::shared_ptr<AppDB> db;
+	std::shared_ptr<Clock> clock;
 	Core::Scheduler scheduler;
 	
 	ExitProcedure exitProcedure;

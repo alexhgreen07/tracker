@@ -28,7 +28,7 @@ TEST_GROUP(NetworkServerGroup)
 
 TEST(NetworkServerGroup, BasicStart)
 {
-	DummyApi api;
+	auto api = std::make_shared<DummyApi>();
     Server server(api);
     CHECK(server.start());
 }

@@ -15,11 +15,11 @@ namespace Network
 class Server
 {
 public:
-    Server(Api & api);
+    Server(const std::shared_ptr<Api> & api);
     bool start();
 private:
     
-	Api & api;
+	std::shared_ptr<Api> api;
     HTTPConnector http;
     JsonRpcServer serv;
 };

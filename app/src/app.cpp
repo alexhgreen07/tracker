@@ -12,19 +12,41 @@ uint64_t AppClock::getNowTimestamp()
 	return time(NULL);
 }
 
-TrackerApp::TrackerApp(string dbName) :
+TrackerApp::TrackerApp(
+		string dbName,
+		const std::shared_ptr<Database::DatabaseSqlite3> & sqliteDB,
+		const std::shared_ptr<AppDB> & db,
+		const std::shared_ptr<Server> & server) :
 	dbName(dbName),
-	db(mysqlDB),
-	api(db,apiClock),
-	server(api)
+	sqliteDB(sqliteDB),
+	db(db),
+	server(server)
 {}
 	
 bool TrackerApp::start()
 {
-	mysqlDB.open(dbName);
-	db.updateDatabase();
+	sqliteDB->open(dbName);
+	db->updateDatabase();
 
-    return server.start();
+    return server->start();
+}
+
+std::shared_ptr<TrackerApp> buildTrackerApp(string dbName)
+{
+	auto sqliteDB = std::make_shared<Database::DatabaseSqlite3>();
+	auto db = std::make_shared<AppDB>(sqliteDB);
+	auto apiClock = std::make_shared<AppClock>();
+	auto api = std::make_shared<AppApi>(db,apiClock);
+	auto server = std::make_shared<Server>(api);
+
+	auto app = std::make_shared<TrackerApp>(
+		dbName,
+		sqliteDB,
+		db,
+		server
+	);
+
+	return app;
 }
 
 }

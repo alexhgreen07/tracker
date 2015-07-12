@@ -7,7 +7,7 @@ namespace Tracker
 namespace Application
 {
 
-AppDB::AppDB(Database::Database & database) :
+AppDB::AppDB(const std::shared_ptr<Database::Database> & database) :
     database(database),
     currentVersion("0")
 {}
@@ -18,7 +18,7 @@ void AppDB::updateDatabase()
 
 	try
 	{
-		auto tasksTable = database.select("select version from version");
+		auto tasksTable = database->select("select version from version");
 
 		if(tasksTable->at(0).at(0) != currentVersion)
 		{
@@ -40,7 +40,7 @@ void AppDB::updateDatabase()
 
 void AppDB::initializeNewDatabase()
 {
-    database.execute("create table version (version int)");
+    database->execute("create table version (version int)");
     
     createVersionTable();
     createTasksTable();
@@ -48,7 +48,7 @@ void AppDB::initializeNewDatabase()
 
 void AppDB::createVersionTable()
 {
-    database.execute("insert into version values (" + currentVersion + ")");
+    database->execute("insert into version values (" + currentVersion + ")");
 }
 
 void AppDB::createTasksTable()
@@ -64,12 +64,12 @@ void AppDB::createTasksTable()
     createSql += ",recurringLateOffset integer";
     createSql += ");";
     
-    database.execute(createSql);
+    database->execute(createSql);
 }
 
 std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Task>>> AppDB::getTasks()
 {
-    auto tasksTable = database.select("select taskId, name, earliestStartTime, latestEndTime, duration, status, recurringPeriod, recurringLateOffset from tasks");
+    auto tasksTable = database->select("select taskId, name, earliestStartTime, latestEndTime, duration, status, recurringPeriod, recurringLateOffset from tasks");
     auto tasks = std::make_shared<std::map<uint64_t, std::shared_ptr<Core::Task>>>();
     
     for(unsigned int i = 0; i < tasksTable->size(); i++)
@@ -141,8 +141,8 @@ uint64_t AppDB::insertTask(const Core::Task & newTask)
     "insert into tasks (" +
     columnsString + ") values(" + valuesString + ")";
     
-    database.execute(insertString);
-    taskInsertedRowId = database.lastInsertRowId();
+    database->execute(insertString);
+    taskInsertedRowId = database->lastInsertRowId();
 
     return taskInsertedRowId;
 }
@@ -161,7 +161,7 @@ void AppDB::updateTask(uint64_t taskId, Core::Task & task)
     
     updateString += " where taskId = " + std::to_string(taskId);
     
-    database.execute(updateString);
+    database->execute(updateString);
 }
 
 void AppDB::removeTask(uint64_t taskId)
@@ -169,7 +169,7 @@ void AppDB::removeTask(uint64_t taskId)
     std::string deleteString =
     "delete from tasks where taskId = " + std::to_string(taskId);
     
-    database.execute(deleteString);
+    database->execute(deleteString);
 }
 
 std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Event>>> AppDB::getLoggedEvents()

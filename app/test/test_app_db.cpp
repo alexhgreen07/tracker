@@ -10,12 +10,14 @@ using namespace Application;
 
 TEST_BASE(AppDBGroupBase)
 {
-    Database::DatabaseSqlite3 mysqlDB;
+    std::shared_ptr<Database::DatabaseSqlite3> mysqlDB;
     AppDB testDB;
     
     AppDBGroupBase() :
+    	mysqlDB(std::make_shared<Database::DatabaseSqlite3>()),
         testDB(mysqlDB)
-    {}
+    {
+    }
 };
 
 TEST_GROUP_BASE(AppDBGroup, AppDBGroupBase)
@@ -23,19 +25,19 @@ TEST_GROUP_BASE(AppDBGroup, AppDBGroupBase)
     
     TEST_SETUP()
     {
-        mysqlDB.open(":memory:");
+        mysqlDB->open(":memory:");
         testDB.initializeNewDatabase();
     }
     
     TEST_TEARDOWN()
     {
-        mysqlDB.close();
+        mysqlDB->close();
     }
 };
 
 TEST(AppDBGroup, ValidateVersionTable)
 {
-    auto result = mysqlDB.select("select version from version");
+    auto result = mysqlDB->select("select version from version");
     
     STRCMP_EQUAL(result->at(0)[0].c_str(),testDB.getCurrentVersion().c_str());
 }
