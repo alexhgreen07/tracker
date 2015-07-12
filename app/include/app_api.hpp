@@ -33,72 +33,63 @@ protected:
 		void call(const Json::Value& request, Json::Value& response) override;
 	};
 
-	struct SayHelloProcedure : public JsonRequestProcedure
+	struct AppApiProcedure : public JsonRequestProcedure
 	{
-		SayHelloProcedure(AppApi & parent) :
+		AppApiProcedure(AppApi & parent) :
 			parent(parent)
 		{}
-		
-		void call(const Json::Value& request, Json::Value& response) override;
-		
+
 		AppApi & parent;
 	};
-	
-	struct GetTasksProcedure : public JsonRequestProcedure
+
+	struct SayHelloProcedure : public AppApiProcedure
 	{
-		GetTasksProcedure(AppApi & parent) :
-			parent(parent)
+		SayHelloProcedure(AppApi & parent) : AppApiProcedure(parent)
+		{}
+
+		void call(const Json::Value& request, Json::Value& response) override;
+	};
+	
+	struct GetTasksProcedure : public AppApiProcedure
+	{
+		GetTasksProcedure(AppApi & parent) : AppApiProcedure(parent)
 		{}
 		
 		void call(const Json::Value& request, Json::Value& response) override;
 		
 		void fillJsonValueFromTask(Json::Value& row, const Core::Task & task);
-
-		AppApi & parent;
 	};
 	
-	struct InsertTask : public JsonRequestProcedure
+	struct InsertTask : public AppApiProcedure
 	{
-		InsertTask(AppApi & parent) :
-			parent(parent)
+		InsertTask(AppApi & parent) : AppApiProcedure(parent)
 		{}
 		
 		void call(const Json::Value& request, Json::Value& response) override;
-		
-		AppApi & parent;
 	};
 	
-	struct UpdateTask : public JsonRequestProcedure
+	struct UpdateTask : public AppApiProcedure
 	{
-		UpdateTask(AppApi & parent) :
-			parent(parent)
+		UpdateTask(AppApi & parent) : AppApiProcedure(parent)
 		{}
 		
 		void call(const Json::Value& request, Json::Value& response) override;
-		
-		AppApi & parent;
 	};
 	
-	struct RemoveTask : public JsonRequestProcedure
+	struct RemoveTask : public AppApiProcedure
 	{
-		RemoveTask(AppApi & parent) :
-			parent(parent)
+		RemoveTask(AppApi & parent) : AppApiProcedure(parent)
 		{}
 		
 		void call(const Json::Value& request, Json::Value& response) override;
-		
-		AppApi & parent;
 	};
 	
-	struct GetEvents : public JsonRequestProcedure
+	struct GetEvents : public AppApiProcedure
 	{
-		GetEvents(AppApi & parent) :
-			parent(parent)
+		GetEvents(AppApi & parent) : AppApiProcedure(parent)
 		{}
 		
 		void call(const Json::Value& request, Json::Value& response) override;
-		
-		AppApi & parent;
 	};
 	
 	std::shared_ptr<AppDB> db;
