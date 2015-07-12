@@ -71,9 +71,33 @@ void AppApi::GetTasksProcedure::fillJsonValueFromTask(Json::Value& row, const Co
 	row["earliestStartTime"] = std::to_string(task.getEarliestStartTime());
 	row["latestEndTime"] = std::to_string(task.getLatestEndTime());
 	row["duration"] = std::to_string(task.getDuration());
+	row["status"] = statusToString(task.getStatus());
 	row["recurringPeriod"] = std::to_string(task.getRecurringPeriod());
 	row["recurringLateOffset"] = std::to_string(task.getRecurringLateOffset());
 
+}
+
+std::string AppApi::GetTasksProcedure::statusToString(Core::Task::Status status)
+{
+	std::string statusString;
+
+	switch(status)
+	{
+	case Core::Task::Status::Incomplete:
+		statusString = "Incomplete";
+		break;
+	case Core::Task::Status::Complete:
+		statusString = "Complete";
+		break;
+	case Core::Task::Status::Missed:
+		statusString = "Missed";
+		break;
+	default:
+		statusString = "";
+		break;
+	}
+
+	return statusString;
 }
 	
 void AppApi::InsertTask::call(const Json::Value& request, Json::Value& response)

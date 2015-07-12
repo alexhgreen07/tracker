@@ -58,6 +58,7 @@ protected:
 		void call(const Json::Value& request, Json::Value& response) override;
 		
 		void fillJsonValueFromTask(Json::Value& row, const Core::Task & task);
+		std::string statusToString(Core::Task::Status status);
 	};
 	
 	struct InsertTask : public AppApiProcedure

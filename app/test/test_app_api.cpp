@@ -71,6 +71,7 @@ TEST(AppApiGroup, ValidateGetEmptyTaskTable)
 TEST(AppApiGroup, ValidateGetTaskTableWithSingleEntry)
 {
 	auto newTask = std::make_shared<Core::Task>("",2,3,4);
+	newTask->setStatus(Core::Task::Status::Complete);
 	newTask->setRecurranceParameters(10,1);
 	unsigned int expectedIndex = 0;
 	
@@ -96,6 +97,8 @@ TEST(AppApiGroup, ValidateGetTaskTableWithSingleEntry)
 	input_stream = std::istringstream(results[expectedIndex]["duration"].asString());
 	input_stream >> value;
 	LONGS_EQUAL(newTask->getDuration(),value);
+
+	STRCMP_EQUAL("Complete",results[expectedIndex]["status"].asCString());
 
 	input_stream = std::istringstream(results[expectedIndex]["recurringPeriod"].asString());
 	input_stream >> value;
