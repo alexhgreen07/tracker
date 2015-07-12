@@ -118,6 +118,18 @@ TEST(AppDBGroup, ValidateTaskInsertByDuration)
     LONGS_EQUAL(newTask.getDuration(),retrievedTask->getDuration());
 }
 
+TEST(AppDBGroup, ValidateTaskInsertByStatus)
+{
+	Core::Task newTask;
+
+	newTask.setStatus(Core::Task::Status::Complete);
+	unsigned int taskId = testDB.insertTask(newTask);
+
+	auto result = testDB.getTasks();
+	auto retrievedTask = result->at(taskId);
+	CHECK(newTask.getStatus() == retrievedTask->getStatus());
+}
+
 TEST(AppDBGroup, ValidateTaskInsertByRecurringChildrenCount)
 {
 	auto newTask = std::make_shared<Core::Task>("",0,50,5);
@@ -196,6 +208,20 @@ TEST(AppDBGroup, ValidateTaskUpdateByDuration)
     auto result = testDB.getTasks();
     auto retrievedTask = result->at(taskId);
     LONGS_EQUAL(newTask.getDuration(),retrievedTask->getDuration());
+}
+
+TEST(AppDBGroup, ValidateTaskUpdateByStatus)
+{
+    Core::Task newTask;
+
+    auto taskId = testDB.insertTask(newTask);
+
+    newTask.setStatus(Core::Task::Status::Complete);
+    testDB.updateTask(taskId, newTask);
+
+    auto result = testDB.getTasks();
+    auto retrievedTask = result->at(taskId);
+    CHECK(newTask.getStatus() == retrievedTask->getStatus());
 }
 
 TEST(AppDBGroup, ValidateTaskUpdateByRecurringChildrenCount)

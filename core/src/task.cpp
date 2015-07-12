@@ -84,7 +84,7 @@ void Task::setDuration(uint64_t duration)
     this->duration = duration;
     validateAndCorrectData();
 }
-Task::Status Task::getStatus()
+Task::Status Task::getStatus() const
 {
 	return status;
 }

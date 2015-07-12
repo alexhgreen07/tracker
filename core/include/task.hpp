@@ -36,7 +36,7 @@ public:
     uint64_t getLatestStartTime() const;
     uint64_t getDuration() const;
     void setDuration(uint64_t duration);
-    Status getStatus();
+    Status getStatus() const;
     void setStatus(Status status);
     void addChild(std::shared_ptr<Task> child);
     std::shared_ptr<Task> getChild(unsigned int index);

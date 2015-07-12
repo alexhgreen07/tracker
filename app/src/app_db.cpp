@@ -59,6 +59,7 @@ void AppDB::createTasksTable()
     createSql += ",earliestStartTime integer";
     createSql += ",latestEndTime integer";
     createSql += ",duration integer";
+    createSql += ",status integer";
     createSql += ",recurringPeriod integer";
     createSql += ",recurringLateOffset integer";
     createSql += ");";
@@ -68,7 +69,7 @@ void AppDB::createTasksTable()
 
 std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Task>>> AppDB::getTasks()
 {
-    auto tasksTable = database.select("select taskId, name, earliestStartTime, latestEndTime, duration, recurringPeriod, recurringLateOffset from tasks");
+    auto tasksTable = database.select("select taskId, name, earliestStartTime, latestEndTime, duration, status, recurringPeriod, recurringLateOffset from tasks");
     auto tasks = std::make_shared<std::map<uint64_t, std::shared_ptr<Core::Task>>>();
     
     for(unsigned int i = 0; i < tasksTable->size(); i++)
@@ -96,11 +97,15 @@ std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Task>>> AppDB::getTasks
 		input_stream >> value;
         nextTask->setDuration(value);
 
+        input_stream = std::istringstream(row[5]);
+		input_stream >> value;
+		nextTask->setStatus((Core::Task::Status)value);
+
         uint64_t recurrancePeriod;
         uint64_t recurranceLateOffset;
-        input_stream = std::istringstream(row[5]);
+        input_stream = std::istringstream(row[6]);
 		input_stream >> recurrancePeriod;
-		input_stream = std::istringstream(row[6]);
+		input_stream = std::istringstream(row[7]);
 		input_stream >> recurranceLateOffset;
         nextTask->setRecurranceParameters(recurrancePeriod,recurranceLateOffset);
 		
@@ -125,6 +130,8 @@ uint64_t AppDB::insertTask(const Core::Task & newTask)
     valuesString += "," + std::to_string(newTask.getLatestEndTime());
     columnsString += ",duration";
     valuesString += "," + std::to_string(newTask.getDuration());
+	columnsString += ",status";
+    valuesString += "," + std::to_string((uint64_t)newTask.getStatus());
     columnsString += ",recurringPeriod";
 	valuesString += "," + std::to_string(newTask.getRecurringPeriod());
 	columnsString += ",recurringLateOffset";
@@ -148,6 +155,7 @@ void AppDB::updateTask(uint64_t taskId, Core::Task & task)
     updateString += ",earliestStartTime = " + std::to_string(task.getEarliestStartTime());
     updateString += ",latestEndTime = " + std::to_string(task.getLatestEndTime());
     updateString += ",duration = " + std::to_string(task.getDuration());
+    updateString += ",status = " + std::to_string((uint64_t)task.getStatus());
     updateString += ",recurringPeriod = " + std::to_string(task.getRecurringPeriod());
     updateString += ",recurringLateOffset = " + std::to_string(task.getRecurringLateOffset());
     
