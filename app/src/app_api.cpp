@@ -1,12 +1,15 @@
 #include "app_api.hpp"
 
+#include <sstream>
+
 namespace Tracker
 {
 namespace Application
 {
 	
-AppApi::AppApi(AppDB & db) :
+AppApi::AppApi(AppDB & db, Clock & clock) :
 	db(db),
+	clock(clock),
 	sayHello(*this),
 	getTasks(*this),
 	insertTask(*this),
@@ -55,37 +58,89 @@ void AppApi::GetTasksProcedure::call(const Json::Value& request, Json::Value& re
 		auto task = outer_iter->second;
 		auto & row = response[i];
 		
-		row["taskId"] = (unsigned int)outer_iter->first;
-		row["name"] = task.getName();
-		row["earliestStartTime"] = task.getEarliestStartTime();
-		row["latestEndTime"] = task.getLatestEndTime();
-		row["duration"] = task.getDuration();
+		fillJsonValueFromTask(row,*task);
 		
 		i++;
 	}
 }
+
+void AppApi::GetTasksProcedure::fillJsonValueFromTask(Json::Value& row, const Core::Task & task)
+{
+	row["taskId"] = task.getTaskId();
+	row["name"] = task.getName();
+	row["earliestStartTime"] = std::to_string(task.getEarliestStartTime());
+	row["latestEndTime"] = std::to_string(task.getLatestEndTime());
+	row["duration"] = std::to_string(task.getDuration());
+	row["recurringPeriod"] = std::to_string(task.getRecurringPeriod());
+	row["recurringLateOffset"] = std::to_string(task.getRecurringLateOffset());
+
+}
 	
 void AppApi::InsertTask::call(const Json::Value& request, Json::Value& response)
 {
-	Core::Task newTask(
+	uint64_t earliestStartTime;
+	uint64_t latestEndTime;
+	uint64_t duration;
+	uint64_t recurringPeriod;
+	uint64_t recurringLateOffset;
+
+	std::istringstream input_stream(request["earliestStartTime"].asString());
+	input_stream >> earliestStartTime;
+
+	input_stream = std::istringstream(request["latestEndTime"].asString());
+	input_stream >> latestEndTime;
+
+	input_stream = std::istringstream(request["duration"].asString());
+	input_stream >> duration;
+
+	input_stream = std::istringstream(request["recurringPeriod"].asString());
+	input_stream >> recurringPeriod;
+
+	input_stream = std::istringstream(request["recurringLateOffset"].asString());
+	input_stream >> recurringLateOffset;
+
+	auto newTask = std::make_shared<Core::Task>(
 			request["name"].asString(),
-			request["earliestStartTime"].asInt(),
-			request["latestEndTime"].asInt(),
-			request["duration"].asInt());
-	parent.db.insertTask(newTask);
+			earliestStartTime,
+			latestEndTime,
+			duration);
+	newTask->setRecurranceParameters(recurringPeriod,recurringLateOffset);
+	parent.db.insertTask(*newTask);
 
 	response = true;
 }
 	
 void AppApi::UpdateTask::call(const Json::Value& request, Json::Value& response)
 {
-	Core::Task updatedTask(
-			request["name"].asString(),
-			request["earliestStartTime"].asInt(),
-			request["latestEndTime"].asInt(),
-			request["duration"].asInt());
+	uint64_t earliestStartTime;
+	uint64_t latestEndTime;
+	uint64_t duration;
+	uint64_t recurringPeriod;
+	uint64_t recurringLateOffset;
+
+	std::istringstream input_stream(request["earliestStartTime"].asString());
+	input_stream >> earliestStartTime;
+
+	input_stream = std::istringstream(request["latestEndTime"].asString());
+	input_stream >> latestEndTime;
+
+	input_stream = std::istringstream(request["duration"].asString());
+	input_stream >> duration;
+
+	input_stream = std::istringstream(request["recurringPeriod"].asString());
+	input_stream >> recurringPeriod;
+
+	input_stream = std::istringstream(request["recurringLateOffset"].asString());
+	input_stream >> recurringLateOffset;
+
+	auto updatedTask = std::make_shared<Core::Task>(
+				request["name"].asString(),
+				earliestStartTime,
+				latestEndTime,
+				duration);
+	updatedTask->setRecurranceParameters(recurringPeriod,recurringLateOffset);
 	
-	parent.db.updateTask(request["taskId"].asInt(),updatedTask);
+	parent.db.updateTask(request["taskId"].asInt(),*updatedTask);
 
 	response = true;
 }
@@ -106,13 +161,12 @@ void AppApi::GetEvents::call(const Json::Value& request, Json::Value& response)
 	for(auto outer_iter=result->begin(); outer_iter!=result->end(); ++outer_iter) {
 		
 		auto task = outer_iter->second;
-		auto listedTask = std::make_shared<Core::Task>(task);
 		
-		taskList->push_back(listedTask);
+		taskList->push_back(task);
 	}
 	
 	parent.scheduler.setTaskList(taskList);
-	parent.scheduler.schedule();
+	parent.scheduler.schedule(parent.clock.getNowTimestamp());
 	
 	unsigned int eventCount = parent.scheduler.getScheduledEventCount();
 	

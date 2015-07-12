@@ -11,7 +11,12 @@ namespace Application
 {
 
 using namespace Network;
-    
+
+class AppClock : public AppApi::Clock
+{
+	uint64_t getNowTimestamp() override;
+};
+
 class TrackerApp
 {
 public:
@@ -21,6 +26,7 @@ private:
     string dbName;
 	Database::DatabaseSqlite3 mysqlDB;
 	AppDB db;
+	AppClock apiClock;
 	AppApi api;
     Server server;
 };

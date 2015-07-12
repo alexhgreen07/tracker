@@ -55,11 +55,15 @@ HTTPConnector::HTTPConnector(int port, const string& resPath) : JsonRpcConnector
 bool HTTPConnector::sendResponse(string & response, void *addInfo)
 {
 	struct mg_connection* conn = (struct mg_connection*)addInfo;
-	if(mg_printf(conn,"HTTP/1.1 200 OK\r\nContent-Type:application/json\r\n\r\n%s",response.c_str()) > 0) {
-		return true;
-	} else {
+
+	const char * header = "HTTP/1.1 200 OK\r\nContent-Type:application/json\r\n\r\n";
+
+	if(mg_write(conn,header,strlen(header)) <= 0)
 		return false;
-	}
+	if(mg_write(conn,response.c_str(),strlen(response.c_str())) <= 0)
+		return false;
+
+	return true;
 }
 
 bool HTTPConnector::startPolling()

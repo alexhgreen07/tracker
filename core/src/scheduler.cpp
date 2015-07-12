@@ -17,17 +17,37 @@ size_t Scheduler::getScheduledEventCount() const
 {
     return scheduledEvents.size();
 }
-void Scheduler::schedule()
+void Scheduler::schedule(uint64_t minStartTime)
 {
     if(taskList)
     {
-        std::sort(taskList->begin(),taskList->end(),compareTasks);
+    	auto taskListToSchedule = std::make_shared<std::vector<std::shared_ptr<const Task>>>();
+    	for(unsigned int i = 0; i < taskList->size(); i++)
+    	{
+    		auto taskToCheck = taskList->at(i);
+
+    		if(taskToCheck->getRecurringTaskCount() == 0)
+    		{
+    			taskListToSchedule->push_back(taskToCheck);
+    		}
+    		else
+    		{
+    			for(unsigned int j = 0; j < taskToCheck->getRecurringTaskCount(); j++)
+    			{
+    				auto taskToAdd = taskToCheck->getRecurringChild(j);
+    				taskListToSchedule->push_back(taskToAdd);
+    			}
+    		}
+
+    	}
+
+        std::sort(taskListToSchedule->begin(),taskListToSchedule->end(),compareTasks);
         scheduledEvents.clear();
         
-        for(unsigned int i = 0; i < taskList->size(); i++)
+        for(unsigned int i = 0; i < taskListToSchedule->size(); i++)
         {
-            auto currentTask = taskList->at(i);
-            auto newEvents = scheduleInFreeSpace(currentTask);
+            auto currentTask = taskListToSchedule->at(i);
+            auto newEvents = scheduleInFreeSpace(currentTask,minStartTime);
             
             for(unsigned int j = 0; j < newEvents->size(); j++)
             {
@@ -45,38 +65,40 @@ std::shared_ptr<Event> Scheduler::getScheduledEvent(unsigned int index) const
 }
 
 std::shared_ptr<std::vector<std::shared_ptr<Event>>>
-    Scheduler::scheduleInFreeSpace(const std::shared_ptr<Task> & currentTask)
+    Scheduler::scheduleInFreeSpace(const std::shared_ptr<const Task> & currentTask, uint64_t minStartTime)
 {
     auto scheduledEvents = std::make_shared<std::vector<std::shared_ptr<Event>>>();
     
-    if(currentTask->getIsRecurringParent())
-    {
-        for(unsigned int i = 0 ; i < currentTask->getRecurringTaskCount(); i++)
-        {
-            auto recurringChild = currentTask->getRecurringChild(i);
-            scheduleOneOffInFreeSpace(scheduledEvents,recurringChild);
-        }
-    }
-    else
-    {
-        scheduleOneOffInFreeSpace(scheduledEvents,currentTask);
-    }
+    scheduleOneOffInFreeSpace(scheduledEvents,currentTask,minStartTime);
     
     return scheduledEvents;
 }
 
-void Scheduler::scheduleOneOffInFreeSpace(std::shared_ptr<std::vector<std::shared_ptr<Event>>> & scheduledEvents, const std::shared_ptr<const Task> & currentTask)
+void Scheduler::scheduleOneOffInFreeSpace(std::shared_ptr<std::vector<std::shared_ptr<Event>>> & scheduledEvents, const std::shared_ptr<const Task> & currentTask, uint64_t minStartTime)
 {
     unsigned int remainingDuration = currentTask->getDuration();
     unsigned int nextStartTime = currentTask->getEarliestStartTime();
     
+    if(nextStartTime < minStartTime)
+    {
+    	nextStartTime = minStartTime;
+    }
+
     while(remainingDuration > 0)
     {
         auto newEvent = std::make_shared<Event>();
         unsigned int freeStartTime = 0;
         unsigned int freeDuration = 0;
         
-        newEvent->setParent(currentTask);
+        if(currentTask->getRecurranceParent().expired())
+        {
+        	newEvent->setParent(currentTask);
+        }
+        else
+        {
+        	auto parent = std::shared_ptr<Task>(currentTask->getRecurranceParent());
+        	newEvent->setParent(parent);
+        }
         
         auto spaceIsAvailable = findFreeSpaceAfter(
                                                      nextStartTime,
@@ -192,7 +214,7 @@ bool getFreeSpaceBetweenEvents(std::shared_ptr<Event> & firstEvent, std::shared_
 	return foundSpace;
 }
 
-bool Scheduler::compareTasks(const std::shared_ptr<Task> & a, const std::shared_ptr<Task> & b)
+bool Scheduler::compareTasks(const std::shared_ptr<const Task> & a, const std::shared_ptr<const Task> & b)
 {
     return (a->getLatestEndTime() < b->getLatestEndTime());
 }

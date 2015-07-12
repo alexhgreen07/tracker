@@ -18,7 +18,7 @@ Task::Task() :
     recurringLateOffset(0)
 {}
 
-Task::Task(std::string name, unsigned int earliestStartTime,unsigned int latestEndTime,unsigned int duration) :
+Task::Task(std::string name, uint64_t earliestStartTime, uint64_t latestEndTime, uint64_t duration) :
 	taskId(0),
 	name(name),
     earliestStartTime(earliestStartTime),
@@ -48,33 +48,33 @@ void Task::setName(std::string name)
 	this->name = name;
 }
 
-unsigned int Task::getEarliestStartTime() const
+uint64_t Task::getEarliestStartTime() const
 {
     return earliestStartTime;
 }
-void Task::setEarliestStartTime(unsigned int earliestStartTime)
+void Task::setEarliestStartTime(uint64_t earliestStartTime)
 {
     this->earliestStartTime = earliestStartTime;
     validateAndCorrectData();
 }
-unsigned int Task::getLatestEndTime() const
+uint64_t Task::getLatestEndTime() const
 {
     return latestEndTime;
 }
-void Task::setLatestEndTime(unsigned int latestEndTime)
+void Task::setLatestEndTime(uint64_t latestEndTime)
 {
     this->latestEndTime = latestEndTime;
     validateAndCorrectData();
 }
-unsigned int Task::getLatestStartTime() const
+uint64_t Task::getLatestStartTime() const
 {
     return latestEndTime - duration;
 }
-unsigned int Task::getDuration() const
+uint64_t Task::getDuration() const
 {
     return duration;
 }
-void Task::setDuration(unsigned int duration)
+void Task::setDuration(uint64_t duration)
 {
     this->duration = duration;
     validateAndCorrectData();
@@ -107,7 +107,17 @@ std::weak_ptr<Task> Task::getParent()
     return parent;
 }
 
-void Task::setRecurranceParameters(unsigned int period, unsigned int lateOffset)
+uint64_t Task::getRecurringPeriod() const
+{
+	return recurringPeriod;
+}
+
+uint64_t Task::getRecurringLateOffset() const
+{
+	return recurringLateOffset;
+}
+
+void Task::setRecurranceParameters(uint64_t period, uint64_t lateOffset)
 {
     recurringPeriod = period;
     recurringLateOffset = lateOffset;
@@ -132,7 +142,7 @@ size_t Task::getRecurringTaskCount() const
     return recurringChildren.size();
 }
 
-std::shared_ptr<const Task> Task::getRecurringChild(unsigned int index)
+std::shared_ptr<const Task> Task::getRecurringChild(unsigned int index) const
 {
     std::shared_ptr<const Task> returnValue = recurringChildren[index];
     return returnValue;

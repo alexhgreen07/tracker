@@ -20,6 +20,19 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 		}
 	};
 	
+	Api.prototype.converTaskDateStringsToInts = function(results)
+	{
+		for(var key in results)
+		{
+			var task = results[key];
+			task.duration = parseInt(task.duration);
+			task.earliestStartTime = parseInt(task.earliestStartTime);
+			task.latestEndTime = parseInt(task.latestEndTime);
+			task.recurringLateOffset = parseInt(task.recurringLateOffset);
+			task.recurringPeriod = parseInt(task.recurringPeriod);
+		}
+	}
+	
 	Api.prototype.exit = function(success,error)
 	{
 		error = error || function(data){};
@@ -47,6 +60,7 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 		this.rpc.request('getTasks', {
 			params : {},
 			success : function(data){
+				this.converTaskDateStringsToInts(data.result);
 				this.fillTaskLookup(data.result);
 				
 				success(data.result);
@@ -54,15 +68,17 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			error : error
 		});
 	};
-	Api.prototype.insertTask = function(name,earliestStartTime,latestEndTime,duration,success,error)
+	Api.prototype.insertTask = function(name,earliestStartTime,latestEndTime,duration,recurringPeriod,recurringLateOffset,success,error)
 	{
 		error = error || function(data){};
 		this.rpc.request('insertTask', {
 			params : {
 				name: name,
-				earliestStartTime: earliestStartTime,
-				latestEndTime: latestEndTime,
-				duration: duration
+				earliestStartTime: earliestStartTime.toString(),
+				latestEndTime: latestEndTime.toString(),
+				duration: duration.toString(),
+				recurringPeriod: recurringPeriod.toString(),
+				recurringLateOffset: recurringLateOffset.toString()
 			},
 			success : function(data){
 				this.getTasks(function(){
@@ -72,16 +88,18 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			error : error
 		});
 	};
-	Api.prototype.updateTask = function(taskId,name,earliestStartTime,latestEndTime,duration,success,error)
+	Api.prototype.updateTask = function(taskId,name,earliestStartTime,latestEndTime,duration,recurringPeriod,recurringLateOffset,success,error)
 	{
 		error = error || function(data){};
 		this.rpc.request('updateTask', {
 			params : {
 				taskId: taskId,
 				name: name,
-				earliestStartTime: earliestStartTime,
-				latestEndTime: latestEndTime,
-				duration: duration
+				earliestStartTime: earliestStartTime.toString(),
+				latestEndTime: latestEndTime.toString(),
+				duration: duration.toString(),
+				recurringPeriod: recurringPeriod.toString(),
+				recurringLateOffset: recurringLateOffset.toString()
 			},
 			success : function(data){
 				this.getTasks(function(){

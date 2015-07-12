@@ -15,32 +15,34 @@ class Task :
 {
 public:
     Task();
-    Task(std::string name, unsigned int earliestStartTime,unsigned int latestEndTime,unsigned int duration);
+    Task(std::string name, uint64_t earliestStartTime, uint64_t latestEndTime, uint64_t duration);
     
     unsigned int getTaskId() const;
     void setTaskId(unsigned int taskId);
     std::string getName() const;
     void setName(std::string name);
-    unsigned int getEarliestStartTime() const;
-    void setEarliestStartTime(unsigned int earliestStartTime);
-    unsigned int getLatestEndTime() const;
-    void setLatestEndTime(unsigned int latestEndTime);
-    unsigned int getLatestStartTime() const;
-    unsigned int getDuration() const;
-    void setDuration(unsigned int duration);
+    uint64_t getEarliestStartTime() const;
+    void setEarliestStartTime(uint64_t earliestStartTime);
+    uint64_t getLatestEndTime() const;
+    void setLatestEndTime(uint64_t latestEndTime);
+    uint64_t getLatestStartTime() const;
+    uint64_t getDuration() const;
+    void setDuration(uint64_t duration);
     void addChild(std::shared_ptr<Task> child);
     std::shared_ptr<Task> getChild(unsigned int index);
     size_t getChildrenCount();
     void removeChild(unsigned int index);
     std::weak_ptr<Task> getParent();
     
-    void setRecurranceParameters(unsigned int period, unsigned int lateOffset);
+    uint64_t getRecurringPeriod() const;
+    uint64_t getRecurringLateOffset() const;
+    void setRecurranceParameters(uint64_t period, uint64_t lateOffset);
     size_t getRecurringTaskCount() const;
     std::weak_ptr<Task> getRecurranceParent() const;
     bool getIsRecurringParent() const;
     void clearRecurranceParameters();
     
-    std::shared_ptr<const Task> getRecurringChild(unsigned int index);
+    std::shared_ptr<const Task> getRecurringChild(unsigned int index) const;
     
 protected:
     void setParent(const std::shared_ptr<Task> & parent);
@@ -49,15 +51,15 @@ protected:
 private:
     unsigned int taskId;
     std::string name;
-    unsigned int earliestStartTime;
-    unsigned int latestEndTime;
-    unsigned int duration;
+    uint64_t earliestStartTime;
+    uint64_t latestEndTime;
+    uint64_t duration;
     std::vector<std::shared_ptr<Task>> children;
     std::vector<std::shared_ptr<Task>> recurringChildren;
     std::weak_ptr<Task> parent;
     
-    unsigned int recurringPeriod;
-    unsigned int recurringLateOffset;
+    uint64_t recurringPeriod;
+    uint64_t recurringLateOffset;
     std::weak_ptr<Task> recurrenceParent;
 
     void validateAndCorrectData();

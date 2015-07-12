@@ -31,7 +31,9 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 				parentTask.name,
 				parentTask.earliestStartTime,
 				parentTask.latestEndTime,
-				parentTask.duration);
+				parentTask.duration,
+				parentTask.recurringPeriod,
+				parentTask.recurringLateOffset);
 	};
 	CalendarForm.prototype.convertServerEventToCalendarEvent = function(serverEvent)
 	{
