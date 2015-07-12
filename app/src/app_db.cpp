@@ -164,6 +164,13 @@ void AppDB::removeTask(uint64_t taskId)
     database.execute(deleteString);
 }
 
+std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Event>>> AppDB::getLoggedEvents()
+{
+	auto loggedEvents = std::make_shared<std::map<uint64_t, std::shared_ptr<Core::Event>>>();
+
+	return loggedEvents;
+}
+
 std::string AppDB::getCurrentVersion()
 {
     return currentVersion;

@@ -7,6 +7,7 @@
 
 #include <database.hpp>
 #include <task.hpp>
+#include <event.hpp>
 
 namespace Tracker
 {
@@ -26,6 +27,7 @@ public:
     uint64_t insertTask(const Core::Task & newTask);
     void updateTask(uint64_t taskId, Core::Task & task);
     void removeTask(uint64_t taskId);
+    std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Event>>> getLoggedEvents();
     std::string getCurrentVersion();
 private:
     Database::Database & database;

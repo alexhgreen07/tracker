@@ -212,3 +212,10 @@ TEST(AppDBGroup, ValidateTaskUpdateByRecurringChildrenCount)
 	auto retrievedTask = result->at(taskId);
 	LONGS_EQUAL(newTask->getRecurringTaskCount(), retrievedTask->getRecurringTaskCount());
 }
+
+TEST(AppDBGroup, ValidateEventsTableExists)
+{
+	auto result = testDB.getLoggedEvents();
+
+	LONGS_EQUAL(0, result->size());
+}
