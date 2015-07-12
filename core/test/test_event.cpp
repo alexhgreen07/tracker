@@ -19,6 +19,7 @@ TEST(EventGroup, BasicInitialize)
     LONGS_EQUAL(0,testEvent->getDuration());
     LONGS_EQUAL(0,testEvent->getStartTime());
     CHECK(!testEvent->getParent());
+    CHECK(testEvent->getStatus() == Event::Status::Scheduled);
 }
 
 TEST(EventGroup, SetStartTime)
@@ -69,5 +70,13 @@ TEST(EventGroup, CheckOverlapping)
     testEvent->setDuration(testDuration);
     
     CHECK(testEvent->overlaps(testOverlappingEvent));
+}
+
+TEST(EventGroup, SetStatus)
+{
+	Event::Status desiredStatus = Event::Status::Logged;
+
+	testEvent->setStatus(desiredStatus);
+	CHECK(testEvent->getStatus() == desiredStatus);
 }
 

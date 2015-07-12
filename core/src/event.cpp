@@ -7,12 +7,14 @@ namespace Core
 
 Event::Event() :
     startTime(0),
-    duration(0)
+    duration(0),
+	status(Status::Scheduled)
 {}
 
 Event::Event(unsigned int startTime, unsigned int duration) :
     startTime(startTime),
-    duration(duration)
+    duration(duration),
+	status(Status::Scheduled)
 {}
 
 unsigned int Event::getDuration() const
@@ -38,6 +40,16 @@ unsigned int Event::getEndTime() const
 void Event::setStartTime(unsigned int startTime)
 {
     this->startTime = startTime;
+}
+
+Event::Status Event::getStatus()
+{
+	return status;
+}
+
+void Event::setStatus(Status status)
+{
+	this->status = status;
 }
 
 std::shared_ptr<const Task> Event::getParent() const

@@ -15,7 +15,8 @@ Task::Task() :
     duration(0),
     children(),
     recurringPeriod(0),
-    recurringLateOffset(0)
+    recurringLateOffset(0),
+	status(Status::Incomplete)
 {}
 
 Task::Task(std::string name, uint64_t earliestStartTime, uint64_t latestEndTime, uint64_t duration) :
@@ -23,7 +24,11 @@ Task::Task(std::string name, uint64_t earliestStartTime, uint64_t latestEndTime,
 	name(name),
     earliestStartTime(earliestStartTime),
     latestEndTime(latestEndTime),
-    duration(duration)
+    duration(duration),
+    children(),
+    recurringPeriod(0),
+    recurringLateOffset(0),
+	status(Status::Incomplete)
 {
 	validateAndCorrectData();
 }
@@ -78,6 +83,14 @@ void Task::setDuration(uint64_t duration)
 {
     this->duration = duration;
     validateAndCorrectData();
+}
+Task::Status Task::getStatus()
+{
+	return status;
+}
+void Task::setStatus(Status status)
+{
+	this->status = status;
 }
 void Task::addChild(std::shared_ptr<Task> child)
 {

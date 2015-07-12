@@ -14,6 +14,14 @@ class Task :
     public std::enable_shared_from_this<Task>
 {
 public:
+
+	enum class Status
+	{
+		Incomplete,
+		Complete,
+		Missed
+	};
+
     Task();
     Task(std::string name, uint64_t earliestStartTime, uint64_t latestEndTime, uint64_t duration);
     
@@ -28,6 +36,8 @@ public:
     uint64_t getLatestStartTime() const;
     uint64_t getDuration() const;
     void setDuration(uint64_t duration);
+    Status getStatus();
+    void setStatus(Status status);
     void addChild(std::shared_ptr<Task> child);
     std::shared_ptr<Task> getChild(unsigned int index);
     size_t getChildrenCount();
@@ -57,6 +67,7 @@ private:
     std::vector<std::shared_ptr<Task>> children;
     std::vector<std::shared_ptr<Task>> recurringChildren;
     std::weak_ptr<Task> parent;
+    Status status;
     
     uint64_t recurringPeriod;
     uint64_t recurringLateOffset;
