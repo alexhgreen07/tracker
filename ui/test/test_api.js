@@ -162,22 +162,33 @@ define( [ 'js/api' ], function(libapi) {
 		});
 		
 		it("gets events table with single event", function(done) {
-			insertDummyTask(function(){
-				testApi.getEvents(function(result){
-					
-					var expectedTable = [
-	                     {
-	                    	 taskId: 1,
-	                    	 name: expectedDummyTask.name,
-	                    	 startTime: expectedDummyTask.earliestStartTime,
-	                    	 duration: expectedDummyTask.duration
-	                	 }
-	    			];
-					
-					expect(result).toEqual(expectedTable);
-					done();
-				});
-			});
+			
+			var dummyStartTime = Math.round((new Date()).getTime() / 1000) + 60;
+			
+			testApi.insertTask(
+					expectedDummyTask.name,
+					dummyStartTime,
+					dummyStartTime + expectedDummyTask.duration,
+					expectedDummyTask.duration,
+					"Incomplete",
+					expectedDummyTask.recurringPeriod,
+					expectedDummyTask.recurringLateOffset,
+					function(){
+						testApi.getEvents(function(result){
+							
+							var expectedTable = [
+			                     {
+			                    	 taskId: 1,
+			                    	 name: expectedDummyTask.name,
+			                    	 startTime: dummyStartTime,
+			                    	 duration: expectedDummyTask.duration
+			                	 }
+			    			];
+							
+							expect(result).toEqual(expectedTable);
+							done();
+						});
+					});
 		});
 		
 		afterEach(function(done) {
