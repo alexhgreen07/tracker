@@ -2,18 +2,13 @@ define( [ 'js/api' ], function(libapi) {
 
 	describe("ApiLib Suite", function() {
 		
-		var name = "test name";
-		var earliestStartTime = 1;
-		var latestEndTime = 5;
-		var duration = 2;
-		
 		var expectedDummyTask = {
            	 taskId: 1,
-        	 name: name,
-        	 earliestStartTime: earliestStartTime, 
-        	 latestEndTime: latestEndTime, 
-        	 duration: duration,
-        	 status: 'Incomplete',
+        	 name: "test name",
+        	 earliestStartTime: 1, 
+        	 latestEndTime: 5, 
+        	 duration: 2,
+        	 status: 'Complete',
         	 recurringLateOffset: 1, 
         	 recurringPeriod: 10
     	 };
@@ -22,12 +17,28 @@ define( [ 'js/api' ], function(libapi) {
 		
 		function insertDummyTask(success,error)
 		{
-			testApi.insertTask(name,earliestStartTime,latestEndTime,duration,10,1,success,error);
+			testApi.insertTask(
+					expectedDummyTask.name,
+					expectedDummyTask.earliestStartTime,
+					expectedDummyTask.latestEndTime,
+					expectedDummyTask.duration,
+					expectedDummyTask.status,
+					expectedDummyTask.recurringPeriod,
+					expectedDummyTask.recurringLateOffset,
+					success,error);
 		}
 		
 		function updateDummyTask(success,error)
 		{
-			testApi.updateTask(1,name + 1,earliestStartTime + 1,latestEndTime + 1,duration + 1,11,2,success,error);
+			testApi.updateTask(1,
+					expectedDummyTask.name + 1,
+					expectedDummyTask.earliestStartTime + 1,
+					expectedDummyTask.latestEndTime + 1,
+					expectedDummyTask.duration + 1,
+					"Missed",
+					expectedDummyTask.recurringPeriod + 1,
+					expectedDummyTask.recurringLateOffset + 1,
+					success,error);
 		}
 		
 		function removeDummyTask(success,error)
@@ -103,13 +114,13 @@ define( [ 'js/api' ], function(libapi) {
 			var expectedTable = [
                  {
                 	 taskId: 1,
-                	 name: name + 1,
-                	 earliestStartTime: earliestStartTime + 1, 
-                	 latestEndTime: latestEndTime + 1, 
-                	 duration: duration + 1,
-                	 status: 'Incomplete',
-                	 recurringLateOffset: 2, 
-                	 recurringPeriod: 11
+                	 name: expectedDummyTask.name + 1,
+                	 earliestStartTime: expectedDummyTask.earliestStartTime + 1, 
+                	 latestEndTime: expectedDummyTask.latestEndTime + 1, 
+                	 duration: expectedDummyTask.duration + 1,
+                	 status: 'Missed',
+                	 recurringLateOffset: expectedDummyTask.recurringLateOffset + 1, 
+                	 recurringPeriod: expectedDummyTask.recurringPeriod + 1
             	 }
 			];
 			
@@ -157,9 +168,9 @@ define( [ 'js/api' ], function(libapi) {
 					var expectedTable = [
 	                     {
 	                    	 taskId: 1,
-	                    	 name: name,
-	                    	 startTime: earliestStartTime,
-	                    	 duration: duration
+	                    	 name: expectedDummyTask.name,
+	                    	 startTime: expectedDummyTask.earliestStartTime,
+	                    	 duration: expectedDummyTask.duration
 	                	 }
 	    			];
 					

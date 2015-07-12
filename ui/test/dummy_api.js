@@ -4,11 +4,11 @@ define( [ ], function() {
 	{
 		this.taskLookup = {};
 	}
-	DummyApi.prototype.insertTask = function(name,earliestStartTime,latestEndTime,duration,recurringPeriod,recurringLateOffset,success,error)
+	DummyApi.prototype.insertTask = function(name,earliestStartTime,latestEndTime,duration,status,recurringPeriod,recurringLateOffset,success,error)
 	{
 		success(true);
 	};
-	DummyApi.prototype.updateTask = function(taskId,name,earliestStartTime,latestEndTime,duration,recurringPeriod,recurringLateOffset,success,error)
+	DummyApi.prototype.updateTask = function(taskId,name,earliestStartTime,latestEndTime,duration,status,recurringPeriod,recurringLateOffset,success,error)
 	{
 		success(true);
 	}
