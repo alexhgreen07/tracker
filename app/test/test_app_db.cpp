@@ -307,3 +307,18 @@ TEST(AppDBGroup, ValidateEventInsertByEventId)
 	auto insertedEvent = result->at(eventId);
 	LONGS_EQUAL(eventId, insertedEvent->getEventId());
 }
+
+TEST(AppDBGroup, ValidateEventInsertByStatus)
+{
+	auto parent = std::make_shared<Core::Task>();
+	parent->setTaskId(1);
+	Core::Event newEvent;
+	newEvent.setParent(parent);
+
+	auto eventId = testDB.insertEvent(newEvent);
+
+	auto result = testDB.getLoggedEvents();
+
+	auto insertedEvent = result->at(eventId);
+	CHECK(Core::Event::Status::Logged == insertedEvent->getStatus());
+}
