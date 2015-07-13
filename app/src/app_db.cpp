@@ -244,6 +244,14 @@ uint64_t AppDB::insertEvent(const Core::Event & newEvent)
 	return eventInsertedRowId;
 }
 
+void AppDB::removeEvent(uint64_t eventId)
+{
+	std::string deleteString =
+	"delete from events where eventId = " + std::to_string(eventId);
+
+	database->execute(deleteString);
+}
+
 std::string AppDB::getCurrentVersion()
 {
     return currentVersion;

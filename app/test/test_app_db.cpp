@@ -307,3 +307,14 @@ TEST(AppDBGroup, ValidateEventInsertByStatus)
 	auto insertedEvent = result->at(newEvent->getEventId());
 	CHECK(Core::Event::Status::Logged == insertedEvent->getStatus());
 }
+
+TEST(AppDBGroup, ValidateEventDelete)
+{
+	auto newEvent = insertDummyEvent();
+
+    testDB.removeEvent(newEvent->getEventId());
+
+    auto result = testDB.getLoggedEvents();
+
+    LONGS_EQUAL(0, result->size());
+}

@@ -33,6 +33,7 @@ public:
 
     std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Event>>> getLoggedEvents();
     uint64_t insertEvent(const Core::Event & newEvent);
+    void removeEvent(uint64_t eventId);
 
     std::string getCurrentVersion();
 private:
