@@ -28,6 +28,17 @@ TEST_BASE(AppDBGroupBase)
 		newEvent->setEventId(testDB.insertEvent(*newEvent));
     	return newEvent;
 	}
+
+    std::shared_ptr<Core::Event> updateDummyEvent(uint64_t eventId)
+	{
+    	auto updatedEvent = std::make_shared<Core::Event>(2,3);
+    	auto parent = std::make_shared<Core::Task>();
+		parent->setTaskId(2);
+		updatedEvent->setParent(parent);
+		testDB.updateEvent(eventId,*updatedEvent);
+
+    	return updatedEvent;
+	}
 };
 
 TEST_GROUP_BASE(AppDBGroup, AppDBGroupBase)
@@ -318,3 +329,24 @@ TEST(AppDBGroup, ValidateEventDelete)
 
     LONGS_EQUAL(0, result->size());
 }
+
+TEST(AppDBGroup, ValidateEventUpdateByStartTime)
+{
+	auto newEvent = insertDummyEvent();
+	auto updatedEvent = updateDummyEvent(newEvent->getEventId());
+
+	auto result = testDB.getLoggedEvents();
+	auto updatedDbEvent = result->at(newEvent->getEventId());
+    LONGS_EQUAL(updatedEvent->getStartTime(),updatedDbEvent->getStartTime());
+}
+
+TEST(AppDBGroup, ValidateEventUpdateByDuration)
+{
+	auto newEvent = insertDummyEvent();
+	auto updatedEvent = updateDummyEvent(newEvent->getEventId());
+
+	auto result = testDB.getLoggedEvents();
+	auto updatedDbEvent = result->at(newEvent->getEventId());
+    LONGS_EQUAL(updatedEvent->getDuration(),updatedDbEvent->getDuration());
+}
+

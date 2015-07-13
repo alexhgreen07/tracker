@@ -244,6 +244,19 @@ uint64_t AppDB::insertEvent(const Core::Event & newEvent)
 	return eventInsertedRowId;
 }
 
+void AppDB::updateEvent(uint64_t eventId, const Core::Event & updatedEvent)
+{
+	std::string updateString = "update events set ";
+
+	updateString += "startTime = " + std::to_string(updatedEvent.getStartTime());
+	updateString += ",duration = " + std::to_string(updatedEvent.getDuration());
+	updateString += ",taskId = " + std::to_string(updatedEvent.getParent()->getTaskId());
+
+	updateString += " where eventId = " + std::to_string(eventId);
+
+	database->execute(updateString);
+}
+
 void AppDB::removeEvent(uint64_t eventId)
 {
 	std::string deleteString =
