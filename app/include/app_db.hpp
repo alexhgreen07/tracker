@@ -22,9 +22,6 @@ public:
     void updateDatabase();
 
     void initializeNewDatabase();
-    void createVersionTable();
-    void createTasksTable();
-    void createEventsTable();
 
     std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Task>>> getTasks();
     uint64_t insertTask(const Core::Task & newTask);
@@ -40,6 +37,10 @@ public:
 private:
     std::shared_ptr<Database::Database> database;
     std::string currentVersion;
+
+    void createVersionTable();
+    void createTasksTable();
+    void createEventsTable();
 };
 
 }
