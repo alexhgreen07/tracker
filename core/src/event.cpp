@@ -52,6 +52,16 @@ void Event::setStatus(Status status)
 	this->status = status;
 }
 
+void Event::setEventId(uint64_t eventId)
+{
+	this->eventId = eventId;
+}
+
+uint64_t Event::getEventId()
+{
+	return eventId;
+}
+
 std::shared_ptr<const Task> Event::getParent() const
 {
     return parent;

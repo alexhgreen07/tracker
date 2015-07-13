@@ -195,13 +195,14 @@ std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Event>>> AppDB::getLogg
 		auto nextEvent = std::make_shared<Core::Event>();
 		auto row = eventsTable->at(i);
 
+		//TODO: add parent task
+
 		uint64_t value;
 		uint64_t eventId;
 
-		//TODO: add eventId and task parent
-
 		std::istringstream input_stream(row[0]);
 		input_stream >> eventId;
+		nextEvent->setEventId(eventId);
 
 		input_stream = std::istringstream(row[1]);
 		input_stream >> value;

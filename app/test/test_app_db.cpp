@@ -262,3 +262,48 @@ TEST(AppDBGroup, ValidateEventInsert)
 
     LONGS_EQUAL(1, result->size());
 }
+
+TEST(AppDBGroup, ValidateEventInsertByStartTime)
+{
+	auto parent = std::make_shared<Core::Task>();
+	parent->setTaskId(1);
+	Core::Event newEvent(1,2);
+	newEvent.setParent(parent);
+
+	auto eventId = testDB.insertEvent(newEvent);
+
+	auto result = testDB.getLoggedEvents();
+
+	auto insertedEvent = result->at(eventId);
+	LONGS_EQUAL(newEvent.getStartTime(), insertedEvent->getStartTime());
+}
+
+TEST(AppDBGroup, ValidateEventInsertByDuration)
+{
+	auto parent = std::make_shared<Core::Task>();
+	parent->setTaskId(1);
+	Core::Event newEvent(1,2);
+	newEvent.setParent(parent);
+
+	auto eventId = testDB.insertEvent(newEvent);
+
+	auto result = testDB.getLoggedEvents();
+
+	auto insertedEvent = result->at(eventId);
+	LONGS_EQUAL(newEvent.getDuration(), insertedEvent->getDuration());
+}
+
+TEST(AppDBGroup, ValidateEventInsertByEventId)
+{
+	auto parent = std::make_shared<Core::Task>();
+	parent->setTaskId(1);
+	Core::Event newEvent;
+	newEvent.setParent(parent);
+
+	auto eventId = testDB.insertEvent(newEvent);
+
+	auto result = testDB.getLoggedEvents();
+
+	auto insertedEvent = result->at(eventId);
+	LONGS_EQUAL(eventId, insertedEvent->getEventId());
+}

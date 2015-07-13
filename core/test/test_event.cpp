@@ -80,3 +80,10 @@ TEST(EventGroup, SetStatus)
 	CHECK(testEvent->getStatus() == desiredStatus);
 }
 
+TEST(EventGroup, SetEventId)
+{
+	uint64_t eventId = 1;
+	testEvent->setEventId(eventId);
+	LONGS_EQUAL(eventId,testEvent->getEventId());
+}
+

@@ -29,6 +29,8 @@ public:
     void setStartTime(unsigned int startTime);
     Status getStatus();
     void setStatus(Status type);
+    void setEventId(uint64_t eventId);
+    uint64_t getEventId();
     std::shared_ptr<const Task> getParent() const;
     void setParent(const std::shared_ptr<const Task> & parent);
     bool overlaps(const std::shared_ptr<Event> & eventToCheck) const;
@@ -37,6 +39,7 @@ private:
     unsigned int duration;
     std::shared_ptr<const Task> parent;
     Status status;
+    uint64_t eventId;
 };
     
 }
