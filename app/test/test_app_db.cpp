@@ -18,6 +18,16 @@ TEST_BASE(AppDBGroupBase)
         testDB(mysqlDB)
     {
     }
+
+    std::shared_ptr<Core::Event> insertDummyEvent()
+	{
+    	auto newEvent = std::make_shared<Core::Event>(1,2);
+    	auto parent = std::make_shared<Core::Task>();
+		parent->setTaskId(1);
+		newEvent->setParent(parent);
+		newEvent->setEventId(testDB.insertEvent(*newEvent));
+    	return newEvent;
+	}
 };
 
 TEST_GROUP_BASE(AppDBGroup, AppDBGroupBase)
@@ -251,12 +261,7 @@ TEST(AppDBGroup, ValidateEventsTableExists)
 
 TEST(AppDBGroup, ValidateEventInsert)
 {
-	auto parent = std::make_shared<Core::Task>();
-	parent->setTaskId(1);
-    Core::Event newEvent;
-    newEvent.setParent(parent);
-
-    testDB.insertEvent(newEvent);
+	insertDummyEvent();
 
     auto result = testDB.getLoggedEvents();
 
@@ -265,60 +270,40 @@ TEST(AppDBGroup, ValidateEventInsert)
 
 TEST(AppDBGroup, ValidateEventInsertByStartTime)
 {
-	auto parent = std::make_shared<Core::Task>();
-	parent->setTaskId(1);
-	Core::Event newEvent(1,2);
-	newEvent.setParent(parent);
-
-	auto eventId = testDB.insertEvent(newEvent);
+	auto newEvent = insertDummyEvent();
 
 	auto result = testDB.getLoggedEvents();
 
-	auto insertedEvent = result->at(eventId);
-	LONGS_EQUAL(newEvent.getStartTime(), insertedEvent->getStartTime());
+	auto insertedEvent = result->at(newEvent->getEventId());
+	LONGS_EQUAL(newEvent->getStartTime(), insertedEvent->getStartTime());
 }
 
 TEST(AppDBGroup, ValidateEventInsertByDuration)
 {
-	auto parent = std::make_shared<Core::Task>();
-	parent->setTaskId(1);
-	Core::Event newEvent(1,2);
-	newEvent.setParent(parent);
-
-	auto eventId = testDB.insertEvent(newEvent);
+	auto newEvent = insertDummyEvent();
 
 	auto result = testDB.getLoggedEvents();
 
-	auto insertedEvent = result->at(eventId);
-	LONGS_EQUAL(newEvent.getDuration(), insertedEvent->getDuration());
+	auto insertedEvent = result->at(newEvent->getEventId());
+	LONGS_EQUAL(newEvent->getDuration(), insertedEvent->getDuration());
 }
 
 TEST(AppDBGroup, ValidateEventInsertByEventId)
 {
-	auto parent = std::make_shared<Core::Task>();
-	parent->setTaskId(1);
-	Core::Event newEvent;
-	newEvent.setParent(parent);
-
-	auto eventId = testDB.insertEvent(newEvent);
+	auto newEvent = insertDummyEvent();
 
 	auto result = testDB.getLoggedEvents();
 
-	auto insertedEvent = result->at(eventId);
-	LONGS_EQUAL(eventId, insertedEvent->getEventId());
+	auto insertedEvent = result->at(newEvent->getEventId());
+	LONGS_EQUAL(newEvent->getEventId(), insertedEvent->getEventId());
 }
 
 TEST(AppDBGroup, ValidateEventInsertByStatus)
 {
-	auto parent = std::make_shared<Core::Task>();
-	parent->setTaskId(1);
-	Core::Event newEvent;
-	newEvent.setParent(parent);
-
-	auto eventId = testDB.insertEvent(newEvent);
+	auto newEvent = insertDummyEvent();
 
 	auto result = testDB.getLoggedEvents();
 
-	auto insertedEvent = result->at(eventId);
+	auto insertedEvent = result->at(newEvent->getEventId());
 	CHECK(Core::Event::Status::Logged == insertedEvent->getStatus());
 }
