@@ -272,3 +272,26 @@ TEST(AppApiGroup, GetEvents)
 	LONGS_EQUAL(newTask.getDuration(),results[expectedIndex]["duration"].asInt());
 }
 
+
+TEST(AppApiGroup, InsertEvent)
+{
+	Core::Task newTask("test task",1,1,1);
+	newTask.setStatus(Core::Task::Status::Complete);
+	uint64_t taskId = db->insertTask(newTask);
+
+	params["startTime"] = "2";
+	params["duration"] = "3";
+	params["taskId"] = std::to_string(taskId);
+
+	procedures["insertEvent"]->call(params,results);
+
+	auto result = db->getLoggedEvents();
+
+	LONGS_EQUAL(1,result->size());
+
+	auto event = result->at(1);
+	LONGS_EQUAL(2,event->getStartTime());
+	LONGS_EQUAL(3,event->getDuration());
+	LONGS_EQUAL(taskId,event->getParent()->getTaskId());
+}
+
