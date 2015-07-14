@@ -10,6 +10,7 @@ namespace Application
 AppApi::AppApi(const std::shared_ptr<AppDB> & db, const std::shared_ptr<Clock> & clock) :
 	db(db),
 	clock(clock),
+	exitProcedure(*this),
 	sayHello(*this),
 	getTasks(*this),
 	insertTask(*this),
@@ -58,13 +59,13 @@ void AppApi::GetTasksProcedure::call(const Json::Value& request, Json::Value& re
 		auto task = outer_iter->second;
 		auto & row = response[i];
 		
-		fillJsonValueFromTask(row,*task);
+		parent.fillJsonValueFromTask(row,*task);
 		
 		i++;
 	}
 }
 
-void AppApi::GetTasksProcedure::fillJsonValueFromTask(Json::Value& row, const Core::Task & task)
+void AppApi::fillJsonValueFromTask(Json::Value& row, const Core::Task & task)
 {
 	row["taskId"] = task.getTaskId();
 	row["name"] = task.getName();
@@ -77,7 +78,7 @@ void AppApi::GetTasksProcedure::fillJsonValueFromTask(Json::Value& row, const Co
 
 }
 
-std::string AppApi::GetTasksProcedure::statusToString(Core::Task::Status status)
+std::string AppApi::statusToString(Core::Task::Status status)
 {
 	std::string statusString;
 
