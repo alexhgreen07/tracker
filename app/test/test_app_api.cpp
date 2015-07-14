@@ -322,3 +322,21 @@ TEST(AppApiGroup, UpdateEvent)
 	LONGS_EQUAL(updatedParent->getTaskId(),event->getParent()->getTaskId());
 }
 
+TEST(AppApiGroup, RemoveEvent)
+{
+	auto newTask = std::make_shared<Core::Task>("test task",1,1,1);
+	newTask->setStatus(Core::Task::Status::Complete);
+	newTask->setTaskId(db->insertTask(*newTask));
+	auto newEvent = std::make_shared<Core::Event>(1,2);
+	newEvent->setParent(newTask);
+	newEvent->setEventId(db->insertEvent(*newEvent));
+
+	params["eventId"] = std::to_string(newEvent->getEventId());
+
+	procedures["removeEvent"]->call(params,results);
+
+	auto result = db->getLoggedEvents();
+
+	LONGS_EQUAL(0,result->size());
+}
+

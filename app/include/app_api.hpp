@@ -57,6 +57,7 @@ protected:
 	APP_API_PROCEDURE(RemoveTask) removeTask;
 	APP_API_PROCEDURE(InsertEvent) insertEvent;
 	APP_API_PROCEDURE(UpdateEvent) updateEvent;
+	APP_API_PROCEDURE(RemoveEvent) removeEvent;
 	APP_API_PROCEDURE(GetEvents) getEvents;
 	
 	JsonMethods procedurePointers;
