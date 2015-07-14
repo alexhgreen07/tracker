@@ -83,7 +83,7 @@ void AppDB::createEventsTable()
 std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Task>>> AppDB::getTasks()
 {
     auto tasksTable = database->select("select taskId, name, earliestStartTime, latestEndTime, duration, status, recurringPeriod, recurringLateOffset from tasks");
-    auto tasks = std::make_shared<std::map<uint64_t, std::shared_ptr<Core::Task>>>();
+    tasks = std::make_shared<std::map<uint64_t, std::shared_ptr<Core::Task>>>();
     
     for(unsigned int i = 0; i < tasksTable->size(); i++)
     {
@@ -157,6 +157,8 @@ uint64_t AppDB::insertTask(const Core::Task & newTask)
     database->execute(insertString);
     taskInsertedRowId = database->lastInsertRowId();
 
+    getTasks();
+
     return taskInsertedRowId;
 }
 
@@ -175,6 +177,8 @@ void AppDB::updateTask(uint64_t taskId, Core::Task & task)
     updateString += " where taskId = " + std::to_string(taskId);
     
     database->execute(updateString);
+
+    getTasks();
 }
 
 void AppDB::removeTask(uint64_t taskId)
@@ -183,12 +187,19 @@ void AppDB::removeTask(uint64_t taskId)
     "delete from tasks where taskId = " + std::to_string(taskId);
     
     database->execute(deleteString);
+
+    getTasks();
 }
 
 std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Event>>> AppDB::getLoggedEvents()
 {
 	auto eventsTable = database->select("select eventId, startTime, duration, taskId from events");
-	auto loggedEvents = std::make_shared<std::map<uint64_t, std::shared_ptr<Core::Event>>>();
+	events = std::make_shared<std::map<uint64_t, std::shared_ptr<Core::Event>>>();
+
+	if(!tasks)
+	{
+		getTasks();
+	}
 
 	for(unsigned int i = 0; i < eventsTable->size(); i++)
 	{
@@ -212,12 +223,17 @@ std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Event>>> AppDB::getLogg
 		input_stream >> value;
 		nextEvent->setDuration(value);
 
+		input_stream = std::istringstream(row[3]);
+		input_stream >> value;
+
+		nextEvent->setParent((*tasks)[value]);
+
 		nextEvent->setStatus(Core::Event::Status::Logged);
 
-		(*loggedEvents)[eventId] = nextEvent;
+		(*events)[eventId] = nextEvent;
 	}
 
-	return loggedEvents;
+	return events;
 }
 
 uint64_t AppDB::insertEvent(const Core::Event & newEvent)

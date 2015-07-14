@@ -38,6 +38,9 @@ private:
     std::shared_ptr<Database::Database> database;
     std::string currentVersion;
 
+    std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Task>>> tasks;
+    std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Event>>> events;
+
     void createVersionTable();
     void createTasksTable();
     void createEventsTable();

@@ -19,11 +19,19 @@ TEST_BASE(AppDBGroupBase)
     {
     }
 
+    std::shared_ptr<Core::Task> insertDummyTask()
+	{
+    	auto newTask = std::make_shared<Core::Task>();
+    	uint64_t taskId = testDB.insertTask(*newTask);
+    	newTask->setTaskId(taskId);
+
+    	return newTask;
+	}
+
     std::shared_ptr<Core::Event> insertDummyEvent()
 	{
     	auto newEvent = std::make_shared<Core::Event>(1,2);
-    	auto parent = std::make_shared<Core::Task>();
-		parent->setTaskId(1);
+    	auto parent = insertDummyTask();
 		newEvent->setParent(parent);
 		newEvent->setEventId(testDB.insertEvent(*newEvent));
     	return newEvent;
@@ -32,7 +40,7 @@ TEST_BASE(AppDBGroupBase)
     std::shared_ptr<Core::Event> updateDummyEvent(uint64_t eventId)
 	{
     	auto updatedEvent = std::make_shared<Core::Event>(2,3);
-    	auto parent = std::make_shared<Core::Task>();
+    	auto parent = insertDummyTask();
 		parent->setTaskId(2);
 		updatedEvent->setParent(parent);
 		testDB.updateEvent(eventId,*updatedEvent);
@@ -319,6 +327,16 @@ TEST(AppDBGroup, ValidateEventInsertByStatus)
 	CHECK(Core::Event::Status::Logged == insertedEvent->getStatus());
 }
 
+TEST(AppDBGroup, ValidateEventInsertByParentTaskId)
+{
+	auto newEvent = insertDummyEvent();
+
+	auto result = testDB.getLoggedEvents();
+
+	auto insertedEvent = result->at(newEvent->getEventId());
+	LONGS_EQUAL(newEvent->getParent()->getTaskId(), insertedEvent->getParent()->getTaskId());
+}
+
 TEST(AppDBGroup, ValidateEventDelete)
 {
 	auto newEvent = insertDummyEvent();
@@ -348,5 +366,15 @@ TEST(AppDBGroup, ValidateEventUpdateByDuration)
 	auto result = testDB.getLoggedEvents();
 	auto updatedDbEvent = result->at(newEvent->getEventId());
     LONGS_EQUAL(updatedEvent->getDuration(),updatedDbEvent->getDuration());
+}
+
+TEST(AppDBGroup, ValidateEventUpdateByParentTaskId)
+{
+	auto newEvent = insertDummyEvent();
+	auto updatedEvent = updateDummyEvent(newEvent->getEventId());
+
+	auto result = testDB.getLoggedEvents();
+	auto updatedDbEvent = result->at(newEvent->getEventId());
+    LONGS_EQUAL(updatedEvent->getParent()->getTaskId(),updatedDbEvent->getParent()->getTaskId());
 }
 
