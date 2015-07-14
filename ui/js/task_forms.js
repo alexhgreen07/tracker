@@ -1,4 +1,4 @@
-define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$) {
+define( [ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(libFormHelpers,moment,$) {
 	
 	function AddTaskForm(api)
 	{
@@ -45,9 +45,9 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 	AddTaskForm.prototype.submitClickEvent = function()
 	{
 		this.api.insertTask(
-				this.nameInput.value,
-				$(this.earliestStartTimeInput).datetimepicker('getDate').getTime() / 1000,
-				$(this.latestEndTimeInput).datetimepicker('getDate').getTime() / 1000,
+				this.nameInput.getValue(),
+				this.earliestStartTimeInput.getValue().getTime() / 1000,
+				this.latestEndTimeInput.getValue().getTime() / 1000,
 				this.getTimestampFromInputs(this.durationDayInput,this.durationInput),
 				this.statusInput.value,
 				this.getTimestampFromInputs(this.recurrancePeriodDayInput,this.recurrancePeriodInput),
@@ -57,30 +57,14 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 	};
 	AddTaskForm.prototype.renderEntryInputs = function(div)
 	{
-		div.appendChild(document.createTextNode("Name"));
-		div.appendChild(document.createElement("br"));
-		this.nameInput = div.appendChild(document.createElement("input"));
-		this.nameInput.type = "text";
-		this.nameInput.value = "Task Name";
+		this.nameInput = new libFormHelpers.TextFormField("Name","Task Name");
+		this.nameInput.render(div);
 		
-		div.appendChild(document.createElement("br"));
-		div.appendChild(document.createElement("br"));
+		this.earliestStartTimeInput = new libFormHelpers.DateTimeFormField("Earliest Start Time",(new Date()));
+		this.earliestStartTimeInput.render(div);
 		
-		div.appendChild(document.createTextNode("Earliest Start Time"));
-		div.appendChild(document.createElement("br"));
-		this.earliestStartTimeInput = div.appendChild(document.createElement("input"));
-		this.earliestStartTimeInput.type = "text";
-		
-		div.appendChild(document.createElement("br"));
-		div.appendChild(document.createElement("br"));
-		
-		div.appendChild(document.createTextNode("Latest End Time"));
-		div.appendChild(document.createElement("br"));
-		this.latestEndTimeInput = div.appendChild(document.createElement("input"));
-		this.latestEndTimeInput.type = "text";
-		
-		div.appendChild(document.createElement("br"));
-		div.appendChild(document.createElement("br"));
+		this.latestEndTimeInput = new libFormHelpers.DateTimeFormField("Latest End Time",(new Date()));
+		this.latestEndTimeInput.render(div);
 		
 		div.appendChild(document.createTextNode("Duration"));
 		div.appendChild(document.createElement("br"));
@@ -127,11 +111,6 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 		this.resultsDiv = div.appendChild(document.createElement("div"));
 		
 		div.appendChild(document.createElement("br"));
-		
-		$(this.earliestStartTimeInput).datetimepicker();
-		$(this.earliestStartTimeInput).datetimepicker('setDate',new Date());
-		$(this.latestEndTimeInput).datetimepicker();
-		$(this.latestEndTimeInput).datetimepicker('setDate',new Date());
 
 		var d = new Date(1970,1,1,1,0,0,0); 
 		var timePickerOptions = {
@@ -197,10 +176,10 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 	UpdateTaskForm.prototype.submitClickEvent = function()
 	{
 		this.api.updateTask(
-				parseInt(this.taskIdInput.value),
-				this.nameInput.value,
-				$(this.earliestStartTimeInput).datetimepicker('getDate').getTime() / 1000,
-				$(this.latestEndTimeInput).datetimepicker('getDate').getTime() / 1000,
+				parseInt(this.taskIdInput.getValue()),
+				this.nameInput.getValue(),
+				this.earliestStartTimeInput.getValue().getTime() / 1000,
+				this.latestEndTimeInput.getValue().getTime() / 1000,
 				this.getTimestampFromInputs(this.durationDayInput,this.durationInput),
 				this.statusInput.value,
 				this.getTimestampFromInputs(this.recurrancePeriodDayInput,this.recurrancePeriodInput),
@@ -211,7 +190,7 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 	UpdateTaskForm.prototype.deleteClickEvent = function()
 	{
 		this.api.removeTask(
-				parseInt(this.taskIdInput.value),
+				parseInt(this.taskIdInput.getValue()),
 				this.submitSuccess.bind(this),
 				this.submitError.bind(this));
 	};
@@ -219,14 +198,9 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 	{
 		var div = parent.appendChild(document.createElement("div"));
 		
-		div.appendChild(document.createTextNode("Task"));
-		div.appendChild(document.createElement("br"));
-		this.taskIdInput = div.appendChild(document.createElement("input"));
-		this.taskIdInput.type = "text";
-		
-		div.appendChild(document.createElement("br"));
-		div.appendChild(document.createElement("br"));
-		
+		this.taskIdInput = new libFormHelpers.TextFormField("Task","");
+		this.taskIdInput.render(div);
+
 		this.renderEntryInputs(div);
 		
 		this.submitButton = div.appendChild(document.createElement("input"));

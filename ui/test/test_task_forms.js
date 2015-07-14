@@ -32,8 +32,9 @@ define( [ 'js/task_forms', 'test/dummy_api' ], function(libTaskForms,libDummyApi
 			testForm.render(testDiv);
 			
 			var now = new Date();
+			var testName = "test name";
 			
-			testForm.nameInput.value = "test name";
+			testForm.nameInput.setValue(testName);
 			$(testForm.earliestStartTimeInput).datetimepicker('setDate', now );
 			$(testForm.latestEndTimeInput).datetimepicker('setDate', now );
 			
@@ -53,7 +54,7 @@ define( [ 'js/task_forms', 'test/dummy_api' ], function(libTaskForms,libDummyApi
 			var expectedTime = roundTimeToMinute(now) / 1000;
 			
 			var callArgs = testApi.insertTask.calls.argsFor(0);
-			expect(callArgs[0]).toBe(testForm.nameInput.value);
+			expect(callArgs[0]).toBe(testName);
 			expect(callArgs[1]).toBe(expectedTime);
 			expect(callArgs[2]).toBe(expectedTime);
 			expect(callArgs[3]).toBe(1 * 3600 * 24 + 1 * 3600 + 60);
@@ -94,11 +95,12 @@ define( [ 'js/task_forms', 'test/dummy_api' ], function(libTaskForms,libDummyApi
 			
 			var now = new Date();
 			var dummyTaskId = 1;
+			var testName = "test name";
 			
-			testForm.taskIdInput.value = dummyTaskId;
-			testForm.nameInput.value = "test name";
-			$(testForm.earliestStartTimeInput).datetimepicker('setDate', now );
-			$(testForm.latestEndTimeInput).datetimepicker('setDate', now );
+			testForm.taskIdInput.setValue(dummyTaskId);
+			testForm.nameInput.setValue(testName);
+			testForm.earliestStartTimeInput.setValue(now);
+			testForm.latestEndTimeInput.setValue(now);
 			
 			testForm.statusInput.value = "Complete";
 			
@@ -117,7 +119,7 @@ define( [ 'js/task_forms', 'test/dummy_api' ], function(libTaskForms,libDummyApi
 			
 			var callArgs = testApi.updateTask.calls.argsFor(0);
 			expect(callArgs[0]).toBe(dummyTaskId);
-			expect(callArgs[1]).toBe(testForm.nameInput.value);
+			expect(callArgs[1]).toBe(testName);
 			expect(callArgs[2]).toBe(expectedTime);
 			expect(callArgs[3]).toBe(expectedTime);
 			expect(callArgs[4]).toBe(1 * 3600 * 24 + 1 * 3600 + 60);
@@ -131,7 +133,7 @@ define( [ 'js/task_forms', 'test/dummy_api' ], function(libTaskForms,libDummyApi
 			var now = new Date();
 			var dummyTaskId = 1;
 			
-			testForm.taskIdInput.value = dummyTaskId;
+			testForm.taskIdInput.setValue(dummyTaskId);
 			
 			testForm.deleteButton.click();
 			
@@ -155,8 +157,8 @@ define( [ 'js/task_forms', 'test/dummy_api' ], function(libTaskForms,libDummyApi
 			
 			expect(parseInt(testForm.taskIdInput.value)).toBe(taskId);
 			expect(testForm.nameInput.value).toBe(name);
-			expect($(testForm.earliestStartTimeInput).datetimepicker('getDate').getTime()).toBe(dummyTime * 1000);
-			expect($(testForm.latestEndTimeInput).datetimepicker('getDate').getTime()).toBe(dummyTime * 1000);
+			expect(testForm.earliestStartTimeInput.getValue().getTime()).toBe(dummyTime * 1000);
+			expect(testForm.latestEndTimeInput.getValue().getTime()).toBe(dummyTime * 1000);
 			expect(parseInt(testForm.durationDayInput.value)).toBe(1);
 			expect(testForm.durationInput.value).toBe("01:01");
 			expect(parseInt(testForm.recurrancePeriodDayInput.value)).toBe(2);
