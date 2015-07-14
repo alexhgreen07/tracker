@@ -48,7 +48,7 @@ define( [ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], 
 				this.nameInput.getValue(),
 				this.earliestStartTimeInput.getValue().getTime() / 1000,
 				this.latestEndTimeInput.getValue().getTime() / 1000,
-				this.getTimestampFromInputs(this.durationDayInput,this.durationInput),
+				this.durationInput.getValue(),
 				this.statusInput.value,
 				this.getTimestampFromInputs(this.recurrancePeriodDayInput,this.recurrancePeriodInput),
 				this.getTimestampFromInputs(this.recurranceLateOffsetDayInput,this.recurranceLateOffsetInput),
@@ -66,16 +66,8 @@ define( [ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], 
 		this.latestEndTimeInput = new libFormHelpers.DateTimeFormField("Latest End Time",(new Date()));
 		this.latestEndTimeInput.render(div);
 		
-		div.appendChild(document.createTextNode("Duration"));
-		div.appendChild(document.createElement("br"));
-		this.durationDayInput = div.appendChild(document.createElement("input"));
-		this.durationDayInput.type = "text";
-		this.durationDayInput.value = 0;
-		this.durationInput = div.appendChild(document.createElement("input"));
-		this.durationInput.type = "text";
-
-		div.appendChild(document.createElement("br"));
-		div.appendChild(document.createElement("br"));
+		this.durationInput = new libFormHelpers.DurationFormField("Duration",3600);
+		this.durationInput.render(div);
 		
 		div.appendChild(document.createTextNode("Status"));
 		div.appendChild(document.createElement("br"));
@@ -117,8 +109,6 @@ define( [ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], 
 			timeOnly: true,
 			timeFormat: 'HH:mm',
 		};
-		$(this.durationInput).datetimepicker(timePickerOptions);
-		$(this.durationInput).datetimepicker('setDate',d);
 		$(this.recurrancePeriodInput).datetimepicker(timePickerOptions);
 		$(this.recurrancePeriodInput).datetimepicker('setDate','00:00');
 		$(this.recurranceLateOffsetInput).datetimepicker(timePickerOptions);
@@ -155,8 +145,6 @@ define( [ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], 
 		
 		var newEarliestStartTime = new Date(earliestStartTime * 1000);
 		var newLatestEndTime = new Date(latestEndTime * 1000);
-		var momentDuration = moment.duration(duration, 'seconds');
-		var newDuration = new Date(0,0,0,momentDuration.hours(),momentDuration.minutes(),0,0);
 		var recurrancePeriodDuration = moment.duration(recurrancePeriod, 'seconds');
 		var newRecurrancePeriod = new Date(0,0,0,recurrancePeriodDuration.hours(),recurrancePeriodDuration.minutes(),0,0);
 		var recurranceLateOffsetDuration = moment.duration(recurranceLateOffset, 'seconds');
@@ -166,8 +154,7 @@ define( [ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], 
 		this.nameInput.value = name;
 		$(this.earliestStartTimeInput).datetimepicker('setDate', newEarliestStartTime );
 		$(this.latestEndTimeInput).datetimepicker('setDate', newLatestEndTime );
-		this.durationDayInput.value = momentDuration.days();
-		$(this.durationInput).datetimepicker('setDate', newDuration );
+		this.durationInput.setValue(duration);
 		this.recurrancePeriodDayInput.value = recurrancePeriodDuration.days();
 		$(this.recurrancePeriodInput).datetimepicker('setDate', newRecurrancePeriod );
 		this.recurranceLateOffsetDayInput.value = recurranceLateOffsetDuration.days();
@@ -180,7 +167,7 @@ define( [ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], 
 				this.nameInput.getValue(),
 				this.earliestStartTimeInput.getValue().getTime() / 1000,
 				this.latestEndTimeInput.getValue().getTime() / 1000,
-				this.getTimestampFromInputs(this.durationDayInput,this.durationInput),
+				this.durationInput.getValue(),
 				this.statusInput.value,
 				this.getTimestampFromInputs(this.recurrancePeriodDayInput,this.recurrancePeriodInput),
 				this.getTimestampFromInputs(this.recurranceLateOffsetDayInput,this.recurranceLateOffsetInput),
