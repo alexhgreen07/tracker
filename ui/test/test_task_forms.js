@@ -153,8 +153,8 @@ define( [ 'js/task_forms', 'test/dummy_api' ], function(libTaskForms,libDummyApi
 			
 			testForm.setTaskData(taskId,name,dummyTime,dummyTime,duration,recurrancePeriod,recurranceLateOffset);
 			
-			expect(parseInt(testForm.taskIdInput.value)).toBe(taskId);
-			expect(testForm.nameInput.value).toBe(name);
+			expect(parseInt(testForm.taskIdInput.getValue())).toBe(taskId);
+			expect(testForm.nameInput.getValue()).toBe(name);
 			expect(testForm.earliestStartTimeInput.getValue().getTime()).toBe(dummyTime * 1000);
 			expect(testForm.latestEndTimeInput.getValue().getTime()).toBe(dummyTime * 1000);
 			expect(testForm.durationInput.getValue()).toBe(duration);

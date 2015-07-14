@@ -125,10 +125,10 @@ define( [ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], 
 		var recurranceLateOffsetDuration = moment.duration(recurranceLateOffset, 'seconds');
 		var newRecurranceLateOffset = new Date(0,0,0,recurranceLateOffsetDuration.hours(),recurranceLateOffsetDuration.minutes(),0,0);
 		
-		this.taskIdInput.value = taskId;
-		this.nameInput.value = name;
-		$(this.earliestStartTimeInput).datetimepicker('setDate', newEarliestStartTime );
-		$(this.latestEndTimeInput).datetimepicker('setDate', newLatestEndTime );
+		this.taskIdInput.setValue(taskId);
+		this.nameInput.setValue(name);
+		this.earliestStartTimeInput.setValue(newEarliestStartTime);
+		this.latestEndTimeInput.setValue(newLatestEndTime);
 		this.durationInput.setValue(duration);
 		this.recurrancePeriodInput.setValue(recurrancePeriod);
 		this.recurranceLateOffsetInput.setValue(recurranceLateOffset);
