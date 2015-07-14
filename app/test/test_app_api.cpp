@@ -295,3 +295,30 @@ TEST(AppApiGroup, InsertEvent)
 	LONGS_EQUAL(taskId,event->getParent()->getTaskId());
 }
 
+TEST(AppApiGroup, UpdateEvent)
+{
+	auto newTask = std::make_shared<Core::Task>("test task",1,1,1);
+	newTask->setStatus(Core::Task::Status::Complete);
+	newTask->setTaskId(db->insertTask(*newTask));
+	auto newEvent = std::make_shared<Core::Event>(1,2);
+	newEvent->setParent(newTask);
+	newEvent->setEventId(db->insertEvent(*newEvent));
+
+	auto updatedParent = std::make_shared<Core::Task>("test task 2",1,1,1);
+	updatedParent->setStatus(Core::Task::Status::Complete);
+	updatedParent->setTaskId(db->insertTask(*updatedParent));
+
+	params["eventId"] = std::to_string(newEvent->getEventId());
+	params["startTime"] = "2";
+	params["duration"] = "3";
+	params["taskId"] = std::to_string(updatedParent->getTaskId());
+
+	procedures["updateEvent"]->call(params,results);
+
+	auto result = db->getLoggedEvents();
+	auto event = result->at(newEvent->getEventId());
+	LONGS_EQUAL(2,event->getStartTime());
+	LONGS_EQUAL(3,event->getDuration());
+	LONGS_EQUAL(updatedParent->getTaskId(),event->getParent()->getTaskId());
+}
+

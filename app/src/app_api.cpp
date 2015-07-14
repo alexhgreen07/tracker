@@ -17,6 +17,7 @@ AppApi::AppApi(const std::shared_ptr<AppDB> & db, const std::shared_ptr<Clock> &
 	updateTask(*this),
 	removeTask(*this),
 	insertEvent(*this),
+	updateEvent(*this),
 	getEvents(*this)
 {
 	procedurePointers["exit"] = &exitProcedure;
@@ -26,6 +27,7 @@ AppApi::AppApi(const std::shared_ptr<AppDB> & db, const std::shared_ptr<Clock> &
 	procedurePointers["updateTask"] = &updateTask;
 	procedurePointers["removeTask"] = &removeTask;
 	procedurePointers["insertEvent"] = &insertEvent;
+	procedurePointers["updateEvent"] = &updateEvent;
 	procedurePointers["getEvents"] = &getEvents;
 }
 
@@ -229,6 +231,36 @@ void AppApi::InsertEvent::call(const Json::Value& request, Json::Value& response
 	newEvent.setParent(parentTask);
 
 	parent.db->insertEvent(newEvent);
+
+	response = true;
+}
+
+void AppApi::UpdateEvent::call(const Json::Value& request, Json::Value& response)
+{
+	uint64_t eventId;
+	uint64_t startTime;
+	uint64_t duration;
+	uint64_t parentTaskId;
+
+	std::istringstream input_stream(request["eventId"].asString());
+	input_stream >> eventId;
+
+	input_stream = std::istringstream(request["startTime"].asString());
+	input_stream >> startTime;
+
+	input_stream = std::istringstream(request["duration"].asString());
+	input_stream >> duration;
+
+	input_stream = std::istringstream(request["taskId"].asString());
+	input_stream >> parentTaskId;
+
+	auto result = parent.db->getTasks();
+	auto parentTask = result->at(parentTaskId);
+
+	Core::Event updatedEvent(startTime,duration);
+	updatedEvent.setParent(parentTask);
+
+	parent.db->updateEvent(eventId,updatedEvent);
 
 	response = true;
 }
