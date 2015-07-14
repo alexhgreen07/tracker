@@ -51,7 +51,7 @@ define( [ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], 
 				this.durationInput.getValue(),
 				this.statusInput.value,
 				this.recurrancePeriodInput.getValue(),
-				this.getTimestampFromInputs(this.recurranceLateOffsetDayInput,this.recurranceLateOffsetInput),
+				this.recurranceLateOffsetInput.getValue(),
 				this.submitSuccess.bind(this),
 				this.submitError.bind(this));
 	};
@@ -81,28 +81,15 @@ define( [ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], 
 		
 		this.recurrancePeriodInput = new libFormHelpers.DurationFormField("Recurrance Period",0);
 		this.recurrancePeriodInput.render(div);
-
-		div.appendChild(document.createTextNode("Recurrance Late Offset"));
-		div.appendChild(document.createElement("br"));
-		this.recurranceLateOffsetDayInput = div.appendChild(document.createElement("input"));
-		this.recurranceLateOffsetDayInput.type = "text";
-		this.recurranceLateOffsetDayInput.value = 0;
-		this.recurranceLateOffsetInput = div.appendChild(document.createElement("input"));
-		this.recurranceLateOffsetInput.type = "text";
 		
+		this.recurranceLateOffsetInput = new libFormHelpers.DurationFormField("Recurrance Late Offset",0);
+		this.recurranceLateOffsetInput.render(div);
+
 		div.appendChild(document.createElement("br"));
 		
 		this.resultsDiv = div.appendChild(document.createElement("div"));
 		
 		div.appendChild(document.createElement("br"));
-
-		var d = new Date(1970,1,1,1,0,0,0); 
-		var timePickerOptions = {
-			timeOnly: true,
-			timeFormat: 'HH:mm',
-		};
-		$(this.recurranceLateOffsetInput).datetimepicker(timePickerOptions);
-		$(this.recurranceLateOffsetInput).datetimepicker('setDate','00:00');
 		
 	};
 	AddTaskForm.prototype.render = function(parent)
@@ -144,8 +131,7 @@ define( [ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], 
 		$(this.latestEndTimeInput).datetimepicker('setDate', newLatestEndTime );
 		this.durationInput.setValue(duration);
 		this.recurrancePeriodInput.setValue(recurrancePeriod);
-		this.recurranceLateOffsetDayInput.value = recurranceLateOffsetDuration.days();
-		$(this.recurranceLateOffsetInput).datetimepicker('setDate', newRecurranceLateOffset );
+		this.recurranceLateOffsetInput.setValue(recurranceLateOffset);
 	};
 	UpdateTaskForm.prototype.submitClickEvent = function()
 	{
@@ -157,7 +143,7 @@ define( [ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], 
 				this.durationInput.getValue(),
 				this.statusInput.value,
 				this.recurrancePeriodInput.getValue(),
-				this.getTimestampFromInputs(this.recurranceLateOffsetDayInput,this.recurranceLateOffsetInput),
+				this.recurranceLateOffsetInput.getValue(),
 				this.submitSuccess.bind(this),
 				this.submitError.bind(this));
 	};
