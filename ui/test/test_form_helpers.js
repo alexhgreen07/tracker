@@ -1,11 +1,11 @@
 define( [ 'js/form_helpers' ], function(libFormHelpers) {
 	
 	var testDiv = document.getElementById("test_div");
+	var testInput = null;
+	var testName = "Name";
 	
 	describe("Form Helpers Text Input Suite", function() {
-		
-		var testInput = null;
-		var testName = "Name";
+
 		var defaultValue = "Value";
 		
 		beforeEach(function() {
@@ -43,9 +43,7 @@ define( [ 'js/form_helpers' ], function(libFormHelpers) {
 	});
 	
 	describe("Form Helpers DateTime Input Suite", function() {
-		
-		var testInput = null;
-		var testName = "Name";
+
 		var defaultValue = new Date(Math.round((new Date()).getTime() / 1000 / 60) * 1000 * 60);
 		
 		beforeEach(function() {
@@ -84,8 +82,6 @@ define( [ 'js/form_helpers' ], function(libFormHelpers) {
 	
 	describe("Form Helpers Duartion Input Suite", function() {
 		
-		var testInput = null;
-		var testName = "Name";
 		var defaultValue = 60 + 3600 + 3600 * 24;
 		
 		beforeEach(function() {
