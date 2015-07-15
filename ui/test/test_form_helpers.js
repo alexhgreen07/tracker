@@ -82,4 +82,44 @@ define( [ 'js/form_helpers' ], function(libFormHelpers) {
 		
 	});
 	
+	describe("Form Helpers Duartion Input Suite", function() {
+		
+		var testInput = null;
+		var testName = "Name";
+		var defaultValue = 60 + 3600 + 3600 * 24;
+		
+		beforeEach(function() {
+			testInput = new libFormHelpers.DurationFormField(testName,defaultValue);
+			testInput.render(testDiv);
+		});
+		
+		it("is allocated", function() {
+			expect(testInput).not.toEqual(null);
+		});
+		
+		it("renders the input", function() {
+			expect(testDiv.innerHTML).toContain(testName);
+		});
+		
+		it("is default value", function() {
+			expect(testInput.getValue()).toEqual(defaultValue);
+		});
+		
+		it("sets value", function() {
+			var newValue = defaultValue - 60;
+			testInput.setValue(newValue);
+			expect(testInput.getValue()).toEqual(newValue);
+		});
+		
+		it("validates input value", function() {
+			expect(testInput.textDayInput.value).toBe("1");
+			expect(testInput.textTimeInput.value).toBe("01:01");
+		});
+		
+		afterEach(function() {
+			testInput = null;
+			testDiv.innerHTML = "";
+		});
+	});
+	
 });
