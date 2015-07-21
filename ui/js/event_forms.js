@@ -5,7 +5,13 @@ define(function(){
 		
 	}
 	
+	function EditEventForm()
+	{
+		
+	}
+	
 	return {
-		AddEventForm: AddEventForm
+		AddEventForm: AddEventForm,
+		EditEventForm: EditEventForm
 	};
 });

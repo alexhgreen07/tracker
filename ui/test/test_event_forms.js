@@ -23,4 +23,22 @@ define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyA
 		
 	});
 	
+	describe("Event Forms Edit Event Suite", function() {
+		
+		beforeEach(function() {
+
+			testForm = new libEventForms.EditEventForm(testApi);
+		});
+		
+		it("is allocated", function() {
+			expect(testForm).not.toEqual(null);
+		});
+		
+		afterEach(function() {
+			testForm = null;
+			testApi = null;
+			testDiv.innerHTML = "";
+		});
+	});
+	
 });
