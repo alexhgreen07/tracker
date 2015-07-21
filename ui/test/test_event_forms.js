@@ -15,6 +15,11 @@ define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyA
 			expect(testForm).not.toEqual(null);
 		});
 		
+		it("renders form", function() {
+			testForm.render(testDiv);
+			expect(testDiv.innerHTML).not.toBe("");
+		});
+		
 		afterEach(function() {
 			testForm = null;
 			testApi = null;
@@ -32,6 +37,11 @@ define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyA
 		
 		it("is allocated", function() {
 			expect(testForm).not.toEqual(null);
+		});
+		
+		it("renders form", function() {
+			testForm.render(testDiv);
+			expect(testDiv.innerHTML).not.toBe("");
 		});
 		
 		afterEach(function() {
