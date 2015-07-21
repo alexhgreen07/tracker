@@ -27,6 +27,7 @@ public:
     virtual void open(std::string connectionString) = 0;
     virtual void close() = 0;
     virtual bool isConnected() = 0;
+    virtual std::string getConnectionString() = 0;
     virtual void execute(std::string sqlString) = 0;
     virtual std::shared_ptr<std::vector<std::vector<std::string>>> select(std::string sqlString) = 0;
     virtual uint64_t lastInsertRowId() = 0;
@@ -49,12 +50,14 @@ public:
     void open(std::string connectionString) override;
     void close() override;
     bool isConnected() override;
+    std::string getConnectionString() override;
     void execute(std::string sqlString) override;
     std::shared_ptr<std::vector<std::vector<std::string>>> select(std::string sqlString) override;
     uint64_t lastInsertRowId() override;
 private:
     void * privData;
     bool connected;
+    std::string connectionString;
 };
     
 }

@@ -12,6 +12,11 @@ AppDB::AppDB(const std::shared_ptr<Database::Database> & database) :
     currentVersion("0")
 {}
 
+std::shared_ptr<Database::Database> AppDB::getDatabase()
+{
+	return database;
+}
+
 void AppDB::updateDatabase()
 {
 	bool shouldInitialize = false;

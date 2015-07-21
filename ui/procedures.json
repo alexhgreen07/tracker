@@ -4,6 +4,11 @@
         "isNotification": false,
         "params": {}
     },
+    {
+        "method": "reset",
+        "isNotification": false,
+        "params": {}
+    },
 	{
 		"method": "sayHello",
 		"isNotification": false,

@@ -14,6 +14,7 @@ define( [ 'js/api' ], function(libapi) {
     	 };
 		
 		var testApi = null;
+		testApi = new libapi.Api();
 		
 		function insertDummyTask(success,error)
 		{
@@ -47,7 +48,7 @@ define( [ 'js/api' ], function(libapi) {
 		}
 		
 		beforeEach(function() {
-			testApi = new libapi.Api();
+			
 		});
 		
 		it("is allocated", function() {
@@ -57,6 +58,7 @@ define( [ 'js/api' ], function(libapi) {
 		it("says hello", function(done) {
 			testApi.sayHello("test",function(result){
 				expect(result).toEqual("Hello: test");
+				console.log("hello!");
 				done();
 			});
 		});
@@ -192,8 +194,12 @@ define( [ 'js/api' ], function(libapi) {
 		});
 		
 		afterEach(function(done) {
-			testApi.exit(function(){done();},function(){done();});
-			testApi = null;
+			testApi.reset(function(){
+				done();
+			},
+			function(){
+				done();
+			});
 		});
 
 	});

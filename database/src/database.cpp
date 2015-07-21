@@ -37,6 +37,8 @@ DatabaseSqlite3::~DatabaseSqlite3()
 
 void DatabaseSqlite3::open(std::string connectionString)
 {
+	this->connectionString = connectionString;
+
     sqlite3 *db;
     int rc = sqlite3_open(connectionString.c_str(), &db);
     privData = (void*)db;
@@ -60,6 +62,11 @@ void DatabaseSqlite3::close()
 bool DatabaseSqlite3::isConnected()
 {
     return connected;
+}
+
+std::string DatabaseSqlite3::getConnectionString()
+{
+	return connectionString;
 }
 
 void DatabaseSqlite3::execute(std::string sqlString)

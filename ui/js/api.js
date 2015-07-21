@@ -43,6 +43,15 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			error : error
 		});
 	};
+	Api.prototype.reset = function(success,error)
+	{
+		error = error || function(data){};
+		this.rpc.request('reset', {
+			params : {},
+			success : success,
+			error : error
+		});
+	};
 	Api.prototype.sayHello = function(name,success,error)
 	{
 		error = error || function(data){};

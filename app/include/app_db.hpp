@@ -19,6 +19,8 @@ class AppDB
 public:
     AppDB(const std::shared_ptr<Database::Database> & database);
     
+    std::shared_ptr<Database::Database> getDatabase();
+
     void updateDatabase();
 
     void initializeNewDatabase();

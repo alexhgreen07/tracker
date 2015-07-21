@@ -50,7 +50,9 @@ protected:
 	Core::Scheduler scheduler;
 
 	APP_API_PROCEDURE(ExitProcedure) exitProcedure;
+	APP_API_PROCEDURE(ResetProcedure) resetProcedure;
 	APP_API_PROCEDURE(SayHelloProcedure) sayHello;
+
 	APP_API_PROCEDURE(GetTasksProcedure) getTasks;
 	APP_API_PROCEDURE(InsertTask) insertTask;
 	APP_API_PROCEDURE(UpdateTask) updateTask;

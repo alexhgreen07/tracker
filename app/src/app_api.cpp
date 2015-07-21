@@ -11,6 +11,7 @@ AppApi::AppApi(const std::shared_ptr<AppDB> & db, const std::shared_ptr<Clock> &
 	db(db),
 	clock(clock),
 	exitProcedure(*this),
+	resetProcedure(*this),
 	sayHello(*this),
 	getTasks(*this),
 	insertTask(*this),
@@ -22,6 +23,7 @@ AppApi::AppApi(const std::shared_ptr<AppDB> & db, const std::shared_ptr<Clock> &
 	getEvents(*this)
 {
 	procedurePointers["exit"] = &exitProcedure;
+	procedurePointers["reset"] = &resetProcedure;
 	procedurePointers["sayHello"] = &sayHello;
 	procedurePointers["getTasks"] = &getTasks;
 	procedurePointers["insertTask"] = &insertTask;
@@ -45,6 +47,18 @@ JsonNotifications & AppApi::getNotifications()
 void AppApi::ExitProcedure::call(const Json::Value& request, Json::Value& response)
 {
 	exit(0);
+}
+
+void AppApi::ResetProcedure::call(const Json::Value& request, Json::Value& response)
+{
+	//NOTE: this is for debug purposes only to support web testing
+	auto baseDb = parent.db->getDatabase();
+	std::string connectionString = baseDb->getConnectionString();
+	baseDb->close();
+	baseDb->open(connectionString);
+	parent.db->updateDatabase();
+
+	response = true;
 }
 
 void AppApi::SayHelloProcedure::call(const Json::Value& request, Json::Value& response)
