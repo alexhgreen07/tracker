@@ -15,12 +15,12 @@ define([ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ],fu
 	
 	AddEventForm.prototype.submitSuccess = function()
 	{
-		this.resultsDiv.innerHTML = "Task submitted";
+		this.resultsDiv.innerHTML = "Event submitted";
 		setTimeout(this.clearResults.bind(this),2000);
 	};
 	AddEventForm.prototype.submitError = function()
 	{
-		this.resultsDiv.innerHTML = "Task submission error";
+		this.resultsDiv.innerHTML = "Event submission error";
 		setTimeout(this.clearResults.bind(this),2000);
 	};
 	
