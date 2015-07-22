@@ -110,6 +110,11 @@ define([ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ],fu
 		this.removeButton.value = "Delete";
 		
 		div.appendChild(document.createElement("br"));
+		div.appendChild(document.createElement("br"));
+		
+		this.resultsDiv = div.appendChild(document.createElement("div"));
+		
+		div.appendChild(document.createElement("br"));
 
 		$(this.submitButton).button();
 		//$(this.submitButton).click(this.submitClickEvent.bind(this));
