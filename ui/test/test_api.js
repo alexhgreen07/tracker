@@ -47,6 +47,25 @@ define( [ 'js/api' ], function(libapi) {
 			testApi.removeTask(1,success,error);
 		}
 		
+		var expectedDummyEvent = {
+			taskId: 1,
+			startTime: 2,
+			duration: 3,
+			name: expectedDummyTask.name
+		};
+		
+		function insertDummyEvent(success,error)
+		{
+			insertDummyTask(function(){
+				testApi.insertEvent(
+					expectedDummyEvent.taskId,
+					expectedDummyEvent.startTime,
+					expectedDummyEvent.duration,
+					success,
+					error);
+			});
+		}
+		
 		beforeEach(function() {
 			
 		});
@@ -193,25 +212,23 @@ define( [ 'js/api' ], function(libapi) {
 					});
 		});
 		
-		it("inserts event",function(done){
-			
-			var taskId = 1;
-			var dummyStartTime = Math.round((new Date()).getTime() / 1000) + 60;
-			var duration = 3600;
-			
-			insertDummyTask(function(){
-				
-				testApi.insertEvent(
-					taskId,
-					dummyStartTime,
-					duration,
-					function(result){
-						expect(result).toEqual(true);
-						done();
-				});
-				
+		it("inserts a single event",function(done){
+			insertDummyEvent(function(result){
+					expect(result).toEqual(true);
+					done();
 			});
+		});
+		
+		it("gets an inserted event in table", function(done) {
 			
+			var expectedTable = [expectedDummyEvent];
+			
+			insertDummyEvent(function(){
+				testApi.getEvents(function(result){
+					expect(result).toEqual(expectedTable);
+					done();
+				});
+			});
 		});
 		
 		afterEach(function(done) {
