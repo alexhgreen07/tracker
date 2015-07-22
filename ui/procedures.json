@@ -41,9 +41,9 @@
         "isNotification": false,
         "params": {}
     },
-	{
-		"method" : "notifyServer",
-		"isNotification": true,
-		"params": null
-	}
+    {
+        "method": "insertEvent",
+        "isNotification": false,
+        "params": {}
+    }
 ]

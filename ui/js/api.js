@@ -146,6 +146,21 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			error : error
 		});
 	};
+	Api.prototype.insertEvent = function(taskId,startTime,duration,success,error)
+	{
+		error = error || function(data){};
+		this.rpc.request('insertEvent', {
+			params : {
+				taskId: taskId.toString(),
+				startTime: startTime.toString(),
+				duration: duration.toString()
+			},
+			success : function(data){
+				success(data.result);
+			},
+			error : error
+		});
+	};
 	
 	return {
 		Api: Api

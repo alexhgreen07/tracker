@@ -163,7 +163,7 @@ define( [ 'js/api' ], function(libapi) {
 			});
 		});
 		
-		it("gets events table with single event", function(done) {
+		it("gets events table with single scheduled event", function(done) {
 			
 			var dummyStartTime = Math.round((new Date()).getTime() / 1000) + 60;
 			
@@ -191,6 +191,27 @@ define( [ 'js/api' ], function(libapi) {
 							done();
 						});
 					});
+		});
+		
+		it("inserts event",function(done){
+			
+			var taskId = 1;
+			var dummyStartTime = Math.round((new Date()).getTime() / 1000) + 60;
+			var duration = 3600;
+			
+			insertDummyTask(function(){
+				
+				testApi.insertEvent(
+					taskId,
+					dummyStartTime,
+					duration,
+					function(result){
+						expect(result).toEqual(true);
+						done();
+				});
+				
+			});
+			
 		});
 		
 		afterEach(function(done) {
