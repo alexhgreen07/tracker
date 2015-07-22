@@ -71,11 +71,22 @@ define([ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ],fu
 	//EditEventForm inherits from AddEventForm
 	EditEventForm.prototype = new AddEventForm();
 	EditEventForm.prototype.constructor = EditEventForm;
-	function EditEventForm()
+	function EditEventForm(api)
 	{
+		AddEventForm.prototype.constructor.call(this,api);
+		
 		this.eventIdInput = null;
 		
 		this.removeButton = null;
+	}
+	
+	EditEventForm.prototype.removeButtonClick = function()
+	{
+		this.api.removeEvent(
+			parseInt(this.eventIdInput.getValue()),
+			this.submitSuccess.bind(this),
+			this.submitError.bind(this)
+		);
 	}
 	
 	EditEventForm.prototype.render = function(parent)
@@ -104,7 +115,7 @@ define([ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ],fu
 		//$(this.submitButton).click(this.submitClickEvent.bind(this));
 		
 		$(this.removeButton).button();
-		//$(this.removeButton).click(this.removeClickEvent.bind(this));
+		$(this.removeButton).click(this.removeButtonClick.bind(this));
 	}
 	
 	return {

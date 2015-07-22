@@ -57,7 +57,12 @@ define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyA
 	describe("Event Forms Edit Event Suite", function() {
 		
 		beforeEach(function() {
-			testForm = new libEventForms.EditEventForm();
+			testApi = new libDummyApi.DummyApi();
+			testForm = new libEventForms.EditEventForm(testApi);
+			
+			testForm.render(testDiv);
+			
+			spyOn(testApi,'removeEvent');
 		});
 		
 		it("is allocated", function() {
@@ -65,8 +70,18 @@ define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyA
 		});
 		
 		it("renders form", function() {
-			testForm.render(testDiv);
 			expect(testDiv.innerHTML).not.toBe("");
+		});
+		
+		it("removes event on remove button click", function() {
+			
+			var eventId = 1;
+			testForm.eventIdInput.setValue(eventId);
+			
+			testForm.removeButton.click();
+			
+			var callArgs = testApi.removeEvent.calls.argsFor(0);
+			expect(callArgs[0]).toBe(eventId);
 		});
 		
 		afterEach(function() {

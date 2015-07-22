@@ -24,6 +24,10 @@ define( [ ], function() {
 	{
 		success(true);
 	};
+	DummyApi.prototype.removeEvent = function(eventId,success,error)
+	{
+		success(true);
+	};
 	
 	return {
 		DummyApi: DummyApi
