@@ -18,16 +18,6 @@ define( [ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], 
 		
 		this.submitButton = null;
 	}
-	AddTaskForm.prototype.getTimestampFromInputs = function(dayInput, timeInput)
-	{
-		var returnTimeStamp = 0;
-		
-		returnTimeStamp = parseInt(dayInput.value) * 3600 * 24;
-		var time = $(timeInput).datetimepicker('getDate');
-		returnTimeStamp += time.getHours() * 3600 + time.getMinutes() * 60;
-		
-		return returnTimeStamp;
-	};
 	AddTaskForm.prototype.clearResults = function()
 	{
 		this.resultsDiv.innerHTML = "";
