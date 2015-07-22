@@ -1,13 +1,39 @@
 define([ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ],function(libFormHelpers,moment,$){
 	
-	function AddEventForm()
+	function AddEventForm(api)
 	{
+		this.api = api;
+		
 		this.taskIdInput = null;
 		this.startTimeInput = null;
 		this.durationInput = null;
 		
+		this.resultsDiv = null;
+		
 		this.submitButton = null;
 	}
+	
+	AddEventForm.prototype.submitSuccess = function()
+	{
+		this.resultsDiv.innerHTML = "Task submitted";
+		setTimeout(this.clearResults.bind(this),2000);
+	};
+	AddEventForm.prototype.submitError = function()
+	{
+		this.resultsDiv.innerHTML = "Task submission error";
+		setTimeout(this.clearResults.bind(this),2000);
+	};
+	
+	AddEventForm.prototype.submitButtonClick = function()
+	{
+		this.api.insertEvent(
+			parseInt(this.taskIdInput.getValue()),
+			this.startTimeInput.getValue().getTime() / 1000,
+			this.durationInput.getValue(),
+			this.submitSuccess.bind(this),
+			this.submitError.bind(this)
+		);
+	};
 	
 	AddEventForm.prototype.renderEntryInputs = function(div)
 	{
@@ -32,9 +58,14 @@ define([ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ],fu
 		this.submitButton.value = "Submit";
 		
 		div.appendChild(document.createElement("br"));
+		div.appendChild(document.createElement("br"));
+		
+		this.resultsDiv = div.appendChild(document.createElement("div"));
+		
+		div.appendChild(document.createElement("br"));
 
 		$(this.submitButton).button();
-		//$(this.submitButton).click(this.submitClickEvent.bind(this));
+		$(this.submitButton).click(this.submitButtonClick.bind(this));
 	}
 	
 	//EditEventForm inherits from AddEventForm

@@ -1,5 +1,10 @@
 define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyApi) {
 	
+	function roundTimeToMinute(time)
+	{
+		return Math.floor(time.getTime() / 60 / 1000) * 60 * 1000;
+	}
+	
 	var testDiv = document.getElementById("test_div");
 	var testForm = null;
 	var testApi = null;
@@ -7,8 +12,11 @@ define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyA
 	describe("Event Forms Add Event Suite", function() {
 		
 		beforeEach(function() {
-
+			testApi = new libDummyApi.DummyApi();
 			testForm = new libEventForms.AddEventForm(testApi);
+			testForm.render(testDiv);
+			
+			spyOn(testApi,'insertEvent');
 		});
 		
 		it("is allocated", function() {
@@ -16,8 +24,26 @@ define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyA
 		});
 		
 		it("renders form", function() {
-			testForm.render(testDiv);
 			expect(testDiv.innerHTML).not.toBe("");
+		});
+		
+		it("add an event on submit button click", function() {
+			
+			var taskId = 1;
+			var startTime = new Date();
+			var duration = 3600;
+			
+			testForm.taskIdInput.setValue(taskId);
+			testForm.startTimeInput.setValue(startTime);
+			testForm.durationInput.setValue(duration);
+			
+			testForm.submitButton.click();
+			
+			var callArgs = testApi.insertEvent.calls.argsFor(0);
+			
+			expect(callArgs[0]).toBe(taskId);
+			expect(callArgs[1]).toBe(roundTimeToMinute(startTime) / 1000);
+			expect(callArgs[2]).toBe(duration);
 		});
 		
 		afterEach(function() {
@@ -31,8 +57,7 @@ define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyA
 	describe("Event Forms Edit Event Suite", function() {
 		
 		beforeEach(function() {
-
-			testForm = new libEventForms.EditEventForm(testApi);
+			testForm = new libEventForms.EditEventForm();
 		});
 		
 		it("is allocated", function() {

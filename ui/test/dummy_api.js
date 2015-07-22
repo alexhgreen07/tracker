@@ -20,6 +20,10 @@ define( [ ], function() {
 	{
 		success([]);
 	};
+	DummyApi.prototype.insertEvent = function(taskId,startTime,duration,success,error)
+	{
+		success(true);
+	};
 	
 	return {
 		DummyApi: DummyApi
