@@ -67,6 +67,14 @@ define( [ 'js/api' ], function(libapi) {
 			});
 		}
 		
+		function removeDummyEvent(success,error)
+		{
+			testApi.removeEvent(
+				expectedDummyEvent.eventId,
+				success,
+				error);
+		}
+		
 		beforeEach(function() {
 			
 		});
@@ -228,6 +236,15 @@ define( [ 'js/api' ], function(libapi) {
 			insertDummyEvent(function(){
 				testApi.getEvents(function(result){
 					expect(result).toEqual(expectedTable);
+					done();
+				});
+			});
+		});
+		
+		it("removes a single event", function(done) {
+			insertDummyEvent(function(){
+				removeDummyEvent(function(result){
+					expect(result).toEqual(true);
 					done();
 				});
 			});

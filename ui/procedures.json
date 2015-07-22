@@ -45,5 +45,10 @@
         "method": "insertEvent",
         "isNotification": false,
         "params": {}
+    },
+    {
+        "method": "removeEvent",
+        "isNotification": false,
+        "params": {}
     }
 ]

@@ -174,6 +174,19 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			error : error
 		});
 	};
+	Api.prototype.removeEvent = function(eventId,success,error)
+	{
+		error = error || function(data){};
+		this.rpc.request('removeEvent', {
+			params : {
+				taseventIdkId: eventId.toString()
+			},
+			success : function(data){
+				success(data.result);
+			},
+			error : error
+		});
+	};
 	
 	return {
 		Api: Api
