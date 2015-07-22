@@ -33,6 +33,18 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 		}
 	}
 	
+	Api.prototype.converEventDateStringsToInts = function(results)
+	{
+		for(var key in results)
+		{
+			var event = results[key];
+			event.eventId = parseInt(event.eventId);
+			event.taskId = parseInt(event.taskId);
+			event.startTime = parseInt(event.startTime);
+			event.duration = parseInt(event.duration);
+		}
+	};
+	
 	Api.prototype.exit = function(success,error)
 	{
 		error = error || function(data){};
@@ -141,8 +153,9 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 		this.rpc.request('getEvents', {
 			params : {},
 			success : function(data){
+				this.converEventDateStringsToInts(data.result);
 				success(data.result);
-			},
+			}.bind(this),
 			error : error
 		});
 	};

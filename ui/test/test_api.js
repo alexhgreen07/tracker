@@ -48,6 +48,7 @@ define( [ 'js/api' ], function(libapi) {
 		}
 		
 		var expectedDummyEvent = {
+			eventId: 1,
 			taskId: 1,
 			startTime: 2,
 			duration: 3,
@@ -199,6 +200,7 @@ define( [ 'js/api' ], function(libapi) {
 							
 							var expectedTable = [
 			                     {
+			                    	 eventId: 0,
 			                    	 taskId: 1,
 			                    	 name: expectedDummyTask.name,
 			                    	 startTime: dummyStartTime,
