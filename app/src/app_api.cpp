@@ -141,6 +141,14 @@ Core::Task::Status AppApi::taskStatusFromString(std::string status)
 	return returnStatus;
 }
 
+void AppApi::fillJsonValueFromEvent(Json::Value& row, const Core::Event & event)
+{
+	row["taskId"] = event.getParent()->getTaskId();
+	row["name"] = event.getParent()->getName();
+	row["startTime"] = event.getStartTime();
+	row["duration"] = event.getDuration();
+}
+
 void AppApi::InsertTask::call(const Json::Value& request, Json::Value& response)
 {
 	uint64_t earliestStartTime;
@@ -295,13 +303,27 @@ void AppApi::RemoveEvent::call(const Json::Value& request, Json::Value& response
 
 void AppApi::GetEvents::call(const Json::Value& request, Json::Value& response)
 {
+	unsigned int rowCount = 0;
+	response = Json::Value(Json::arrayValue);
+
+	auto loggedEvents = parent.db->getLoggedEvents();
+
+	for(auto iter = loggedEvents->begin(); iter != loggedEvents->end(); ++iter)
+	{
+		auto & row = response[rowCount];
+		auto event = iter->second;
+		parent.fillJsonValueFromEvent(row,*event);
+
+		rowCount++;
+	}
+
 	auto taskList = std::make_shared<std::vector<std::shared_ptr<Core::Task>>>();
 	
 	auto result = parent.db->getTasks();
 	
-	for(auto outer_iter=result->begin(); outer_iter!=result->end(); ++outer_iter) {
+	for(auto iter = result->begin(); iter != result->end(); ++iter) {
 		
-		auto task = outer_iter->second;
+		auto task = iter->second;
 		
 		taskList->push_back(task);
 	}
@@ -310,17 +332,15 @@ void AppApi::GetEvents::call(const Json::Value& request, Json::Value& response)
 	parent.scheduler.schedule(parent.clock->getNowTimestamp());
 	
 	unsigned int eventCount = parent.scheduler.getScheduledEventCount();
-	
-	response = Json::Value(Json::arrayValue);
 
 	for(unsigned int i = 0; i < eventCount; i++)
 	{
-		auto & row = response[i];
+		auto & row = response[rowCount];
 		auto event = parent.scheduler.getScheduledEvent(i);
-		row["taskId"] = event->getParent()->getTaskId();
-		row["name"] = event->getParent()->getName();
-		row["startTime"] = event->getStartTime();
-		row["duration"] = event->getDuration();
+
+		parent.fillJsonValueFromEvent(row,*event);
+
+		rowCount++;
 	}
 
 }
