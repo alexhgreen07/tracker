@@ -143,10 +143,11 @@ Core::Task::Status AppApi::taskStatusFromString(std::string status)
 
 void AppApi::fillJsonValueFromEvent(Json::Value& row, const Core::Event & event)
 {
-	row["taskId"] = event.getParent()->getTaskId();
+	row["eventId"] = std::to_string(event.getEventId());
+	row["taskId"] = std::to_string(event.getParent()->getTaskId());
 	row["name"] = event.getParent()->getName();
-	row["startTime"] = event.getStartTime();
-	row["duration"] = event.getDuration();
+	row["startTime"] = std::to_string(event.getStartTime());
+	row["duration"] = std::to_string(event.getDuration());
 }
 
 void AppApi::InsertTask::call(const Json::Value& request, Json::Value& response)

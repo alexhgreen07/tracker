@@ -266,10 +266,25 @@ TEST(AppApiGroup, GetEvents)
 	
 	LONGS_EQUAL(1,results.size());
 	
-	LONGS_EQUAL(1,results[expectedIndex]["taskId"].asInt());
+	uint64_t value;
+
+	std::istringstream input_stream(results[expectedIndex]["eventId"].asString());
+	input_stream >> value;
+	LONGS_EQUAL(0,value);
+
+	input_stream = std::istringstream(results[expectedIndex]["taskId"].asString());
+	input_stream >> value;
+	LONGS_EQUAL(1,value);
+
 	STRCMP_EQUAL(newTask.getName().c_str(),results[expectedIndex]["name"].asCString());
-	LONGS_EQUAL(newTask.getEarliestStartTime(),results[expectedIndex]["startTime"].asInt());
-	LONGS_EQUAL(newTask.getDuration(),results[expectedIndex]["duration"].asInt());
+
+	input_stream = std::istringstream(results[expectedIndex]["startTime"].asString());
+	input_stream >> value;
+	LONGS_EQUAL(newTask.getEarliestStartTime(),value);
+
+	input_stream = std::istringstream(results[expectedIndex]["duration"].asString());
+	input_stream >> value;
+	LONGS_EQUAL(newTask.getDuration(),value);
 }
 
 
