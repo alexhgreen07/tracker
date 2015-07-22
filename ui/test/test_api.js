@@ -250,6 +250,17 @@ define( [ 'js/api' ], function(libapi) {
 			});
 		});
 		
+		it("gets empty events table after remove", function(done) {
+			insertDummyEvent(function(){
+				removeDummyEvent(function(result){
+					testApi.getEvents(function(result){
+						expect(result).toEqual([]);
+						done();
+					});
+				});
+			});
+		});
+		
 		afterEach(function(done) {
 			testApi.reset(function(){
 				done();

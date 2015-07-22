@@ -179,7 +179,7 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 		error = error || function(data){};
 		this.rpc.request('removeEvent', {
 			params : {
-				taseventIdkId: eventId.toString()
+				eventId: eventId.toString()
 			},
 			success : function(data){
 				success(data.result);
