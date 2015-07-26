@@ -88,6 +88,18 @@ define([ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ],fu
 		this.durationInput.setValue(duration);
 	};
 	
+	EditEventForm.prototype.submitButtonClick = function()
+	{
+		this.api.updateEvent(
+			parseInt(this.eventIdInput.getValue()),
+			parseInt(this.taskIdInput.getValue()),
+			this.startTimeInput.getValue().getTime() / 1000,
+			this.durationInput.getValue(),
+			this.submitSuccess.bind(this),
+			this.submitError.bind(this)
+		);
+	};
+	
 	EditEventForm.prototype.removeButtonClick = function()
 	{
 		this.api.removeEvent(
@@ -125,7 +137,7 @@ define([ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ],fu
 		div.appendChild(document.createElement("br"));
 
 		$(this.submitButton).button();
-		//$(this.submitButton).click(this.submitClickEvent.bind(this));
+		$(this.submitButton).click(this.submitButtonClick.bind(this));
 		
 		$(this.removeButton).button();
 		$(this.removeButton).click(this.removeButtonClick.bind(this));

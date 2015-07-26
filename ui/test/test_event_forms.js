@@ -62,6 +62,7 @@ define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyA
 			
 			testForm.render(testDiv);
 			
+			spyOn(testApi,'updateEvent');
 			spyOn(testApi,'removeEvent');
 		});
 		
@@ -71,6 +72,24 @@ define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyA
 		
 		it("renders form", function() {
 			expect(testDiv.innerHTML).not.toBe("");
+		});
+		
+		it("upates a event on submit button click", function() {
+			
+			var eventId = 1;
+			var taskId = 1;
+			var startTime = new Date();
+			var duration = 2 * 3600;
+			
+			testForm.setEventData(eventId,taskId,startTime,duration);
+			
+			testForm.submitButton.click();
+			
+			var callArgs = testApi.updateEvent.calls.argsFor(0);
+			expect(callArgs[0]).toBe(eventId);
+			expect(callArgs[1]).toBe(taskId);
+			expect(callArgs[2]).toBe(roundTimeToMinute(startTime) / 1000);
+			expect(callArgs[3]).toBe(duration);
 		});
 		
 		it("removes event on remove button click", function() {
