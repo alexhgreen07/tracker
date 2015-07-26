@@ -84,6 +84,21 @@ define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyA
 			expect(callArgs[0]).toBe(eventId);
 		});
 		
+		it("fills event data on set", function(){
+			
+			var eventId = 1;
+			var taskId = 1;
+			var startTime = new Date();
+			var duration = 2 * 3600;
+			
+			testForm.setEventData(eventId,taskId,startTime,duration);
+			
+			expect(parseInt(testForm.eventIdInput.getValue())).toBe(eventId);
+			expect(parseInt(testForm.taskIdInput.getValue())).toBe(taskId);
+			expect(testForm.startTimeInput.getValue().getTime()).toBe(roundTimeToMinute(startTime));
+			expect(testForm.durationInput.getValue()).toBe(duration);
+		});
+		
 		afterEach(function() {
 			testForm = null;
 			testApi = null;

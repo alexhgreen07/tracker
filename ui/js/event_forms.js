@@ -80,6 +80,14 @@ define([ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ],fu
 		this.removeButton = null;
 	}
 	
+	EditEventForm.prototype.setEventData = function(eventId,taskId,startTime,duration)
+	{
+		this.eventIdInput.setValue(eventId);
+		this.taskIdInput.setValue(taskId);
+		this.startTimeInput.setValue(startTime);
+		this.durationInput.setValue(duration);
+	};
+	
 	EditEventForm.prototype.removeButtonClick = function()
 	{
 		this.api.removeEvent(
