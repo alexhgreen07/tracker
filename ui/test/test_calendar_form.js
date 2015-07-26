@@ -5,19 +5,38 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 	
 	function DummyForm(){}
 	DummyForm.prototype.render = function(parent){};
-	DummyForm.prototype.setTaskData = function(){};
 	
 	describe("TaskActionForm Suite", function(){
+		
+		var dummyEditTaskForm = null;
+		var dummyAddEventForm = null;
+		var dummyEditEventForm = null;
 		
 		beforeEach(function() {
 			dummyEditTaskForm = new DummyForm();
 			dummyAddEventForm = new DummyForm();
 			dummyEditEventForm = new DummyForm();
 			testForm = new libCalendarForm.TaskActionForm(dummyEditTaskForm,dummyAddEventForm,dummyEditEventForm);
+			
+			spyOn(dummyEditTaskForm,'render');
+			spyOn(dummyAddEventForm,'render');
+			spyOn(dummyEditEventForm,'render');
+			
+			testForm.render(testDiv);
 		});
 		
 		it("is allocated", function() {
 			expect(testForm).not.toEqual(null);
+		});
+		
+		it("renders form", function() {
+			expect(testDiv.innerHTML).not.toBe("");
+		});
+		
+		it("renders child forms", function(){
+			expect(dummyEditTaskForm.render).toHaveBeenCalled();
+			expect(dummyAddEventForm.render).toHaveBeenCalled();
+			expect(dummyEditEventForm.render).toHaveBeenCalled();
 		});
 		
 		afterEach(function() {
@@ -43,19 +62,20 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 			}
 		};
 		
-		var dummyEditTaskForm = null;
+		var dummyTaskActionsForm = null;
 		var testApi = null;
 		
 		beforeEach(function() {
 			testApi = new libDummyApi.DummyApi();
-			dummyEditTaskForm = new DummyForm();
-			testForm = new libCalendarForm.CalendarForm(testApi,dummyEditTaskForm);
+			dummyTaskActionsForm = new DummyForm();
+			dummyTaskActionsForm.editTaskForm = {setTaskData: function(task){}};
+			testForm = new libCalendarForm.CalendarForm(testApi,dummyTaskActionsForm);
 			
 			testApi.taskLookup = dummyTaskLookup;
 			
 			spyOn(testApi, 'getEvents');
-			spyOn(dummyEditTaskForm,'render');
-			spyOn(dummyEditTaskForm,'setTaskData');
+			spyOn(dummyTaskActionsForm,'render');
+			spyOn(dummyTaskActionsForm.editTaskForm,'setTaskData');
 			
 			testForm.render(testDiv);
 		});
@@ -68,8 +88,8 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 			expect(testDiv.innerHTML).not.toBe("");
 		});
 		
-		it("renders edit task form", function(){
-			expect(dummyEditTaskForm.render).toHaveBeenCalled();
+		it("renders task actions form", function(){
+			expect(dummyTaskActionsForm.render).toHaveBeenCalled();
 		});
 		
 		it("queries events on refresh", function() {
@@ -97,18 +117,18 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 		
 		it("displays edit task form on event click", function() {
 			testForm.eventClick(dummyCalEvent);
-			expect($(testForm.editTaskFormDiv).is(":visible")).toBe(true);
+			expect($(testForm.taskActionFormDiv).is(":visible")).toBe(true);
 			expect($(testForm.calendarDiv).is(":visible")).toBe(false);
 		});
 		
 		it("fills task data in edit task form on event click", function(){
 			testForm.eventClick(dummyCalEvent);
-			expect(dummyEditTaskForm.setTaskData).toHaveBeenCalled();
+			expect(dummyTaskActionsForm.editTaskForm.setTaskData).toHaveBeenCalled();
 		});
 		
 		it("displays calendar on back click", function() {
 			testForm.backButton.click();
-			expect($(testForm.editTaskFormDiv).is(":visible")).toBe(false);
+			expect($(testForm.taskActionFormDiv).is(":visible")).toBe(false);
 			expect($(testForm.calendarDiv).is(":visible")).toBe(true);
 		});
 		
