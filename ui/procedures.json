@@ -47,6 +47,11 @@
         "params": {}
     },
     {
+        "method": "updateEvent",
+        "isNotification": false,
+        "params": {}
+    },
+    {
         "method": "removeEvent",
         "isNotification": false,
         "params": {}
