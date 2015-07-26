@@ -67,6 +67,17 @@ define( [ 'js/api' ], function(libapi) {
 			});
 		}
 		
+		function updateDummyEvent(success,error)
+		{
+			testApi.updateEvent(
+					1,
+					expectedDummyEvent.taskId,
+					expectedDummyEvent.startTime + 1,
+					expectedDummyEvent.duration + 1,
+					success,
+					error);
+		}
+		
 		function removeDummyEvent(success,error)
 		{
 			testApi.removeEvent(
@@ -239,6 +250,27 @@ define( [ 'js/api' ], function(libapi) {
 					done();
 				});
 			});
+		});
+		
+		it("updates a single event", function(done) {
+			
+			var expectedTable = [{
+				eventId: expectedDummyEvent.eventId,
+				taskId: expectedDummyEvent.taskId,
+				startTime: expectedDummyEvent.startTime + 1,
+				duration: expectedDummyEvent.duration + 1,
+				name: expectedDummyTask.name
+			}];
+			
+			insertDummyEvent(function(){
+				updateDummyEvent(function(){
+					testApi.getEvents(function(result){
+						expect(result).toEqual(expectedTable);
+						done();
+					});
+				});
+			});
+			
 		});
 		
 		it("removes a single event", function(done) {

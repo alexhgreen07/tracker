@@ -174,6 +174,22 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			error : error
 		});
 	};
+	Api.prototype.updateEvent = function(eventId,taskId,startTime,duration,success,error)
+	{
+		error = error || function(data){};
+		this.rpc.request('updateEvent', {
+			params : {
+				eventId: eventId.toString(),
+				taskId: taskId.toString(),
+				startTime: startTime.toString(),
+				duration: duration.toString()
+			},
+			success : function(data){
+				success(data.result);
+			},
+			error : error
+		});
+	};
 	Api.prototype.removeEvent = function(eventId,success,error)
 	{
 		error = error || function(data){};
