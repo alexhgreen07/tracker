@@ -1,6 +1,32 @@
 define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDummyApi) {
 	
-	describe("CalendarFormLib Suite", function() {
+	var testDiv = document.getElementById("test_div");
+	var testForm = null;
+	
+	function DummyForm(){}
+	DummyForm.prototype.render = function(parent){};
+	DummyForm.prototype.setTaskData = function(){};
+	
+	describe("TaskActionForm Suite", function(){
+		
+		beforeEach(function() {
+			dummyEditTaskForm = new DummyForm();
+			dummyAddEventForm = new DummyForm();
+			dummyEditEventForm = new DummyForm();
+			testForm = new libCalendarForm.TaskActionForm(dummyEditTaskForm,dummyAddEventForm,dummyEditEventForm);
+		});
+		
+		it("is allocated", function() {
+			expect(testForm).not.toEqual(null);
+		});
+		
+		afterEach(function() {
+			testForm = null;
+			testDiv.innerHTML = "";
+		});
+	});
+	
+	describe("CalendarForm Suite", function() {
 		
 		var dummyCalEvent = {
 			serverEvent: {
@@ -17,14 +43,8 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 			}
 		};
 		
-		var testDiv = document.getElementById("test_div");
-		var testForm = null;
 		var dummyEditTaskForm = null;
 		var testApi = null;
-		
-		function DummyForm(){}
-		DummyForm.prototype.render = function(parent){};
-		DummyForm.prototype.setTaskData = function(){};
 		
 		beforeEach(function() {
 			testApi = new libDummyApi.DummyApi();

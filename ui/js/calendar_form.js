@@ -1,5 +1,14 @@
 define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 	
+	function TaskActionForm(editTaskForm,addEventForm,editEventForm)
+	{
+		
+		
+		this.editTaskButton = null;
+		this.addEventButton = null;
+		this.editEventButton = null;
+	}
+	
 	function CalendarForm(api,editTaskForm)
 	{
 		this.api = api;
@@ -101,6 +110,7 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 	};
 	
 	return {
+		TaskActionForm: TaskActionForm,
 		CalendarForm: CalendarForm
 	};
 	
