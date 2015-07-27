@@ -145,7 +145,6 @@ void AppApi::fillJsonValueFromEvent(Json::Value& row, const Core::Event & event)
 {
 	row["eventId"] = std::to_string(event.getEventId());
 	row["taskId"] = std::to_string(event.getParent()->getTaskId());
-	row["name"] = event.getParent()->getName();
 	row["startTime"] = std::to_string(event.getStartTime());
 	row["duration"] = std::to_string(event.getDuration());
 }

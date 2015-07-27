@@ -121,12 +121,16 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 	};
 	CalendarForm.prototype.convertServerEventToCalendarEvent = function(serverEvent)
 	{
-		return {
+		var parentTask = this.api.taskLookup[serverEvent.taskId];
+		
+		var calEvent = {
 			serverEvent: serverEvent,
-			title: serverEvent.name,
+			title: parentTask.name,
 			start: new Date(serverEvent.startTime * 1000),
 			end: new Date((serverEvent.startTime + serverEvent.duration) * 1000)
 		};
+		
+		return calEvent;
 	};
 	CalendarForm.prototype.refresh = function(success,error)
 	{
