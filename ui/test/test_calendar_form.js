@@ -3,6 +3,12 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 	var testDiv = document.getElementById("test_div");
 	var testForm = null;
 	
+	var dummyCalEvent = {
+		serverEvent: {
+			taskId: 1
+		}
+	};
+	
 	function DummyForm(){}
 	DummyForm.prototype.render = function(parent){};
 	
@@ -39,6 +45,24 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 			expect(dummyEditEventForm.render).toHaveBeenCalled();
 		});
 		
+		it("displays edit task form on button click", function() {
+			testForm.editTaskButton.click();
+			expect($(testForm.editTaskFormDiv).is(":visible")).toBe(true);
+			expect($(testForm.buttonsDiv).is(":visible")).toBe(false);
+		});
+		
+		it("displays add event form on button click", function() {
+			testForm.addEventButton.click();
+			expect($(testForm.addEventFormDiv).is(":visible")).toBe(true);
+			expect($(testForm.buttonsDiv).is(":visible")).toBe(false);
+		});
+		
+		it("displays edit event form on button click", function() {
+			testForm.editEventButton.click();
+			expect($(testForm.editEventFormDiv).is(":visible")).toBe(true);
+			expect($(testForm.buttonsDiv).is(":visible")).toBe(false);
+		});
+		
 		afterEach(function() {
 			testForm = null;
 			testDiv.innerHTML = "";
@@ -47,11 +71,6 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 	
 	describe("CalendarForm Suite", function() {
 		
-		var dummyCalEvent = {
-			serverEvent: {
-				taskId: 1
-			}
-		};
 		var dummyTaskLookup = {
 			1: {
 				taskId: 1,
@@ -115,7 +134,7 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 			expect(convertedEvent.end.getTime()).toBe((dummyEvent.startTime + dummyEvent.duration) * 1000);
 		});
 		
-		it("displays edit task form on event click", function() {
+		it("displays task actions form on event click", function() {
 			testForm.eventClick(dummyCalEvent);
 			expect($(testForm.taskActionFormDiv).is(":visible")).toBe(true);
 			expect($(testForm.calendarDiv).is(":visible")).toBe(false);

@@ -15,6 +15,28 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 		this.addEventButton = null;
 		this.editEventButton = null;
 	}
+	TaskActionForm.prototype.editTaskButtonClick = function()
+	{
+		$(this.buttonsDiv).hide();
+		$(this.editTaskFormDiv).show();
+	};
+	TaskActionForm.prototype.addEventButtonClick = function()
+	{
+		$(this.buttonsDiv).hide();
+		$(this.addEventFormDiv).show();
+	};
+	TaskActionForm.prototype.editEventButtonClick = function()
+	{
+		$(this.buttonsDiv).hide();
+		$(this.editEventFormDiv).show();
+	};
+	TaskActionForm.prototype.showOnlyButtons = function()
+	{
+		$(this.editTaskFormDiv).hide();
+		$(this.addEventFormDiv).hide();
+		$(this.editEventFormDiv).hide();
+		$(this.buttonsDiv).show();
+	};
 	TaskActionForm.prototype.render = function(parent)
 	{
 		var div = parent.appendChild(document.createElement("div"));
@@ -25,10 +47,6 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 		this.addEventForm.render(this.addEventFormDiv);
 		this.editEventFormDiv = div.appendChild(document.createElement("div"));
 		this.editEventForm.render(this.editEventFormDiv);
-		
-		$(this.editTaskFormDiv).hide();
-		$(this.addEventFormDiv).hide();
-		$(this.editEventFormDiv).hide();
 		
 		this.buttonsDiv = div.appendChild(document.createElement("div"));
 		
@@ -44,9 +62,16 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 		this.editEventButton.type = "submit";
 		this.editEventButton.value = "Edit Event";
 		
+		this.showOnlyButtons();
+		
 		$(this.editTaskButton).button();
+		$(this.editTaskButton).click(this.editTaskButtonClick.bind(this));
+		
 		$(this.addEventButton).button();
+		$(this.addEventButton).click(this.addEventButtonClick.bind(this));
+		
 		$(this.editEventButton).button();
+		$(this.editEventButton).click(this.editEventButtonClick.bind(this));
 	};
 	
 	function CalendarForm(api,taskActionForm)
@@ -62,6 +87,8 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 	}
 	CalendarForm.prototype.backButtonClick = function()
 	{
+		this.taskActionForm.showOnlyButtons();
+		
 		$(this.taskActionFormDiv).hide();
 		$(this.calendarDiv).show();
 		
