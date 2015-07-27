@@ -362,3 +362,16 @@ TEST(SchedulerGroup, ScheduleSingleEventAfterTime)
 	auto event = testScheduler->getScheduledEvent(0);
 	CHECK_EVENT(newTask,schedulerStartTime,newTask->getDuration(),event);
 }
+
+TEST(SchedulerGroup, DoNotScheduleCompleteAndMissedTasks)
+{
+	auto newTaskList = createNonOverlappingTasks(5,2,0);
+
+	newTaskList->at(0)->setStatus(Task::Status::Complete);
+	newTaskList->at(1)->setStatus(Task::Status::Missed);
+
+	testScheduler->setTaskList(newTaskList);
+	testScheduler->schedule();
+
+	LONGS_EQUAL(0,testScheduler->getScheduledEventCount());
+}

@@ -1,4 +1,4 @@
-define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$) {
+define( [ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(libFormHelpers,moment,$) {
 	
 	function AddTaskForm(api)
 	{
@@ -7,6 +7,7 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 		this.nameInput = null;
 		this.earliestStartTimeInput = null;
 		this.latestEndTimeInput = null;
+		this.statusInput = null;
 		this.durationInput = null;
 		this.durationDayInput = null;
 		this.recurrancePeriodInput = null;
@@ -17,16 +18,6 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 		
 		this.submitButton = null;
 	}
-	AddTaskForm.prototype.getTimestampFromInputs = function(dayInput, timeInput)
-	{
-		var returnTimeStamp = 0;
-		
-		returnTimeStamp = parseInt(dayInput.value) * 3600 * 24;
-		var time = $(timeInput).datetimepicker('getDate');
-		returnTimeStamp += time.getHours() * 3600 + time.getMinutes() * 60;
-		
-		return returnTimeStamp;
-	};
 	AddTaskForm.prototype.clearResults = function()
 	{
 		this.resultsDiv.innerHTML = "";
@@ -44,94 +35,51 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 	AddTaskForm.prototype.submitClickEvent = function()
 	{
 		this.api.insertTask(
-				this.nameInput.value,
-				$(this.earliestStartTimeInput).datetimepicker('getDate').getTime() / 1000,
-				$(this.latestEndTimeInput).datetimepicker('getDate').getTime() / 1000,
-				this.getTimestampFromInputs(this.durationDayInput,this.durationInput),
-				this.getTimestampFromInputs(this.recurrancePeriodDayInput,this.recurrancePeriodInput),
-				this.getTimestampFromInputs(this.recurranceLateOffsetDayInput,this.recurranceLateOffsetInput),
+				this.nameInput.getValue(),
+				this.earliestStartTimeInput.getValue().getTime() / 1000,
+				this.latestEndTimeInput.getValue().getTime() / 1000,
+				this.durationInput.getValue(),
+				this.statusInput.value,
+				this.recurrancePeriodInput.getValue(),
+				this.recurranceLateOffsetInput.getValue(),
 				this.submitSuccess.bind(this),
 				this.submitError.bind(this));
 	};
 	AddTaskForm.prototype.renderEntryInputs = function(div)
 	{
-		div.appendChild(document.createTextNode("Name"));
+		this.nameInput = new libFormHelpers.TextFormField("Name","Task Name");
+		this.nameInput.render(div);
+		
+		this.earliestStartTimeInput = new libFormHelpers.DateTimeFormField("Earliest Start Time",(new Date()));
+		this.earliestStartTimeInput.render(div);
+		
+		this.latestEndTimeInput = new libFormHelpers.DateTimeFormField("Latest End Time",(new Date()));
+		this.latestEndTimeInput.render(div);
+		
+		this.durationInput = new libFormHelpers.DurationFormField("Duration",3600);
+		this.durationInput.render(div);
+		
+		div.appendChild(document.createTextNode("Status"));
 		div.appendChild(document.createElement("br"));
-		this.nameInput = div.appendChild(document.createElement("input"));
-		this.nameInput.type = "text";
-		this.nameInput.value = "Task Name";
+		this.statusInput = div.appendChild(document.createElement("select"));
+		this.statusInput.options[this.statusInput.options.length] = new Option("Incomplete","Incomplete");
+		this.statusInput.options[this.statusInput.options.length] = new Option("Complete","Complete");
+		this.statusInput.options[this.statusInput.options.length] = new Option("Missed","Missed");
 		
 		div.appendChild(document.createElement("br"));
 		div.appendChild(document.createElement("br"));
 		
-		div.appendChild(document.createTextNode("Earliest Start Time"));
-		div.appendChild(document.createElement("br"));
-		this.earliestStartTimeInput = div.appendChild(document.createElement("input"));
-		this.earliestStartTimeInput.type = "text";
+		this.recurrancePeriodInput = new libFormHelpers.DurationFormField("Recurrance Period",0);
+		this.recurrancePeriodInput.render(div);
 		
-		div.appendChild(document.createElement("br"));
-		div.appendChild(document.createElement("br"));
-		
-		div.appendChild(document.createTextNode("Latest End Time"));
-		div.appendChild(document.createElement("br"));
-		this.latestEndTimeInput = div.appendChild(document.createElement("input"));
-		this.latestEndTimeInput.type = "text";
-		
-		div.appendChild(document.createElement("br"));
-		div.appendChild(document.createElement("br"));
-		
-		div.appendChild(document.createTextNode("Duration"));
-		div.appendChild(document.createElement("br"));
-		this.durationDayInput = div.appendChild(document.createElement("input"));
-		this.durationDayInput.type = "text";
-		this.durationDayInput.value = 0;
-		this.durationInput = div.appendChild(document.createElement("input"));
-		this.durationInput.type = "text";
-		
-		div.appendChild(document.createElement("br"));
-		div.appendChild(document.createElement("br"));
-		
-		div.appendChild(document.createTextNode("Recurrance Period"));
-		div.appendChild(document.createElement("br"));
-		this.recurrancePeriodDayInput = div.appendChild(document.createElement("input"));
-		this.recurrancePeriodDayInput.type = "text";
-		this.recurrancePeriodDayInput.value = 0;
-		this.recurrancePeriodInput = div.appendChild(document.createElement("input"));
-		this.recurrancePeriodInput.type = "text";
-		
-		div.appendChild(document.createElement("br"));
-		div.appendChild(document.createElement("br"));
-		
-		div.appendChild(document.createTextNode("Recurrance Late Offset"));
-		div.appendChild(document.createElement("br"));
-		this.recurranceLateOffsetDayInput = div.appendChild(document.createElement("input"));
-		this.recurranceLateOffsetDayInput.type = "text";
-		this.recurranceLateOffsetDayInput.value = 0;
-		this.recurranceLateOffsetInput = div.appendChild(document.createElement("input"));
-		this.recurranceLateOffsetInput.type = "text";
-		
+		this.recurranceLateOffsetInput = new libFormHelpers.DurationFormField("Recurrance Late Offset",0);
+		this.recurranceLateOffsetInput.render(div);
+
 		div.appendChild(document.createElement("br"));
 		
 		this.resultsDiv = div.appendChild(document.createElement("div"));
 		
 		div.appendChild(document.createElement("br"));
-		
-		$(this.earliestStartTimeInput).datetimepicker();
-		$(this.earliestStartTimeInput).datetimepicker('setDate',new Date());
-		$(this.latestEndTimeInput).datetimepicker();
-		$(this.latestEndTimeInput).datetimepicker('setDate',new Date());
-
-		var d = new Date(1970,1,1,1,0,0,0); 
-		var timePickerOptions = {
-			timeOnly: true,
-			timeFormat: 'HH:mm',
-		};
-		$(this.durationInput).datetimepicker(timePickerOptions);
-		$(this.durationInput).datetimepicker('setDate',d);
-		$(this.recurrancePeriodInput).datetimepicker(timePickerOptions);
-		$(this.recurrancePeriodInput).datetimepicker('setDate','00:00');
-		$(this.recurranceLateOffsetInput).datetimepicker(timePickerOptions);
-		$(this.recurranceLateOffsetInput).datetimepicker('setDate','00:00');
 		
 	};
 	AddTaskForm.prototype.render = function(parent)
@@ -164,41 +112,35 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 		
 		var newEarliestStartTime = new Date(earliestStartTime * 1000);
 		var newLatestEndTime = new Date(latestEndTime * 1000);
-		var momentDuration = moment.duration(duration, 'seconds');
-		var newDuration = new Date(0,0,0,momentDuration.hours(),momentDuration.minutes(),0,0);
-		var recurrancePeriodDuration = moment.duration(recurrancePeriod, 'seconds');
-		var newRecurrancePeriod = new Date(0,0,0,recurrancePeriodDuration.hours(),recurrancePeriodDuration.minutes(),0,0);
 		var recurranceLateOffsetDuration = moment.duration(recurranceLateOffset, 'seconds');
 		var newRecurranceLateOffset = new Date(0,0,0,recurranceLateOffsetDuration.hours(),recurranceLateOffsetDuration.minutes(),0,0);
 		
-		this.taskIdInput.value = taskId;
-		this.nameInput.value = name;
-		$(this.earliestStartTimeInput).datetimepicker('setDate', newEarliestStartTime );
-		$(this.latestEndTimeInput).datetimepicker('setDate', newLatestEndTime );
-		this.durationDayInput.value = momentDuration.days();
-		$(this.durationInput).datetimepicker('setDate', newDuration );
-		this.recurrancePeriodDayInput.value = recurrancePeriodDuration.days();
-		$(this.recurrancePeriodInput).datetimepicker('setDate', newRecurrancePeriod );
-		this.recurranceLateOffsetDayInput.value = recurranceLateOffsetDuration.days();
-		$(this.recurranceLateOffsetInput).datetimepicker('setDate', newRecurranceLateOffset );
+		this.taskIdInput.setValue(taskId);
+		this.nameInput.setValue(name);
+		this.earliestStartTimeInput.setValue(newEarliestStartTime);
+		this.latestEndTimeInput.setValue(newLatestEndTime);
+		this.durationInput.setValue(duration);
+		this.recurrancePeriodInput.setValue(recurrancePeriod);
+		this.recurranceLateOffsetInput.setValue(recurranceLateOffset);
 	};
 	UpdateTaskForm.prototype.submitClickEvent = function()
 	{
 		this.api.updateTask(
-				parseInt(this.taskIdInput.value),
-				this.nameInput.value,
-				$(this.earliestStartTimeInput).datetimepicker('getDate').getTime() / 1000,
-				$(this.latestEndTimeInput).datetimepicker('getDate').getTime() / 1000,
-				this.getTimestampFromInputs(this.durationDayInput,this.durationInput),
-				this.getTimestampFromInputs(this.recurrancePeriodDayInput,this.recurrancePeriodInput),
-				this.getTimestampFromInputs(this.recurranceLateOffsetDayInput,this.recurranceLateOffsetInput),
+				parseInt(this.taskIdInput.getValue()),
+				this.nameInput.getValue(),
+				this.earliestStartTimeInput.getValue().getTime() / 1000,
+				this.latestEndTimeInput.getValue().getTime() / 1000,
+				this.durationInput.getValue(),
+				this.statusInput.value,
+				this.recurrancePeriodInput.getValue(),
+				this.recurranceLateOffsetInput.getValue(),
 				this.submitSuccess.bind(this),
 				this.submitError.bind(this));
 	};
 	UpdateTaskForm.prototype.deleteClickEvent = function()
 	{
 		this.api.removeTask(
-				parseInt(this.taskIdInput.value),
+				parseInt(this.taskIdInput.getValue()),
 				this.submitSuccess.bind(this),
 				this.submitError.bind(this));
 	};
@@ -206,14 +148,9 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 	{
 		var div = parent.appendChild(document.createElement("div"));
 		
-		div.appendChild(document.createTextNode("Task"));
-		div.appendChild(document.createElement("br"));
-		this.taskIdInput = div.appendChild(document.createElement("input"));
-		this.taskIdInput.type = "text";
-		
-		div.appendChild(document.createElement("br"));
-		div.appendChild(document.createElement("br"));
-		
+		this.taskIdInput = new libFormHelpers.TextFormField("Task","");
+		this.taskIdInput.render(div);
+
 		this.renderEntryInputs(div);
 		
 		this.submitButton = div.appendChild(document.createElement("input"));

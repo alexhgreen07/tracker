@@ -19,14 +19,16 @@ class TestClock : public AppApi::Clock
 
 TEST_BASE(AppApiGroupBase)
 {
-	Database::DatabaseSqlite3 sqlDB;
-	AppDB db;
-	TestClock testClock;
+	std::shared_ptr<Database::DatabaseSqlite3> sqlDB;
+	std::shared_ptr<AppDB> db;
+	std::shared_ptr<TestClock> testClock;
 	AppApi testApi;
 	JsonMethods & procedures;
 	
 	AppApiGroupBase() :
-		db(sqlDB),
+		sqlDB(std::make_shared<Database::DatabaseSqlite3>()),
+		db(std::make_shared<AppDB>(sqlDB)),
+		testClock(std::make_shared<TestClock>()),
 		testApi(db,testClock),
 		procedures(testApi.getProcedures())
 	{}
@@ -39,13 +41,13 @@ TEST_GROUP_BASE(AppApiGroup, AppApiGroupBase)
 	
 	TEST_SETUP()
 	{
-		sqlDB.open(":memory:");
-		db.initializeNewDatabase();
+		sqlDB->open(":memory:");
+		db->initializeNewDatabase();
 	}
 	
 	TEST_TEARDOWN()
 	{
-		sqlDB.close();
+		sqlDB->close();
 	}
 };
 
@@ -69,10 +71,11 @@ TEST(AppApiGroup, ValidateGetEmptyTaskTable)
 TEST(AppApiGroup, ValidateGetTaskTableWithSingleEntry)
 {
 	auto newTask = std::make_shared<Core::Task>("",2,3,4);
+	newTask->setStatus(Core::Task::Status::Complete);
 	newTask->setRecurranceParameters(10,1);
 	unsigned int expectedIndex = 0;
 	
-	unsigned int taskId = db.insertTask(*newTask);
+	unsigned int taskId = db->insertTask(*newTask);
 
 	procedures["getTasks"]->call(params,results);
 	
@@ -95,6 +98,8 @@ TEST(AppApiGroup, ValidateGetTaskTableWithSingleEntry)
 	input_stream >> value;
 	LONGS_EQUAL(newTask->getDuration(),value);
 
+	STRCMP_EQUAL("Complete",results[expectedIndex]["status"].asCString());
+
 	input_stream = std::istringstream(results[expectedIndex]["recurringPeriod"].asString());
 	input_stream >> value;
 	LONGS_EQUAL(newTask->getRecurringPeriod(),value);
@@ -111,7 +116,7 @@ TEST(AppApiGroup, ValidateGetTaskTableWithMultipleEntries)
 	for(unsigned int i = 0; i < loopLimit; i++)
 	{
 		Core::Task newTask(std::to_string(i),i,i+1,i+2);
-		db.insertTask(newTask);
+		db->insertTask(newTask);
 	}
 
 	procedures["getTasks"]->call(params,results);
@@ -146,10 +151,11 @@ TEST(AppApiGroup, InsertTask)
 	params["earliestStartTime"] = "1";
 	params["latestEndTime"] = "2";
 	params["duration"] = "3";
+	params["status"] = "Complete";
 	
 	procedures["insertTask"]->call(params,results);
 	
-	auto result = db.getTasks();
+	auto result = db->getTasks();
 	
 	LONGS_EQUAL(1,result->size());
 	
@@ -158,6 +164,7 @@ TEST(AppApiGroup, InsertTask)
 	LONGS_EQUAL(1,task->getEarliestStartTime());
 	LONGS_EQUAL(2,task->getLatestEndTime());
 	LONGS_EQUAL(3,task->getDuration());
+	CHECK(task->getStatus() == Core::Task::Status::Complete);
 }
 
 TEST(AppApiGroup, InsertRecurringTask)
@@ -173,7 +180,7 @@ TEST(AppApiGroup, InsertRecurringTask)
 
 	procedures["insertTask"]->call(params,results);
 
-	auto result = db.getTasks();
+	auto result = db->getTasks();
 
 	auto task = result->at(1);
 	LONGS_EQUAL(5,task->getRecurringTaskCount());
@@ -185,17 +192,18 @@ TEST(AppApiGroup, UpdateTask)
 {
 	std::string testName = "test name";
 	Core::Task newTask("",1,2,1);
-	unsigned int parentTaskId = db.insertTask(newTask);
+	unsigned int parentTaskId = db->insertTask(newTask);
 	
 	params["taskId"] = parentTaskId;
 	params["name"] = testName;
 	params["earliestStartTime"] = "2";
 	params["latestEndTime"] = "4";
 	params["duration"] = "2";
+	params["status"] = "Complete";
 	
 	procedures["updateTask"]->call(params,results);
 	
-	auto result = db.getTasks();
+	auto result = db->getTasks();
 	
 	auto task = result->at(parentTaskId);
 	
@@ -203,13 +211,14 @@ TEST(AppApiGroup, UpdateTask)
 	LONGS_EQUAL(2,task->getEarliestStartTime());
 	LONGS_EQUAL(4,task->getLatestEndTime());
 	LONGS_EQUAL(2,task->getDuration());
+	CHECK(task->getStatus() == Core::Task::Status::Complete);
 }
 
 TEST(AppApiGroup, UpdateRecurringTask)
 {
 	auto newTask = std::make_shared<Core::Task>("",0,50,5);
 	newTask->setRecurranceParameters(10,0);
-	unsigned int parentTaskId = db.insertTask(*newTask);
+	unsigned int parentTaskId = db->insertTask(*newTask);
 
 	params["taskId"] = parentTaskId;
 	params["name"] = "";
@@ -222,7 +231,7 @@ TEST(AppApiGroup, UpdateRecurringTask)
 
 	procedures["updateTask"]->call(params,results);
 
-	auto result = db.getTasks();
+	auto result = db->getTasks();
 
 	auto task = result->at(parentTaskId);
 
@@ -234,12 +243,12 @@ TEST(AppApiGroup, UpdateRecurringTask)
 TEST(AppApiGroup, RemoveTask)
 {
 	Core::Task newTask("",1,1,1);
-	db.insertTask(newTask);
+	db->insertTask(newTask);
 	
 	params["taskId"] = 1;
 	procedures["removeTask"]->call(params,results);
 	
-	auto result = db.getTasks();
+	auto result = db->getTasks();
 	
 	LONGS_EQUAL(0,result->size());
 }
@@ -251,15 +260,98 @@ TEST(AppApiGroup, GetEvents)
 
 	newTask.setName("test name");
 
-	db.insertTask(newTask);
+	db->insertTask(newTask);
 	
 	procedures["getEvents"]->call(params,results);
 	
 	LONGS_EQUAL(1,results.size());
 	
-	LONGS_EQUAL(1,results[expectedIndex]["taskId"].asInt());
+	uint64_t value;
+
+	std::istringstream input_stream(results[expectedIndex]["eventId"].asString());
+	input_stream >> value;
+	LONGS_EQUAL(0,value);
+
+	input_stream = std::istringstream(results[expectedIndex]["taskId"].asString());
+	input_stream >> value;
+	LONGS_EQUAL(1,value);
+
 	STRCMP_EQUAL(newTask.getName().c_str(),results[expectedIndex]["name"].asCString());
-	LONGS_EQUAL(newTask.getEarliestStartTime(),results[expectedIndex]["startTime"].asInt());
-	LONGS_EQUAL(newTask.getDuration(),results[expectedIndex]["duration"].asInt());
+
+	input_stream = std::istringstream(results[expectedIndex]["startTime"].asString());
+	input_stream >> value;
+	LONGS_EQUAL(newTask.getEarliestStartTime(),value);
+
+	input_stream = std::istringstream(results[expectedIndex]["duration"].asString());
+	input_stream >> value;
+	LONGS_EQUAL(newTask.getDuration(),value);
+}
+
+
+TEST(AppApiGroup, InsertEvent)
+{
+	Core::Task newTask("test task",1,1,1);
+	newTask.setStatus(Core::Task::Status::Complete);
+	uint64_t taskId = db->insertTask(newTask);
+
+	params["startTime"] = "2";
+	params["duration"] = "3";
+	params["taskId"] = std::to_string(taskId);
+
+	procedures["insertEvent"]->call(params,results);
+
+	auto result = db->getLoggedEvents();
+
+	LONGS_EQUAL(1,result->size());
+
+	auto event = result->at(1);
+	LONGS_EQUAL(2,event->getStartTime());
+	LONGS_EQUAL(3,event->getDuration());
+	LONGS_EQUAL(taskId,event->getParent()->getTaskId());
+}
+
+TEST(AppApiGroup, UpdateEvent)
+{
+	auto newTask = std::make_shared<Core::Task>("test task",1,1,1);
+	newTask->setStatus(Core::Task::Status::Complete);
+	newTask->setTaskId(db->insertTask(*newTask));
+	auto newEvent = std::make_shared<Core::Event>(1,2);
+	newEvent->setParent(newTask);
+	newEvent->setEventId(db->insertEvent(*newEvent));
+
+	auto updatedParent = std::make_shared<Core::Task>("test task 2",1,1,1);
+	updatedParent->setStatus(Core::Task::Status::Complete);
+	updatedParent->setTaskId(db->insertTask(*updatedParent));
+
+	params["eventId"] = std::to_string(newEvent->getEventId());
+	params["startTime"] = "2";
+	params["duration"] = "3";
+	params["taskId"] = std::to_string(updatedParent->getTaskId());
+
+	procedures["updateEvent"]->call(params,results);
+
+	auto result = db->getLoggedEvents();
+	auto event = result->at(newEvent->getEventId());
+	LONGS_EQUAL(2,event->getStartTime());
+	LONGS_EQUAL(3,event->getDuration());
+	LONGS_EQUAL(updatedParent->getTaskId(),event->getParent()->getTaskId());
+}
+
+TEST(AppApiGroup, RemoveEvent)
+{
+	auto newTask = std::make_shared<Core::Task>("test task",1,1,1);
+	newTask->setStatus(Core::Task::Status::Complete);
+	newTask->setTaskId(db->insertTask(*newTask));
+	auto newEvent = std::make_shared<Core::Event>(1,2);
+	newEvent->setParent(newTask);
+	newEvent->setEventId(db->insertEvent(*newEvent));
+
+	params["eventId"] = std::to_string(newEvent->getEventId());
+
+	procedures["removeEvent"]->call(params,results);
+
+	auto result = db->getLoggedEvents();
+
+	LONGS_EQUAL(0,result->size());
 }
 

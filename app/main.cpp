@@ -16,10 +16,10 @@ int main(int argc, char* argv[])
     {
     	dbName = args[0];
     }
-
-    TrackerApp app(dbName);
-    app.start();
     
+    auto app = buildTrackerApp(dbName);
+    app->start();
+
     getline (cin, input);
     
     return 0;

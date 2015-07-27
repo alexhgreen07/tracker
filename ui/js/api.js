@@ -33,6 +33,18 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 		}
 	}
 	
+	Api.prototype.converEventDateStringsToInts = function(results)
+	{
+		for(var key in results)
+		{
+			var event = results[key];
+			event.eventId = parseInt(event.eventId);
+			event.taskId = parseInt(event.taskId);
+			event.startTime = parseInt(event.startTime);
+			event.duration = parseInt(event.duration);
+		}
+	};
+	
 	Api.prototype.exit = function(success,error)
 	{
 		error = error || function(data){};
@@ -40,6 +52,15 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			params : {},
 			success : function(data){
 			},
+			error : error
+		});
+	};
+	Api.prototype.reset = function(success,error)
+	{
+		error = error || function(data){};
+		this.rpc.request('reset', {
+			params : {},
+			success : success,
 			error : error
 		});
 	};
@@ -68,7 +89,7 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			error : error
 		});
 	};
-	Api.prototype.insertTask = function(name,earliestStartTime,latestEndTime,duration,recurringPeriod,recurringLateOffset,success,error)
+	Api.prototype.insertTask = function(name,earliestStartTime,latestEndTime,duration,status,recurringPeriod,recurringLateOffset,success,error)
 	{
 		error = error || function(data){};
 		this.rpc.request('insertTask', {
@@ -77,6 +98,7 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 				earliestStartTime: earliestStartTime.toString(),
 				latestEndTime: latestEndTime.toString(),
 				duration: duration.toString(),
+				status: status,
 				recurringPeriod: recurringPeriod.toString(),
 				recurringLateOffset: recurringLateOffset.toString()
 			},
@@ -88,7 +110,7 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			error : error
 		});
 	};
-	Api.prototype.updateTask = function(taskId,name,earliestStartTime,latestEndTime,duration,recurringPeriod,recurringLateOffset,success,error)
+	Api.prototype.updateTask = function(taskId,name,earliestStartTime,latestEndTime,duration,status,recurringPeriod,recurringLateOffset,success,error)
 	{
 		error = error || function(data){};
 		this.rpc.request('updateTask', {
@@ -98,6 +120,7 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 				earliestStartTime: earliestStartTime.toString(),
 				latestEndTime: latestEndTime.toString(),
 				duration: duration.toString(),
+				status: status,
 				recurringPeriod: recurringPeriod.toString(),
 				recurringLateOffset: recurringLateOffset.toString()
 			},
@@ -129,6 +152,51 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 		error = error || function(data){};
 		this.rpc.request('getEvents', {
 			params : {},
+			success : function(data){
+				this.converEventDateStringsToInts(data.result);
+				success(data.result);
+			}.bind(this),
+			error : error
+		});
+	};
+	Api.prototype.insertEvent = function(taskId,startTime,duration,success,error)
+	{
+		error = error || function(data){};
+		this.rpc.request('insertEvent', {
+			params : {
+				taskId: taskId.toString(),
+				startTime: startTime.toString(),
+				duration: duration.toString()
+			},
+			success : function(data){
+				success(data.result);
+			},
+			error : error
+		});
+	};
+	Api.prototype.updateEvent = function(eventId,taskId,startTime,duration,success,error)
+	{
+		error = error || function(data){};
+		this.rpc.request('updateEvent', {
+			params : {
+				eventId: eventId.toString(),
+				taskId: taskId.toString(),
+				startTime: startTime.toString(),
+				duration: duration.toString()
+			},
+			success : function(data){
+				success(data.result);
+			},
+			error : error
+		});
+	};
+	Api.prototype.removeEvent = function(eventId,success,error)
+	{
+		error = error || function(data){};
+		this.rpc.request('removeEvent', {
+			params : {
+				eventId: eventId.toString()
+			},
 			success : function(data){
 				success(data.result);
 			},

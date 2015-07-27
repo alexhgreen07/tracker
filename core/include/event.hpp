@@ -13,20 +13,33 @@ namespace Core
 class Event
 {
 public:
+
+	enum class Status
+	{
+		Logged,
+		Scheduled
+	};
+
     Event();
     Event(unsigned int startTime, unsigned int duration);
-    unsigned int getDuration() const;
-    void setDuration(unsigned int duration);
-    unsigned int getStartTime() const;
-    unsigned int getEndTime() const;
-    void setStartTime(unsigned int startTime);
+    uint64_t getDuration() const;
+    void setDuration(uint64_t duration);
+    uint64_t getStartTime() const;
+    uint64_t getEndTime() const;
+    void setStartTime(uint64_t startTime);
+    Status getStatus();
+    void setStatus(Status type);
+    void setEventId(uint64_t eventId);
+    uint64_t getEventId() const;
     std::shared_ptr<const Task> getParent() const;
     void setParent(const std::shared_ptr<const Task> & parent);
     bool overlaps(const std::shared_ptr<Event> & eventToCheck) const;
 private:
-    unsigned int startTime;
-    unsigned int duration;
+    uint64_t startTime;
+    uint64_t duration;
     std::shared_ptr<const Task> parent;
+    Status status;
+    uint64_t eventId;
 };
     
 }

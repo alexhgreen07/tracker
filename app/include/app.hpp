@@ -20,16 +20,20 @@ class AppClock : public AppApi::Clock
 class TrackerApp
 {
 public:
-	TrackerApp(string dbName);
+	TrackerApp(
+			string dbName,
+			const std::shared_ptr<Database::DatabaseSqlite3> & sqliteDB,
+			const std::shared_ptr<AppDB> & db,
+			const std::shared_ptr<Server> & server);
     bool start();
 private:
     string dbName;
-	Database::DatabaseSqlite3 mysqlDB;
-	AppDB db;
-	AppClock apiClock;
-	AppApi api;
-    Server server;
+    std::shared_ptr<Database::DatabaseSqlite3> sqliteDB;
+    std::shared_ptr<AppDB> db;
+    std::shared_ptr<Server> server;
 };
+
+std::shared_ptr<TrackerApp> buildTrackerApp(string dbName);
     
 }
 }

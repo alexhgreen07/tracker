@@ -1,19 +1,95 @@
 define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 	
-	function CalendarForm(api,editTaskForm)
+	function TaskActionForm(editTaskForm,addEventForm,editEventForm)
+	{
+		this.editTaskForm = editTaskForm;
+		this.addEventForm = addEventForm;
+		this.editEventForm = editEventForm;
+		
+		this.editTaskFormDiv = null;
+		this.addEventFormDiv = null;
+		this.editEventFormDiv = null;
+		
+		this.buttonsDiv = null;
+		this.editTaskButton = null;
+		this.addEventButton = null;
+		this.editEventButton = null;
+	}
+	TaskActionForm.prototype.editTaskButtonClick = function()
+	{
+		$(this.buttonsDiv).hide();
+		$(this.editTaskFormDiv).show();
+	};
+	TaskActionForm.prototype.addEventButtonClick = function()
+	{
+		$(this.buttonsDiv).hide();
+		$(this.addEventFormDiv).show();
+	};
+	TaskActionForm.prototype.editEventButtonClick = function()
+	{
+		$(this.buttonsDiv).hide();
+		$(this.editEventFormDiv).show();
+	};
+	TaskActionForm.prototype.showOnlyButtons = function()
+	{
+		$(this.editTaskFormDiv).hide();
+		$(this.addEventFormDiv).hide();
+		$(this.editEventFormDiv).hide();
+		$(this.buttonsDiv).show();
+	};
+	TaskActionForm.prototype.render = function(parent)
+	{
+		var div = parent.appendChild(document.createElement("div"));
+		
+		this.editTaskFormDiv = div.appendChild(document.createElement("div"));
+		this.editTaskForm.render(this.editTaskFormDiv);
+		this.addEventFormDiv = div.appendChild(document.createElement("div"));
+		this.addEventForm.render(this.addEventFormDiv);
+		this.editEventFormDiv = div.appendChild(document.createElement("div"));
+		this.editEventForm.render(this.editEventFormDiv);
+		
+		this.buttonsDiv = div.appendChild(document.createElement("div"));
+		
+		this.editTaskButton = this.buttonsDiv.appendChild(document.createElement("input"));
+		this.editTaskButton.type = "submit";
+		this.editTaskButton.value = "Edit Task";
+		
+		this.addEventButton = this.buttonsDiv.appendChild(document.createElement("input"));
+		this.addEventButton.type = "submit";
+		this.addEventButton.value = "Add Event";
+		
+		this.editEventButton = this.buttonsDiv.appendChild(document.createElement("input"));
+		this.editEventButton.type = "submit";
+		this.editEventButton.value = "Edit Event";
+		
+		this.showOnlyButtons();
+		
+		$(this.editTaskButton).button();
+		$(this.editTaskButton).click(this.editTaskButtonClick.bind(this));
+		
+		$(this.addEventButton).button();
+		$(this.addEventButton).click(this.addEventButtonClick.bind(this));
+		
+		$(this.editEventButton).button();
+		$(this.editEventButton).click(this.editEventButtonClick.bind(this));
+	};
+	
+	function CalendarForm(api,taskActionForm)
 	{
 		this.api = api;
-		this.editTaskForm = editTaskForm;
+		this.taskActionForm = taskActionForm;
 		
 		this.calendarDiv = null;
 		this.calendar = null;
-		this.editTaskFormDiv = null;
+		this.taskActionFormDiv = null;
 		
 		this.backButton = null;
 	}
 	CalendarForm.prototype.backButtonClick = function()
 	{
-		$(this.editTaskFormDiv).hide();
+		this.taskActionForm.showOnlyButtons();
+		
+		$(this.taskActionFormDiv).hide();
 		$(this.calendarDiv).show();
 		
 		this.refresh(function(){});
@@ -22,11 +98,11 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 	CalendarForm.prototype.eventClick = function(calEvent, jsEvent, view)
 	{
 		$(this.calendarDiv).hide();
-		$(this.editTaskFormDiv).show();
+		$(this.taskActionFormDiv).show();
 		
 		var parentTask = this.api.taskLookup[calEvent.serverEvent.taskId];
 		
-		this.editTaskForm.setTaskData(
+		this.taskActionForm.editTaskForm.setTaskData(
 				parentTask.taskId,
 				parentTask.name,
 				parentTask.earliestStartTime,
@@ -34,6 +110,14 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 				parentTask.duration,
 				parentTask.recurringPeriod,
 				parentTask.recurringLateOffset);
+		
+		this.taskActionForm.addEventForm.taskIdInput.setValue(parentTask.taskId);
+		
+		this.taskActionForm.editEventForm.setEventData(
+				calEvent.serverEvent.eventId,
+				calEvent.serverEvent.taskId,
+				calEvent.serverEvent.startTime,
+				calEvent.serverEvent.duration);
 	};
 	CalendarForm.prototype.convertServerEventToCalendarEvent = function(serverEvent)
 	{
@@ -82,15 +166,15 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 			events: []
 		});
 		
-		this.editTaskFormDiv = parent.appendChild(document.createElement("div"));
-		$(this.editTaskFormDiv).hide();
+		this.taskActionFormDiv = parent.appendChild(document.createElement("div"));
+		$(this.taskActionFormDiv).hide();
 		
-		this.editTaskForm.render(this.editTaskFormDiv);
+		this.taskActionForm.render(this.taskActionFormDiv);
 		
-		this.editTaskFormDiv.appendChild(document.createElement("br"));
-		this.editTaskFormDiv.appendChild(document.createElement("br"));
+		this.taskActionFormDiv.appendChild(document.createElement("br"));
+		this.taskActionFormDiv.appendChild(document.createElement("br"));
 		
-		this.backButton = this.editTaskFormDiv.appendChild(document.createElement("input"));
+		this.backButton = this.taskActionFormDiv.appendChild(document.createElement("input"));
 		this.backButton.type = "submit";
 		this.backButton.value = "Back";
 		
@@ -101,6 +185,7 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 	};
 	
 	return {
+		TaskActionForm: TaskActionForm,
 		CalendarForm: CalendarForm
 	};
 	

@@ -4,6 +4,11 @@
         "isNotification": false,
         "params": {}
     },
+    {
+        "method": "reset",
+        "isNotification": false,
+        "params": {}
+    },
 	{
 		"method": "sayHello",
 		"isNotification": false,
@@ -36,9 +41,19 @@
         "isNotification": false,
         "params": {}
     },
-	{
-		"method" : "notifyServer",
-		"isNotification": true,
-		"params": null
-	}
+    {
+        "method": "insertEvent",
+        "isNotification": false,
+        "params": {}
+    },
+    {
+        "method": "updateEvent",
+        "isNotification": false,
+        "params": {}
+    },
+    {
+        "method": "removeEvent",
+        "isNotification": false,
+        "params": {}
+    }
 ]

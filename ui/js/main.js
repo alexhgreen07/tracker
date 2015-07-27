@@ -1,4 +1,15 @@
-define( [ './api', './calendar_form', './task_forms', 'jquery', 'jqueryui' ], function(libApi,libCalendarForm,libTaskForms,$) {
+define( [ './api', 
+          './calendar_form', 
+          './task_forms', 
+          './event_forms',
+          'jquery', 
+          'jqueryui' ], 
+          function(
+		  libApi,
+		  libCalendarForm,
+		  libTaskForms,
+		  libEventForms,
+		  $) {
 	
 	function Application(api,calendarForm,addTaskForm)
 	{
@@ -67,7 +78,10 @@ define( [ './api', './calendar_form', './task_forms', 'jquery', 'jqueryui' ], fu
 		var api = new libApi.Api();
 		var addTaskForm = new libTaskForms.AddTaskForm(api);
 		var editTaskForm = new libTaskForms.UpdateTaskForm(api);
-		var calendarForm = new libCalendarForm.CalendarForm(api,editTaskForm);
+		var addEventForm = new libEventForms.AddEventForm(api);
+		var editEventForm = new libEventForms.EditEventForm(api);
+		var taskActionsForm = new libCalendarForm.TaskActionForm(editTaskForm,addEventForm,editEventForm);
+		var calendarForm = new libCalendarForm.CalendarForm(api,taskActionsForm);
 		
 		return new Application(api,calendarForm,addTaskForm);
 	};

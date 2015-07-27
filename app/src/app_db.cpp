@@ -7,10 +7,15 @@ namespace Tracker
 namespace Application
 {
 
-AppDB::AppDB(Database::Database & database) :
+AppDB::AppDB(const std::shared_ptr<Database::Database> & database) :
     database(database),
     currentVersion("0")
 {}
+
+std::shared_ptr<Database::Database> AppDB::getDatabase()
+{
+	return database;
+}
 
 void AppDB::updateDatabase()
 {
@@ -18,7 +23,7 @@ void AppDB::updateDatabase()
 
 	try
 	{
-		auto tasksTable = database.select("select version from version");
+		auto tasksTable = database->select("select version from version");
 
 		if(tasksTable->at(0).at(0) != currentVersion)
 		{
@@ -40,15 +45,16 @@ void AppDB::updateDatabase()
 
 void AppDB::initializeNewDatabase()
 {
-    database.execute("create table version (version int)");
+    database->execute("create table version (version int)");
     
     createVersionTable();
     createTasksTable();
+    createEventsTable();
 }
 
 void AppDB::createVersionTable()
 {
-    database.execute("insert into version values (" + currentVersion + ")");
+    database->execute("insert into version values (" + currentVersion + ")");
 }
 
 void AppDB::createTasksTable()
@@ -59,17 +65,30 @@ void AppDB::createTasksTable()
     createSql += ",earliestStartTime integer";
     createSql += ",latestEndTime integer";
     createSql += ",duration integer";
+    createSql += ",status integer";
     createSql += ",recurringPeriod integer";
     createSql += ",recurringLateOffset integer";
     createSql += ");";
     
-    database.execute(createSql);
+    database->execute(createSql);
+}
+
+void AppDB::createEventsTable()
+{
+	std::string createSql = "create table events (";
+	createSql += "eventId integer primary key asc";
+	createSql += ",startTime integer";
+	createSql += ",duration integer";
+	createSql += ",taskId integer";
+	createSql += ");";
+
+	database->execute(createSql);
 }
 
 std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Task>>> AppDB::getTasks()
 {
-    auto tasksTable = database.select("select taskId, name, earliestStartTime, latestEndTime, duration, recurringPeriod, recurringLateOffset from tasks");
-    auto tasks = std::make_shared<std::map<uint64_t, std::shared_ptr<Core::Task>>>();
+    auto tasksTable = database->select("select taskId, name, earliestStartTime, latestEndTime, duration, status, recurringPeriod, recurringLateOffset from tasks");
+    tasks = std::make_shared<std::map<uint64_t, std::shared_ptr<Core::Task>>>();
     
     for(unsigned int i = 0; i < tasksTable->size(); i++)
     {
@@ -96,11 +115,15 @@ std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Task>>> AppDB::getTasks
 		input_stream >> value;
         nextTask->setDuration(value);
 
+        input_stream = std::istringstream(row[5]);
+		input_stream >> value;
+		nextTask->setStatus((Core::Task::Status)value);
+
         uint64_t recurrancePeriod;
         uint64_t recurranceLateOffset;
-        input_stream = std::istringstream(row[5]);
+        input_stream = std::istringstream(row[6]);
 		input_stream >> recurrancePeriod;
-		input_stream = std::istringstream(row[6]);
+		input_stream = std::istringstream(row[7]);
 		input_stream >> recurranceLateOffset;
         nextTask->setRecurranceParameters(recurrancePeriod,recurranceLateOffset);
 		
@@ -125,6 +148,8 @@ uint64_t AppDB::insertTask(const Core::Task & newTask)
     valuesString += "," + std::to_string(newTask.getLatestEndTime());
     columnsString += ",duration";
     valuesString += "," + std::to_string(newTask.getDuration());
+	columnsString += ",status";
+    valuesString += "," + std::to_string((uint64_t)newTask.getStatus());
     columnsString += ",recurringPeriod";
 	valuesString += "," + std::to_string(newTask.getRecurringPeriod());
 	columnsString += ",recurringLateOffset";
@@ -134,8 +159,10 @@ uint64_t AppDB::insertTask(const Core::Task & newTask)
     "insert into tasks (" +
     columnsString + ") values(" + valuesString + ")";
     
-    database.execute(insertString);
-    taskInsertedRowId = database.lastInsertRowId();
+    database->execute(insertString);
+    taskInsertedRowId = database->lastInsertRowId();
+
+    getTasks();
 
     return taskInsertedRowId;
 }
@@ -148,12 +175,15 @@ void AppDB::updateTask(uint64_t taskId, Core::Task & task)
     updateString += ",earliestStartTime = " + std::to_string(task.getEarliestStartTime());
     updateString += ",latestEndTime = " + std::to_string(task.getLatestEndTime());
     updateString += ",duration = " + std::to_string(task.getDuration());
+    updateString += ",status = " + std::to_string((uint64_t)task.getStatus());
     updateString += ",recurringPeriod = " + std::to_string(task.getRecurringPeriod());
     updateString += ",recurringLateOffset = " + std::to_string(task.getRecurringLateOffset());
     
     updateString += " where taskId = " + std::to_string(taskId);
     
-    database.execute(updateString);
+    database->execute(updateString);
+
+    getTasks();
 }
 
 void AppDB::removeTask(uint64_t taskId)
@@ -161,7 +191,99 @@ void AppDB::removeTask(uint64_t taskId)
     std::string deleteString =
     "delete from tasks where taskId = " + std::to_string(taskId);
     
-    database.execute(deleteString);
+    database->execute(deleteString);
+
+    getTasks();
+}
+
+std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Event>>> AppDB::getLoggedEvents()
+{
+	auto eventsTable = database->select("select eventId, startTime, duration, taskId from events");
+	events = std::make_shared<std::map<uint64_t, std::shared_ptr<Core::Event>>>();
+
+	if(!tasks)
+	{
+		getTasks();
+	}
+
+	for(unsigned int i = 0; i < eventsTable->size(); i++)
+	{
+		auto nextEvent = std::make_shared<Core::Event>();
+		auto row = eventsTable->at(i);
+
+		//TODO: add parent task
+
+		uint64_t value;
+		uint64_t eventId;
+
+		std::istringstream input_stream(row[0]);
+		input_stream >> eventId;
+		nextEvent->setEventId(eventId);
+
+		input_stream = std::istringstream(row[1]);
+		input_stream >> value;
+		nextEvent->setStartTime(value);
+
+		input_stream = std::istringstream(row[2]);
+		input_stream >> value;
+		nextEvent->setDuration(value);
+
+		input_stream = std::istringstream(row[3]);
+		input_stream >> value;
+
+		nextEvent->setParent((*tasks)[value]);
+
+		nextEvent->setStatus(Core::Event::Status::Logged);
+
+		(*events)[eventId] = nextEvent;
+	}
+
+	return events;
+}
+
+uint64_t AppDB::insertEvent(const Core::Event & newEvent)
+{
+	uint64_t eventInsertedRowId = 0;
+
+	std::string columnsString = "";
+	std::string valuesString = "";
+
+	columnsString += "startTime";
+	valuesString += std::to_string(newEvent.getStartTime());
+	columnsString += ",duration";
+	valuesString += "," + std::to_string(newEvent.getDuration());
+	columnsString += ",taskId";
+	valuesString += "," + std::to_string(newEvent.getParent()->getTaskId());
+
+	std::string insertString =
+	"insert into events (" +
+	columnsString + ") values(" + valuesString + ")";
+
+	database->execute(insertString);
+	eventInsertedRowId = database->lastInsertRowId();
+
+	return eventInsertedRowId;
+}
+
+void AppDB::updateEvent(uint64_t eventId, const Core::Event & updatedEvent)
+{
+	std::string updateString = "update events set ";
+
+	updateString += "startTime = " + std::to_string(updatedEvent.getStartTime());
+	updateString += ",duration = " + std::to_string(updatedEvent.getDuration());
+	updateString += ",taskId = " + std::to_string(updatedEvent.getParent()->getTaskId());
+
+	updateString += " where eventId = " + std::to_string(eventId);
+
+	database->execute(updateString);
+}
+
+void AppDB::removeEvent(uint64_t eventId)
+{
+	std::string deleteString =
+	"delete from events where eventId = " + std::to_string(eventId);
+
+	database->execute(deleteString);
 }
 
 std::string AppDB::getCurrentVersion()

@@ -4,11 +4,11 @@ define( [ ], function() {
 	{
 		this.taskLookup = {};
 	}
-	DummyApi.prototype.insertTask = function(name,earliestStartTime,latestEndTime,duration,recurringPeriod,recurringLateOffset,success,error)
+	DummyApi.prototype.insertTask = function(name,earliestStartTime,latestEndTime,duration,status,recurringPeriod,recurringLateOffset,success,error)
 	{
 		success(true);
 	};
-	DummyApi.prototype.updateTask = function(taskId,name,earliestStartTime,latestEndTime,duration,recurringPeriod,recurringLateOffset,success,error)
+	DummyApi.prototype.updateTask = function(taskId,name,earliestStartTime,latestEndTime,duration,status,recurringPeriod,recurringLateOffset,success,error)
 	{
 		success(true);
 	}
@@ -19,6 +19,18 @@ define( [ ], function() {
 	DummyApi.prototype.getEvents = function(success,error)
 	{
 		success([]);
+	};
+	DummyApi.prototype.insertEvent = function(taskId,startTime,duration,success,error)
+	{
+		success(true);
+	};
+	DummyApi.prototype.updateEvent = function(eventId,taskId,startTime,duration,success,error)
+	{
+		success(true);
+	}
+	DummyApi.prototype.removeEvent = function(eventId,success,error)
+	{
+		success(true);
 	};
 	
 	return {

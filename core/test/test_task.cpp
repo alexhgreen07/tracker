@@ -21,6 +21,7 @@ TEST(TaskGroup, BasicInitialize)
     LONGS_EQUAL(0,testTask->getEarliestStartTime());
     LONGS_EQUAL(0,testTask->getLatestEndTime());
     LONGS_EQUAL(0,testTask->getDuration());
+    CHECK(testTask->getStatus() == Task::Status::Incomplete);
     LONGS_EQUAL(0,testTask->getChildrenCount());
     CHECK(testTask->getParent().expired());
 }
@@ -63,6 +64,13 @@ TEST(TaskGroup, SetDuration)
     testTask->setDuration(testDuration);
     
     LONGS_EQUAL(testDuration, testTask->getDuration())
+}
+
+TEST(TaskGroup, SetStatus)
+{
+	Task::Status desiredStatus = Task::Status::Complete;
+	testTask->setStatus(desiredStatus);
+	CHECK(testTask->getStatus() == desiredStatus);
 }
 
 TEST(TaskGroup, SetInvalidParameters)

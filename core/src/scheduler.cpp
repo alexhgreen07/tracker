@@ -26,19 +26,21 @@ void Scheduler::schedule(uint64_t minStartTime)
     	{
     		auto taskToCheck = taskList->at(i);
 
-    		if(taskToCheck->getRecurringTaskCount() == 0)
+    		if(taskToCheck->getStatus() == Task::Status::Incomplete)
     		{
-    			taskListToSchedule->push_back(taskToCheck);
+    			if(taskToCheck->getRecurringTaskCount() == 0)
+				{
+					taskListToSchedule->push_back(taskToCheck);
+				}
+				else
+				{
+					for(unsigned int j = 0; j < taskToCheck->getRecurringTaskCount(); j++)
+					{
+						auto taskToAdd = taskToCheck->getRecurringChild(j);
+						taskListToSchedule->push_back(taskToAdd);
+					}
+				}
     		}
-    		else
-    		{
-    			for(unsigned int j = 0; j < taskToCheck->getRecurringTaskCount(); j++)
-    			{
-    				auto taskToAdd = taskToCheck->getRecurringChild(j);
-    				taskListToSchedule->push_back(taskToAdd);
-    			}
-    		}
-
     	}
 
         std::sort(taskListToSchedule->begin(),taskListToSchedule->end(),compareTasks);
