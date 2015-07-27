@@ -92,13 +92,13 @@ void AppApi::fillJsonValueFromTask(Json::Value& row, const Core::Task & task)
 	row["earliestStartTime"] = std::to_string(task.getEarliestStartTime());
 	row["latestEndTime"] = std::to_string(task.getLatestEndTime());
 	row["duration"] = std::to_string(task.getDuration());
-	row["status"] = statusToString(task.getStatus());
+	row["status"] = taskStatusToString(task.getStatus());
 	row["recurringPeriod"] = std::to_string(task.getRecurringPeriod());
 	row["recurringLateOffset"] = std::to_string(task.getRecurringLateOffset());
 
 }
 
-std::string AppApi::statusToString(Core::Task::Status status)
+std::string AppApi::taskStatusToString(Core::Task::Status status)
 {
 	std::string statusString;
 
@@ -147,6 +147,30 @@ void AppApi::fillJsonValueFromEvent(Json::Value& row, const Core::Event & event)
 	row["taskId"] = std::to_string(event.getParent()->getTaskId());
 	row["startTime"] = std::to_string(event.getStartTime());
 	row["duration"] = std::to_string(event.getDuration());
+	row["status"] = eventStatusToString(event.getStatus());
+}
+
+std::string AppApi::eventStatusToString(Core::Event::Status status)
+{
+	std::string statusString;
+
+	switch(status)
+	{
+	case Core::Event::Status::Logged:
+		statusString = "Logged";
+		break;
+	case Core::Event::Status::Running:
+		statusString = "Running";
+		break;
+	case Core::Event::Status::Scheduled:
+		statusString = "Scheduled";
+		break;
+	default:
+		statusString = "";
+		break;
+	}
+
+	return statusString;
 }
 
 void AppApi::InsertTask::call(const Json::Value& request, Json::Value& response)

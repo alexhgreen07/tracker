@@ -44,7 +44,7 @@ void Event::setStartTime(uint64_t startTime)
     this->startTime = startTime;
 }
 
-Event::Status Event::getStatus()
+Event::Status Event::getStatus() const
 {
 	return status;
 }

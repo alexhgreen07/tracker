@@ -17,6 +17,7 @@ public:
 	enum class Status
 	{
 		Logged,
+		Running,
 		Scheduled
 	};
 
@@ -27,7 +28,7 @@ public:
     uint64_t getStartTime() const;
     uint64_t getEndTime() const;
     void setStartTime(uint64_t startTime);
-    Status getStatus();
+    Status getStatus() const;
     void setStatus(Status type);
     void setEventId(uint64_t eventId);
     uint64_t getEventId() const;
