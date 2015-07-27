@@ -23,6 +23,10 @@ define([ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ],fu
 		this.resultsDiv.innerHTML = "Event submission error";
 		setTimeout(this.clearResults.bind(this),2000);
 	};
+	AddEventForm.prototype.clearResults = function()
+	{
+		this.resultsDiv.innerHTML = "";
+	};
 	
 	AddEventForm.prototype.submitButtonClick = function()
 	{
@@ -84,7 +88,7 @@ define([ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ],fu
 	{
 		this.eventIdInput.setValue(eventId);
 		this.taskIdInput.setValue(taskId);
-		this.startTimeInput.setValue(startTime);
+		this.startTimeInput.setValue(new Date(startTime * 1000));
 		this.durationInput.setValue(duration);
 	};
 	
