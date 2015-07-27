@@ -276,8 +276,6 @@ TEST(AppApiGroup, GetEvents)
 	input_stream >> value;
 	LONGS_EQUAL(1,value);
 
-	STRCMP_EQUAL(newTask.getName().c_str(),results[expectedIndex]["name"].asCString());
-
 	STRCMP_EQUAL("Scheduled",results[expectedIndex]["status"].asCString());
 
 	input_stream = std::istringstream(results[expectedIndex]["startTime"].asString());
