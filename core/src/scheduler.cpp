@@ -13,6 +13,14 @@ void Scheduler::setTaskList(const std::shared_ptr<std::vector<std::shared_ptr<Ta
 {
     this->taskList = taskList;
 }
+void Scheduler::setLoggedEventList(const std::shared_ptr<std::vector<std::shared_ptr<Event>>> & eventList)
+{
+	loggedEventList = eventList;
+}
+std::shared_ptr<std::vector<std::shared_ptr<Event>>> Scheduler::getLoggedEventList()
+{
+	return loggedEventList;
+}
 size_t Scheduler::getScheduledEventCount() const
 {
     return scheduledEvents.size();

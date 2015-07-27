@@ -121,6 +121,18 @@ TEST(SchedulerGroup, SetTaskList)
     CHECK(taskList == newTaskList);
 }
 
+TEST(SchedulerGroup, SetLoggedEventList)
+{
+	std::shared_ptr<std::vector<std::shared_ptr<Event>>> eventList;
+	auto newEventsList = std::make_shared<std::vector<std::shared_ptr<Event>>>();
+
+	testScheduler->setLoggedEventList(newEventsList);
+
+	eventList = testScheduler->getLoggedEventList();
+
+	CHECK(eventList == newEventsList);
+}
+
 TEST(SchedulerGroup, ScheduleSingleEvent)
 {
     const unsigned int duration = 10;
