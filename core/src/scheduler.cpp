@@ -29,41 +29,65 @@ void Scheduler::schedule(uint64_t minStartTime)
 {
     if(taskList)
     {
-    	auto taskListToSchedule = std::make_shared<std::vector<std::shared_ptr<const Task>>>();
-    	for(unsigned int i = 0; i < taskList->size(); i++)
+    	auto taskEntriesToSchedule = std::make_shared<std::vector<std::shared_ptr<TaskEntry>>>();
+    	for(auto iter = taskList->begin(); iter != taskList->end(); iter++)
     	{
-    		auto taskToCheck = taskList->at(i);
+    		auto taskToCheck = *iter;
 
     		if(taskToCheck->getStatus() == Task::Status::Incomplete)
     		{
     			if(taskToCheck->getRecurringTaskCount() == 0)
 				{
-					taskListToSchedule->push_back(taskToCheck);
+    				auto newEntry = std::make_shared<TaskEntry>();
+    				newEntry->task = taskToCheck;
+    				newEntry->loggedDuration = 0;
+					taskEntriesToSchedule->push_back(newEntry);
 				}
 				else
 				{
 					for(unsigned int j = 0; j < taskToCheck->getRecurringTaskCount(); j++)
 					{
 						auto taskToAdd = taskToCheck->getRecurringChild(j);
-						taskListToSchedule->push_back(taskToAdd);
+						auto newEntry = std::make_shared<TaskEntry>();
+						newEntry->task = taskToAdd;
+						newEntry->loggedDuration = 0;
+						taskEntriesToSchedule->push_back(newEntry);
 					}
 				}
     		}
     	}
 
-        std::sort(taskListToSchedule->begin(),taskListToSchedule->end(),compareTasks);
+    	if(loggedEventList)
+    	{
+    		//TODO: make this nested loop more efficient
+    		for(auto taskIter = taskEntriesToSchedule->begin(); taskIter != taskEntriesToSchedule->end(); taskIter++)
+			{
+				auto currentEntry = *taskIter;
+
+				for(auto eventIter = loggedEventList->begin(); eventIter != loggedEventList->end(); eventIter++)
+				{
+					auto loggedEvent = *eventIter;
+					if(loggedEvent->getParent() == currentEntry->task)
+					{
+						currentEntry->loggedDuration += loggedEvent->getDuration();
+					}
+				}
+			}
+    	}
+
+        std::sort(taskEntriesToSchedule->begin(),taskEntriesToSchedule->end(),compareTaskEntriesByLatestEndTime);
         scheduledEvents.clear();
         
-        for(unsigned int i = 0; i < taskListToSchedule->size(); i++)
+        for(auto taskIter = taskEntriesToSchedule->begin(); taskIter != taskEntriesToSchedule->end(); taskIter++)
         {
-            auto currentTask = taskListToSchedule->at(i);
-            auto newEvents = scheduleInFreeSpace(currentTask,minStartTime);
+            auto currentEntry = *taskIter;
+            auto newEvents = scheduleInFreeSpace(currentEntry,minStartTime);
             
-            for(unsigned int j = 0; j < newEvents->size(); j++)
+            for(auto eventIter = newEvents->begin(); eventIter != newEvents->end(); eventIter++)
             {
-                auto newEvent = newEvents->at(j);
+                auto newEvent = *eventIter;
                 auto upperBound =
-                    std::upper_bound(scheduledEvents.begin(),scheduledEvents.end(),newEvent,compareEvents);
+                    std::upper_bound(scheduledEvents.begin(),scheduledEvents.end(),newEvent,compareEventsByStartTime);
                 scheduledEvents.insert(upperBound,newEvent);
             }
         }
@@ -75,20 +99,29 @@ std::shared_ptr<Event> Scheduler::getScheduledEvent(unsigned int index) const
 }
 
 std::shared_ptr<std::vector<std::shared_ptr<Event>>>
-    Scheduler::scheduleInFreeSpace(const std::shared_ptr<const Task> & currentTask, uint64_t minStartTime)
+    Scheduler::scheduleInFreeSpace(const std::shared_ptr<TaskEntry> & currentEntry, uint64_t minStartTime)
 {
     auto scheduledEvents = std::make_shared<std::vector<std::shared_ptr<Event>>>();
     
-    scheduleOneOffInFreeSpace(scheduledEvents,currentTask,minStartTime);
+    scheduleOneOffInFreeSpace(scheduledEvents,currentEntry,minStartTime);
     
     return scheduledEvents;
 }
 
-void Scheduler::scheduleOneOffInFreeSpace(std::shared_ptr<std::vector<std::shared_ptr<Event>>> & scheduledEvents, const std::shared_ptr<const Task> & currentTask, uint64_t minStartTime)
+void Scheduler::scheduleOneOffInFreeSpace(std::shared_ptr<std::vector<std::shared_ptr<Event>>> & scheduledEvents, const std::shared_ptr<TaskEntry> & currentEntry, uint64_t minStartTime)
 {
-    unsigned int remainingDuration = currentTask->getDuration();
-    unsigned int nextStartTime = currentTask->getEarliestStartTime();
+    unsigned int remainingDuration = currentEntry->task->getDuration();
+    unsigned int nextStartTime = currentEntry->task->getEarliestStartTime();
     
+    if(remainingDuration >= currentEntry->loggedDuration)
+    {
+    	remainingDuration -= currentEntry->loggedDuration;
+    }
+    else
+    {
+    	remainingDuration = 0;
+    }
+
     if(nextStartTime < minStartTime)
     {
     	nextStartTime = minStartTime;
@@ -100,13 +133,13 @@ void Scheduler::scheduleOneOffInFreeSpace(std::shared_ptr<std::vector<std::share
         unsigned int freeStartTime = 0;
         unsigned int freeDuration = 0;
         
-        if(currentTask->getRecurranceParent().expired())
+        if(currentEntry->task->getRecurranceParent().expired())
         {
-        	newEvent->setParent(currentTask);
+        	newEvent->setParent(currentEntry->task);
         }
         else
         {
-        	auto parent = std::shared_ptr<Task>(currentTask->getRecurranceParent());
+        	auto parent = std::shared_ptr<Task>(currentEntry->task->getRecurranceParent());
         	newEvent->setParent(parent);
         }
         
@@ -152,7 +185,7 @@ bool Scheduler::findFreeSpaceAfter(unsigned int startTime, unsigned int duration
     else
     {
         auto lowerBound =
-            std::lower_bound(scheduledEvents.begin(),scheduledEvents.end(),newEvent,compareEvents);
+            std::lower_bound(scheduledEvents.begin(),scheduledEvents.end(),newEvent,compareEventsByStartTime);
         
         freeDuration = 0;
         while(freeDuration == 0)
@@ -224,11 +257,16 @@ bool getFreeSpaceBetweenEvents(std::shared_ptr<Event> & firstEvent, std::shared_
 	return foundSpace;
 }
 
-bool Scheduler::compareTasks(const std::shared_ptr<const Task> & a, const std::shared_ptr<const Task> & b)
+bool Scheduler::compareTaskEntriesByLatestEndTime(const std::shared_ptr<TaskEntry> & a, const std::shared_ptr<TaskEntry> & b)
+{
+	return compareTasksByLatestEndTime(a->task,b->task);
+}
+
+bool Scheduler::compareTasksByLatestEndTime(const std::shared_ptr<const Task> & a, const std::shared_ptr<const Task> & b)
 {
     return (a->getLatestEndTime() < b->getLatestEndTime());
 }
-bool Scheduler::compareEvents(const std::shared_ptr<Event> & a, const std::shared_ptr<Event> & b)
+bool Scheduler::compareEventsByStartTime(const std::shared_ptr<Event> & a, const std::shared_ptr<Event> & b)
 {
     return (a->getStartTime() < b->getStartTime());
 }
