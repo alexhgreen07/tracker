@@ -133,7 +133,7 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 		{
 			eventColour = "crimson";
 		}
-		else if(serverEvent.eventId == 0)
+		else if(serverEvent.status == "Scheduled")
 		{
 			eventColour = "cornflowerblue";
 		}
