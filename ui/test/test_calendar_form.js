@@ -87,7 +87,17 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 		beforeEach(function() {
 			testApi = new libDummyApi.DummyApi();
 			dummyTaskActionsForm = new DummyForm();
-			dummyTaskActionsForm.editTaskForm = {setTaskData: function(task){}};
+			dummyTaskActionsForm.editTaskForm = {
+				setTaskData: function(task){}
+			};
+			dummyTaskActionsForm.addEventForm = {
+				taskIdInput: {
+					setValue: function(taskId){}
+				}
+			};
+			dummyTaskActionsForm.editEventForm = {
+				setEventData: function(){}
+			};
 			testForm = new libCalendarForm.CalendarForm(testApi,dummyTaskActionsForm);
 			
 			testApi.taskLookup = dummyTaskLookup;
@@ -95,6 +105,8 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 			spyOn(testApi, 'getEvents');
 			spyOn(dummyTaskActionsForm,'render');
 			spyOn(dummyTaskActionsForm.editTaskForm,'setTaskData');
+			spyOn(dummyTaskActionsForm.addEventForm.taskIdInput,'setValue');
+			spyOn(dummyTaskActionsForm.editEventForm,'setEventData');
 			
 			testForm.render(testDiv);
 		});
@@ -121,15 +133,19 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 			var startTime = new Date();
 			
 			var dummyEvent = {
-				name: "test task",
+				taskId: 1,
 				startTime: startTime.getTime() / 1000,
 				duration: 60*60
+			};
+
+			testApi.taskLookup[dummyEvent.taskId] = {
+				name: "test name"
 			};
 			
 			var convertedEvent = testForm.convertServerEventToCalendarEvent(dummyEvent);
 			
 			expect(convertedEvent.serverEvent).toBe(dummyEvent);
-			expect(convertedEvent.title).toBe(dummyEvent.name);
+			expect(convertedEvent.title).toBe(testApi.taskLookup[dummyEvent.taskId].name);
 			expect(convertedEvent.start.getTime()).toBe(dummyEvent.startTime * 1000);
 			expect(convertedEvent.end.getTime()).toBe((dummyEvent.startTime + dummyEvent.duration) * 1000);
 		});
@@ -143,6 +159,8 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 		it("fills task data in edit task form on event click", function(){
 			testForm.eventClick(dummyCalEvent);
 			expect(dummyTaskActionsForm.editTaskForm.setTaskData).toHaveBeenCalled();
+			expect(dummyTaskActionsForm.addEventForm.taskIdInput.setValue).toHaveBeenCalled();
+			expect(dummyTaskActionsForm.editEventForm.setEventData).toHaveBeenCalled();
 		});
 		
 		it("displays calendar on back click", function() {

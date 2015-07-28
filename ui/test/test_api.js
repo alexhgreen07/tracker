@@ -52,7 +52,7 @@ define( [ 'js/api' ], function(libapi) {
 			taskId: 1,
 			startTime: 2,
 			duration: 3,
-			name: expectedDummyTask.name
+			status: "Logged"
 		};
 		
 		function insertDummyEvent(success,error)
@@ -221,9 +221,9 @@ define( [ 'js/api' ], function(libapi) {
 			                     {
 			                    	 eventId: 0,
 			                    	 taskId: 1,
-			                    	 name: expectedDummyTask.name,
 			                    	 startTime: dummyStartTime,
-			                    	 duration: expectedDummyTask.duration
+			                    	 duration: expectedDummyTask.duration,
+			                    	 status: "Scheduled"
 			                	 }
 			    			];
 							
@@ -259,7 +259,7 @@ define( [ 'js/api' ], function(libapi) {
 				taskId: expectedDummyEvent.taskId,
 				startTime: expectedDummyEvent.startTime + 1,
 				duration: expectedDummyEvent.duration + 1,
-				name: expectedDummyTask.name
+				status: "Logged"
 			}];
 			
 			insertDummyEvent(function(){

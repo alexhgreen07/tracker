@@ -78,7 +78,8 @@ define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyA
 			
 			var eventId = 1;
 			var taskId = 1;
-			var startTime = new Date();
+			var now = new Date();
+			var startTime = Math.round(roundTimeToMinute(now) / 1000);
 			var duration = 2 * 3600;
 			
 			testForm.setEventData(eventId,taskId,startTime,duration);
@@ -88,7 +89,7 @@ define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyA
 			var callArgs = testApi.updateEvent.calls.argsFor(0);
 			expect(callArgs[0]).toBe(eventId);
 			expect(callArgs[1]).toBe(taskId);
-			expect(callArgs[2]).toBe(roundTimeToMinute(startTime) / 1000);
+			expect(callArgs[2]).toBe(startTime);
 			expect(callArgs[3]).toBe(duration);
 		});
 		
@@ -107,14 +108,15 @@ define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyA
 			
 			var eventId = 1;
 			var taskId = 1;
-			var startTime = new Date();
+			var now = new Date();
+			var startTime = Math.round(roundTimeToMinute(now) / 1000);
 			var duration = 2 * 3600;
 			
 			testForm.setEventData(eventId,taskId,startTime,duration);
 			
 			expect(parseInt(testForm.eventIdInput.getValue())).toBe(eventId);
 			expect(parseInt(testForm.taskIdInput.getValue())).toBe(taskId);
-			expect(testForm.startTimeInput.getValue().getTime()).toBe(roundTimeToMinute(startTime));
+			expect(testForm.startTimeInput.getValue().getTime()).toBe(startTime * 1000);
 			expect(testForm.durationInput.getValue()).toBe(duration);
 		});
 		
