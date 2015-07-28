@@ -330,7 +330,11 @@ void AppApi::GetEvents::call(const Json::Value& request, Json::Value& response)
 	unsigned int rowCount = 0;
 	response = Json::Value(Json::arrayValue);
 
+	auto taskList = std::make_shared<std::vector<std::shared_ptr<Core::Task>>>();
+	auto result = parent.db->getTasks();
+	
 	auto loggedEvents = parent.db->getLoggedEvents();
+	auto loggedEventsList = std::make_shared<std::vector<std::shared_ptr<Core::Event>>>();
 
 	for(auto iter = loggedEvents->begin(); iter != loggedEvents->end(); ++iter)
 	{
@@ -339,12 +343,10 @@ void AppApi::GetEvents::call(const Json::Value& request, Json::Value& response)
 		parent.fillJsonValueFromEvent(row,*event);
 
 		rowCount++;
+
+		loggedEventsList->push_back(event);
 	}
 
-	auto taskList = std::make_shared<std::vector<std::shared_ptr<Core::Task>>>();
-	
-	auto result = parent.db->getTasks();
-	
 	for(auto iter = result->begin(); iter != result->end(); ++iter) {
 		
 		auto task = iter->second;
@@ -352,6 +354,7 @@ void AppApi::GetEvents::call(const Json::Value& request, Json::Value& response)
 		taskList->push_back(task);
 	}
 	
+	parent.scheduler.setLoggedEventList(loggedEventsList);
 	parent.scheduler.setTaskList(taskList);
 	parent.scheduler.schedule(parent.clock->getNowTimestamp());
 	
