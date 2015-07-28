@@ -123,11 +123,27 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 	{
 		var parentTask = this.api.taskLookup[serverEvent.taskId];
 		
+		var eventColour = "blue";
+		
+		if(parentTask.status == "Complete")
+		{
+			eventColour = "green";
+		}
+		else if(parentTask.status == "Missed")
+		{
+			eventColour = "crimson";
+		}
+		else if(serverEvent.eventId == 0)
+		{
+			eventColour = "cornflowerblue";
+		}
+		
 		var calEvent = {
 			serverEvent: serverEvent,
 			title: parentTask.name,
 			start: new Date(serverEvent.startTime * 1000),
-			end: new Date((serverEvent.startTime + serverEvent.duration) * 1000)
+			end: new Date((serverEvent.startTime + serverEvent.duration) * 1000),
+			color: eventColour
 		};
 		
 		return calEvent;
