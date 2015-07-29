@@ -107,6 +107,8 @@ TEST(AppApiGroup, ValidateGetTaskTableWithSingleEntry)
 	input_stream = std::istringstream(results[expectedIndex]["recurringLateOffset"].asString());
 	input_stream >> value;
 	LONGS_EQUAL(newTask->getRecurringLateOffset(),value);
+
+	LONGS_EQUAL(newTask->getRecurringTaskCount(),results[expectedIndex]["recurringCount"].asInt());
 }
 
 TEST(AppApiGroup, ValidateGetTaskTableWithMultipleEntries)
@@ -255,12 +257,12 @@ TEST(AppApiGroup, RemoveTask)
 
 TEST(AppApiGroup, GetEvents)
 {
-	Core::Task newTask("",0,1,1);
+	auto newTask = std::make_shared<Core::Task>("",0,1,1);
 	unsigned int expectedIndex = 0;
 
-	newTask.setName("test name");
+	newTask->setName("test name");
 
-	db->insertTask(newTask);
+	db->insertTask(*newTask);
 	
 	procedures["getEvents"]->call(params,results);
 	
@@ -280,11 +282,13 @@ TEST(AppApiGroup, GetEvents)
 
 	input_stream = std::istringstream(results[expectedIndex]["startTime"].asString());
 	input_stream >> value;
-	LONGS_EQUAL(newTask.getEarliestStartTime(),value);
+	LONGS_EQUAL(newTask->getEarliestStartTime(),value);
 
 	input_stream = std::istringstream(results[expectedIndex]["duration"].asString());
 	input_stream >> value;
-	LONGS_EQUAL(newTask.getDuration(),value);
+	LONGS_EQUAL(newTask->getDuration(),value);
+
+	LONGS_EQUAL(newTask->getRecurringIndex(),results[expectedIndex]["recurringIndex"].asInt());
 }
 
 

@@ -95,7 +95,7 @@ void AppApi::fillJsonValueFromTask(Json::Value& row, const Core::Task & task)
 	row["status"] = taskStatusToString(task.getStatus());
 	row["recurringPeriod"] = std::to_string(task.getRecurringPeriod());
 	row["recurringLateOffset"] = std::to_string(task.getRecurringLateOffset());
-
+	row["recurringCount"] = static_cast<unsigned int>(task.getRecurringTaskCount());
 }
 
 std::string AppApi::taskStatusToString(Core::Task::Status status)
@@ -144,10 +144,19 @@ Core::Task::Status AppApi::taskStatusFromString(std::string status)
 void AppApi::fillJsonValueFromEvent(Json::Value& row, const Core::Event & event)
 {
 	row["eventId"] = std::to_string(event.getEventId());
-	row["taskId"] = std::to_string(event.getParent()->getTaskId());
+
+	std::string taskId = std::to_string(event.getParent()->getTaskId());
+	if(!event.getParent()->getRecurranceParent().expired())
+	{
+		auto recurringParent = event.getParent()->getRecurranceParent().lock();
+		taskId = std::to_string(recurringParent->getTaskId());
+	}
+	row["taskId"] = taskId;
+
 	row["startTime"] = std::to_string(event.getStartTime());
 	row["duration"] = std::to_string(event.getDuration());
 	row["status"] = eventStatusToString(event.getStatus());
+	row["recurringIndex"] = event.getParent()->getRecurringIndex();
 }
 
 std::string AppApi::eventStatusToString(Core::Event::Status status)
