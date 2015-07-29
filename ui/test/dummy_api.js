@@ -20,11 +20,11 @@ define( [ ], function() {
 	{
 		success([]);
 	};
-	DummyApi.prototype.insertEvent = function(taskId,startTime,duration,success,error)
+	DummyApi.prototype.insertEvent = function(taskId,startTime,duration,recurringIndex,success,error)
 	{
 		success(true);
 	};
-	DummyApi.prototype.updateEvent = function(eventId,taskId,startTime,duration,success,error)
+	DummyApi.prototype.updateEvent = function(eventId,taskId,startTime,duration,recurringIndex,success,error)
 	{
 		success(true);
 	}
