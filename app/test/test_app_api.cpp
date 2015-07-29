@@ -355,3 +355,26 @@ TEST(AppApiGroup, RemoveEvent)
 	LONGS_EQUAL(0,result->size());
 }
 
+TEST(AppApiGroup, InsertRecurringEvent)
+{
+	auto newTask = std::make_shared<Core::Task>("test task",0,10,1);
+	newTask->setRecurranceParameters(1,0);
+	newTask->setStatus(Core::Task::Status::Complete);
+	uint64_t taskId = db->insertTask(*newTask);
+
+	params["startTime"] = "2";
+	params["duration"] = "3";
+	params["taskId"] = std::to_string(taskId);
+	params["recurringIndex"] = "1";
+
+	procedures["insertEvent"]->call(params,results);
+
+	auto tasks = db->getTasks();
+	auto result = db->getLoggedEvents();
+
+	LONGS_EQUAL(1,result->size());
+
+	auto event = result->at(1);
+	LONGS_EQUAL(1,event->getParent()->getRecurringIndex());
+}
+
