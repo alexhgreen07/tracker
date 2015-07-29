@@ -159,14 +159,15 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			error : error
 		});
 	};
-	Api.prototype.insertEvent = function(taskId,startTime,duration,success,error)
+	Api.prototype.insertEvent = function(taskId,startTime,duration,recurringIndex,success,error)
 	{
 		error = error || function(data){};
 		this.rpc.request('insertEvent', {
 			params : {
 				taskId: taskId.toString(),
 				startTime: startTime.toString(),
-				duration: duration.toString()
+				duration: duration.toString(),
+				recurringIndex: recurringIndex.toString()
 			},
 			success : function(data){
 				success(data.result);
@@ -174,7 +175,7 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			error : error
 		});
 	};
-	Api.prototype.updateEvent = function(eventId,taskId,startTime,duration,success,error)
+	Api.prototype.updateEvent = function(eventId,taskId,startTime,duration,recurringIndex,success,error)
 	{
 		error = error || function(data){};
 		this.rpc.request('updateEvent', {
@@ -182,7 +183,8 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 				eventId: eventId.toString(),
 				taskId: taskId.toString(),
 				startTime: startTime.toString(),
-				duration: duration.toString()
+				duration: duration.toString(),
+				recurringIndex: recurringIndex.toString()
 			},
 			success : function(data){
 				success(data.result);

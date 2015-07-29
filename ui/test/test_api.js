@@ -10,7 +10,8 @@ define( [ 'js/api' ], function(libapi) {
         	 duration: 2,
         	 status: 'Complete',
         	 recurringLateOffset: 1, 
-        	 recurringPeriod: 10
+        	 recurringPeriod: 10,
+        	 recurringCount: 0
     	 };
 		
 		var testApi = null;
@@ -52,7 +53,8 @@ define( [ 'js/api' ], function(libapi) {
 			taskId: 1,
 			startTime: 2,
 			duration: 3,
-			status: "Logged"
+			status: "Logged",
+			recurringIndex: 0
 		};
 		
 		function insertDummyEvent(success,error)
@@ -62,6 +64,7 @@ define( [ 'js/api' ], function(libapi) {
 					expectedDummyEvent.taskId,
 					expectedDummyEvent.startTime,
 					expectedDummyEvent.duration,
+					expectedDummyEvent.recurringIndex
 					success,
 					error);
 			});
@@ -74,6 +77,7 @@ define( [ 'js/api' ], function(libapi) {
 					expectedDummyEvent.taskId,
 					expectedDummyEvent.startTime + 1,
 					expectedDummyEvent.duration + 1,
+					expectedDummyEvent.recurringIndex
 					success,
 					error);
 		}
@@ -161,7 +165,8 @@ define( [ 'js/api' ], function(libapi) {
                 	 duration: expectedDummyTask.duration + 1,
                 	 status: 'Missed',
                 	 recurringLateOffset: expectedDummyTask.recurringLateOffset + 1, 
-                	 recurringPeriod: expectedDummyTask.recurringPeriod + 1
+                	 recurringPeriod: expectedDummyTask.recurringPeriod + 1,
+                	 recurringCount: 0
             	 }
 			];
 			
@@ -223,7 +228,8 @@ define( [ 'js/api' ], function(libapi) {
 			                    	 taskId: 1,
 			                    	 startTime: dummyStartTime,
 			                    	 duration: expectedDummyTask.duration,
-			                    	 status: "Scheduled"
+			                    	 status: "Scheduled",
+			             			 recurringIndex: 0
 			                	 }
 			    			];
 							
@@ -259,7 +265,8 @@ define( [ 'js/api' ], function(libapi) {
 				taskId: expectedDummyEvent.taskId,
 				startTime: expectedDummyEvent.startTime + 1,
 				duration: expectedDummyEvent.duration + 1,
-				status: "Logged"
+				status: "Logged",
+				recurringIndex: 0
 			}];
 			
 			insertDummyEvent(function(){

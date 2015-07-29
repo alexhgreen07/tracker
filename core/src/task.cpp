@@ -7,16 +7,7 @@ namespace Tracker
 namespace Core
 {
 
-Task::Task() :
-	taskId(0),
-	name(""),
-    earliestStartTime(0),
-    latestEndTime(0),
-    duration(0),
-    children(),
-    recurringPeriod(0),
-    recurringLateOffset(0),
-	status(Status::Incomplete)
+Task::Task() : Task("",0,0,0)
 {}
 
 Task::Task(std::string name, uint64_t earliestStartTime, uint64_t latestEndTime, uint64_t duration) :
@@ -28,6 +19,7 @@ Task::Task(std::string name, uint64_t earliestStartTime, uint64_t latestEndTime,
     children(),
     recurringPeriod(0),
     recurringLateOffset(0),
+	recurringIndex(0),
 	status(Status::Incomplete)
 {
 	validateAndCorrectData();
@@ -145,6 +137,7 @@ void Task::setRecurranceParameters(uint64_t period, uint64_t lateOffset)
             unsigned int childLatestEndTime = earliestStartTime + recurringLateOffset + i * recurringPeriod;
             auto newChild = std::make_shared<Task>(name,childEarliestStartTime,childLatestEndTime,duration);
             newChild->setRecurranceParent(shared_from_this());
+            newChild->setRecurringIndex(i);
             recurringChildren.push_back(newChild);
         }
     }
@@ -176,6 +169,11 @@ void Task::clearRecurranceParameters()
     setRecurranceParameters(0,0);
 }
 
+unsigned int Task::getRecurringIndex() const
+{
+	return recurringIndex;
+}
+
 void Task::setParent(const std::shared_ptr<Task> & parent)
 {
     this->parent = parent;
@@ -184,6 +182,11 @@ void Task::setParent(const std::shared_ptr<Task> & parent)
 void Task::setRecurranceParent(const std::shared_ptr<Task> & parent)
 {
     this->recurrenceParent = parent;
+}
+
+void Task::setRecurringIndex(unsigned int index)
+{
+	recurringIndex = index;
 }
 
 void Task::validateAndCorrectData()

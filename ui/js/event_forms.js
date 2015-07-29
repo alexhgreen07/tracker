@@ -5,6 +5,7 @@ define([ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ],fu
 		this.api = api;
 		
 		this.taskIdInput = null;
+		this.recurringIndexInput = null;
 		this.startTimeInput = null;
 		this.durationInput = null;
 		
@@ -34,6 +35,7 @@ define([ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ],fu
 			parseInt(this.taskIdInput.getValue()),
 			this.startTimeInput.getValue().getTime() / 1000,
 			this.durationInput.getValue(),
+			parseInt(this.recurringIndexInput.getValue()),
 			this.submitSuccess.bind(this),
 			this.submitError.bind(this)
 		);
@@ -43,6 +45,9 @@ define([ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ],fu
 	{
 		this.taskIdInput = new libFormHelpers.TextFormField("Task","");
 		this.taskIdInput.render(div);
+		
+		this.recurringIndexInput = new libFormHelpers.TextFormField("Recurring Index","0");
+		this.recurringIndexInput.render(div);
 		
 		this.startTimeInput = new libFormHelpers.DateTimeFormField("Start Time",(new Date()));
 		this.startTimeInput.render(div);
@@ -72,6 +77,12 @@ define([ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ],fu
 		$(this.submitButton).click(this.submitButtonClick.bind(this));
 	}
 	
+	AddEventForm.prototype.setEventData = function(taskId,recurringIndex)
+	{
+		this.taskIdInput.setValue(taskId);
+		this.recurringIndexInput.setValue(recurringIndex);
+	}
+	
 	//EditEventForm inherits from AddEventForm
 	EditEventForm.prototype = new AddEventForm();
 	EditEventForm.prototype.constructor = EditEventForm;
@@ -84,10 +95,11 @@ define([ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ],fu
 		this.removeButton = null;
 	}
 	
-	EditEventForm.prototype.setEventData = function(eventId,taskId,startTime,duration)
+	EditEventForm.prototype.setEventData = function(eventId,taskId,startTime,duration,recurringIndex)
 	{
+		AddEventForm.prototype.setEventData.call(this,taskId,recurringIndex);
+		
 		this.eventIdInput.setValue(eventId);
-		this.taskIdInput.setValue(taskId);
 		this.startTimeInput.setValue(new Date(startTime * 1000));
 		this.durationInput.setValue(duration);
 	};
@@ -99,6 +111,7 @@ define([ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ],fu
 			parseInt(this.taskIdInput.getValue()),
 			this.startTimeInput.getValue().getTime() / 1000,
 			this.durationInput.getValue(),
+			parseInt(this.recurringIndexInput.getValue()),
 			this.submitSuccess.bind(this),
 			this.submitError.bind(this)
 		);

@@ -107,6 +107,8 @@ TEST(AppApiGroup, ValidateGetTaskTableWithSingleEntry)
 	input_stream = std::istringstream(results[expectedIndex]["recurringLateOffset"].asString());
 	input_stream >> value;
 	LONGS_EQUAL(newTask->getRecurringLateOffset(),value);
+
+	LONGS_EQUAL(newTask->getRecurringTaskCount(),results[expectedIndex]["recurringCount"].asInt());
 }
 
 TEST(AppApiGroup, ValidateGetTaskTableWithMultipleEntries)
@@ -255,12 +257,12 @@ TEST(AppApiGroup, RemoveTask)
 
 TEST(AppApiGroup, GetEvents)
 {
-	Core::Task newTask("",0,1,1);
+	auto newTask = std::make_shared<Core::Task>("",0,1,1);
 	unsigned int expectedIndex = 0;
 
-	newTask.setName("test name");
+	newTask->setName("test name");
 
-	db->insertTask(newTask);
+	db->insertTask(*newTask);
 	
 	procedures["getEvents"]->call(params,results);
 	
@@ -280,11 +282,13 @@ TEST(AppApiGroup, GetEvents)
 
 	input_stream = std::istringstream(results[expectedIndex]["startTime"].asString());
 	input_stream >> value;
-	LONGS_EQUAL(newTask.getEarliestStartTime(),value);
+	LONGS_EQUAL(newTask->getEarliestStartTime(),value);
 
 	input_stream = std::istringstream(results[expectedIndex]["duration"].asString());
 	input_stream >> value;
-	LONGS_EQUAL(newTask.getDuration(),value);
+	LONGS_EQUAL(newTask->getDuration(),value);
+
+	LONGS_EQUAL(newTask->getRecurringIndex(),results[expectedIndex]["recurringIndex"].asInt());
 }
 
 
@@ -353,5 +357,55 @@ TEST(AppApiGroup, RemoveEvent)
 	auto result = db->getLoggedEvents();
 
 	LONGS_EQUAL(0,result->size());
+}
+
+TEST(AppApiGroup, InsertRecurringEvent)
+{
+	auto newTask = std::make_shared<Core::Task>("test task",0,10,1);
+	newTask->setRecurranceParameters(1,0);
+	newTask->setStatus(Core::Task::Status::Complete);
+	uint64_t taskId = db->insertTask(*newTask);
+
+	params["startTime"] = "2";
+	params["duration"] = "3";
+	params["taskId"] = std::to_string(taskId);
+	params["recurringIndex"] = "1";
+
+	procedures["insertEvent"]->call(params,results);
+
+	auto tasks = db->getTasks();
+	auto result = db->getLoggedEvents();
+
+	LONGS_EQUAL(1,result->size());
+
+	auto event = result->at(1);
+	LONGS_EQUAL(1,event->getParent()->getRecurringIndex());
+}
+
+TEST(AppApiGroup, UpdateRecurringEvent)
+{
+	auto newTask = std::make_shared<Core::Task>("test task",0,10,1);
+	newTask->setRecurranceParameters(1,0);
+	newTask->setStatus(Core::Task::Status::Complete);
+	uint64_t taskId = db->insertTask(*newTask);
+	auto newEvent = std::make_shared<Core::Event>(1,2);
+	newEvent->setParent(newTask->getRecurringChild(1));
+	newEvent->setEventId(db->insertEvent(*newEvent));
+
+	params["eventId"] = std::to_string(newEvent->getEventId());
+	params["startTime"] = "2";
+	params["duration"] = "3";
+	params["taskId"] = std::to_string(taskId);
+	params["recurringIndex"] = "2";
+
+	procedures["updateEvent"]->call(params,results);
+
+	auto tasks = db->getTasks();
+	auto result = db->getLoggedEvents();
+
+	LONGS_EQUAL(1,result->size());
+
+	auto event = result->at(1);
+	LONGS_EQUAL(2,event->getParent()->getRecurringIndex());
 }
 

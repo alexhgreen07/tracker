@@ -28,6 +28,16 @@ TEST_BASE(AppDBGroupBase)
     	return newTask;
 	}
 
+    std::shared_ptr<Core::Task> insertDummyRecurringTask()
+	{
+    	auto newTask = std::make_shared<Core::Task>("",0,10,1);
+    	newTask->setRecurranceParameters(1,0);
+		uint64_t taskId = testDB.insertTask(*newTask);
+		newTask->setTaskId(taskId);
+
+		return newTask;
+	}
+
     std::shared_ptr<Core::Event> insertDummyEvent()
 	{
     	auto newEvent = std::make_shared<Core::Event>(1,2);
@@ -46,6 +56,25 @@ TEST_BASE(AppDBGroupBase)
 		testDB.updateEvent(eventId,*updatedEvent);
 
     	return updatedEvent;
+	}
+
+    std::shared_ptr<Core::Event> insertDummyRecurringEvent()
+	{
+    	auto newEvent = std::make_shared<Core::Event>(1,2);
+		auto parent = insertDummyRecurringTask();
+		newEvent->setParent(parent->getRecurringChild(1));
+		newEvent->setEventId(testDB.insertEvent(*newEvent));
+		return newEvent;
+	}
+
+    std::shared_ptr<Core::Event> updateRecurringDummyEvent(uint64_t eventId)
+	{
+		auto updatedEvent = std::make_shared<Core::Event>(1,2);
+		auto parent = insertDummyRecurringTask();
+		updatedEvent->setParent(parent->getRecurringChild(2));
+		testDB.updateEvent(eventId,*updatedEvent);
+
+		return updatedEvent;
 	}
 };
 
@@ -337,6 +366,18 @@ TEST(AppDBGroup, ValidateEventInsertByParentTaskId)
 	LONGS_EQUAL(newEvent->getParent()->getTaskId(), insertedEvent->getParent()->getTaskId());
 }
 
+TEST(AppDBGroup, ValidateRecurringEventInsert)
+{
+	auto newEvent = insertDummyRecurringEvent();
+
+	auto result = testDB.getLoggedEvents();
+
+	auto insertedEvent = result->at(newEvent->getEventId());
+	LONGS_EQUAL(
+			newEvent->getParent()->getRecurringIndex(),
+			insertedEvent->getParent()->getRecurringIndex());
+}
+
 TEST(AppDBGroup, ValidateEventDelete)
 {
 	auto newEvent = insertDummyEvent();
@@ -376,5 +417,18 @@ TEST(AppDBGroup, ValidateEventUpdateByParentTaskId)
 	auto result = testDB.getLoggedEvents();
 	auto updatedDbEvent = result->at(newEvent->getEventId());
     LONGS_EQUAL(updatedEvent->getParent()->getTaskId(),updatedDbEvent->getParent()->getTaskId());
+}
+
+TEST(AppDBGroup, ValidateRecurringEventUpdate)
+{
+	auto newEvent = insertDummyRecurringEvent();
+	auto updatedEvent = updateRecurringDummyEvent(newEvent->getEventId());
+
+	auto result = testDB.getLoggedEvents();
+
+	auto insertedEvent = result->at(newEvent->getEventId());
+	LONGS_EQUAL(
+			updatedEvent->getParent()->getRecurringIndex(),
+			insertedEvent->getParent()->getRecurringIndex());
 }
 

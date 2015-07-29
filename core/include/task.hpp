@@ -51,12 +51,14 @@ public:
     std::weak_ptr<Task> getRecurranceParent() const;
     bool getIsRecurringParent() const;
     void clearRecurranceParameters();
+    unsigned int getRecurringIndex() const;
     
     std::shared_ptr<const Task> getRecurringChild(unsigned int index) const;
     
 protected:
     void setParent(const std::shared_ptr<Task> & parent);
     void setRecurranceParent(const std::shared_ptr<Task> & parent);
+    void setRecurringIndex(unsigned int index);
     
 private:
     unsigned int taskId;
@@ -72,6 +74,7 @@ private:
     uint64_t recurringPeriod;
     uint64_t recurringLateOffset;
     std::weak_ptr<Task> recurrenceParent;
+    unsigned int recurringIndex;
 
     void validateAndCorrectData();
 };

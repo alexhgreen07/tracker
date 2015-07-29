@@ -143,6 +143,7 @@ TEST(TaskGroup, SetRecurringParameters)
         LONGS_EQUAL(i * 10,recurringTask->getEarliestStartTime());
         LONGS_EQUAL(i * 10 + 5,recurringTask->getLatestEndTime());
         LONGS_EQUAL(duration,recurringTask->getDuration());
+        LONGS_EQUAL(i,recurringTask->getRecurringIndex());
         
         std::shared_ptr<Task> recurrenceParent = std::shared_ptr<Task>(recurringTask->getRecurranceParent());
         CHECK(testTask == recurrenceParent);
