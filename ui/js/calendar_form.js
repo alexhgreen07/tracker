@@ -111,13 +111,14 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 				parentTask.recurringPeriod,
 				parentTask.recurringLateOffset);
 		
-		this.taskActionForm.addEventForm.taskIdInput.setValue(parentTask.taskId);
+		this.taskActionForm.addEventForm.setEventData(parentTask.taskId,calEvent.serverEvent.recurringIndex);
 		
 		this.taskActionForm.editEventForm.setEventData(
 				calEvent.serverEvent.eventId,
 				calEvent.serverEvent.taskId,
 				calEvent.serverEvent.startTime,
-				calEvent.serverEvent.duration);
+				calEvent.serverEvent.duration,
+				calEvent.serverEvent.recurringIndex);
 	};
 	CalendarForm.prototype.convertServerEventToCalendarEvent = function(serverEvent)
 	{

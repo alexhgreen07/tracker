@@ -32,10 +32,12 @@ define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyA
 			var taskId = 1;
 			var startTime = new Date();
 			var duration = 3600;
+			var recurringIndex = 1;
 			
 			testForm.taskIdInput.setValue(taskId);
 			testForm.startTimeInput.setValue(startTime);
 			testForm.durationInput.setValue(duration);
+			testForm.recurringIndexInput.setValue(recurringIndex);
 			
 			testForm.submitButton.click();
 			
@@ -44,6 +46,7 @@ define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyA
 			expect(callArgs[0]).toBe(taskId);
 			expect(callArgs[1]).toBe(roundTimeToMinute(startTime) / 1000);
 			expect(callArgs[2]).toBe(duration);
+			expect(callArgs[3]).toBe(recurringIndex);
 		});
 		
 		afterEach(function() {
@@ -81,8 +84,9 @@ define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyA
 			var now = new Date();
 			var startTime = Math.round(roundTimeToMinute(now) / 1000);
 			var duration = 2 * 3600;
+			var recurringIndex = 1;
 			
-			testForm.setEventData(eventId,taskId,startTime,duration);
+			testForm.setEventData(eventId,taskId,startTime,duration,recurringIndex);
 			
 			testForm.submitButton.click();
 			
@@ -91,6 +95,7 @@ define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyA
 			expect(callArgs[1]).toBe(taskId);
 			expect(callArgs[2]).toBe(startTime);
 			expect(callArgs[3]).toBe(duration);
+			expect(callArgs[4]).toBe(recurringIndex);
 		});
 		
 		it("removes event on remove button click", function() {

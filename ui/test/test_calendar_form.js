@@ -91,9 +91,7 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 				setTaskData: function(task){}
 			};
 			dummyTaskActionsForm.addEventForm = {
-				taskIdInput: {
-					setValue: function(taskId){}
-				}
+				setEventData: function(){}
 			};
 			dummyTaskActionsForm.editEventForm = {
 				setEventData: function(){}
@@ -105,7 +103,7 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 			spyOn(testApi, 'getEvents');
 			spyOn(dummyTaskActionsForm,'render');
 			spyOn(dummyTaskActionsForm.editTaskForm,'setTaskData');
-			spyOn(dummyTaskActionsForm.addEventForm.taskIdInput,'setValue');
+			spyOn(dummyTaskActionsForm.addEventForm,'setEventData');
 			spyOn(dummyTaskActionsForm.editEventForm,'setEventData');
 			
 			testForm.render(testDiv);
@@ -159,7 +157,7 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 		it("fills task data in edit task form on event click", function(){
 			testForm.eventClick(dummyCalEvent);
 			expect(dummyTaskActionsForm.editTaskForm.setTaskData).toHaveBeenCalled();
-			expect(dummyTaskActionsForm.addEventForm.taskIdInput.setValue).toHaveBeenCalled();
+			expect(dummyTaskActionsForm.addEventForm.setEventData).toHaveBeenCalled();
 			expect(dummyTaskActionsForm.editEventForm.setEventData).toHaveBeenCalled();
 		});
 		
