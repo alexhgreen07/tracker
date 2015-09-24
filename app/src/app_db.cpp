@@ -80,6 +80,7 @@ void AppDB::createEventsTable()
 	createSql += ",startTime integer";
 	createSql += ",duration integer";
 	createSql += ",taskId integer";
+	createSql += ",status integer";
 	createSql += ",recurringIndex integer";
 	createSql += ");";
 
@@ -199,7 +200,7 @@ void AppDB::removeTask(uint64_t taskId)
 
 std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Event>>> AppDB::getLoggedEvents()
 {
-	auto eventsTable = database->select("select eventId, startTime, duration, taskId, recurringIndex from events");
+	auto eventsTable = database->select("select eventId, startTime, duration, taskId, recurringIndex, status from events");
 	events = std::make_shared<std::map<uint64_t, std::shared_ptr<Core::Event>>>();
 
 	if(!tasks)
@@ -211,8 +212,6 @@ std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Event>>> AppDB::getLogg
 	{
 		auto nextEvent = std::make_shared<Core::Event>();
 		auto row = eventsTable->at(i);
-
-		//TODO: add parent task
 
 		uint64_t value;
 		uint64_t eventId;
@@ -238,6 +237,10 @@ std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Event>>> AppDB::getLogg
 		input_stream = std::istringstream(row[4]);
 		input_stream >> recurringIndex;
 
+		input_stream = std::istringstream(row[5]);
+		input_stream >> value;
+		nextEvent->setStatus((Core::Event::Status)value);
+
 		if(parentTaskAtId->getRecurringTaskCount() > 0)
 		{
 			nextEvent->setParent(parentTaskAtId->getRecurringChild(recurringIndex));
@@ -246,8 +249,6 @@ std::shared_ptr<std::map<uint64_t, std::shared_ptr<Core::Event>>> AppDB::getLogg
 		{
 			nextEvent->setParent(parentTaskAtId);
 		}
-
-		nextEvent->setStatus(Core::Event::Status::Logged);
 
 		(*events)[eventId] = nextEvent;
 	}
@@ -278,6 +279,8 @@ uint64_t AppDB::insertEvent(const Core::Event & newEvent)
 
 	columnsString += ",taskId";
 	valuesString += "," + std::to_string(parentTaskId);
+	columnsString += ",status";
+	valuesString += "," + std::to_string((uint64_t)newEvent.getStatus());
 	columnsString += ",recurringIndex";
 	valuesString += "," + std::to_string(parent->getRecurringIndex());
 
@@ -308,6 +311,7 @@ void AppDB::updateEvent(uint64_t eventId, const Core::Event & updatedEvent)
 	}
 
 	updateString += ",taskId = " + std::to_string(parentTaskId);
+	updateString += ",status = " + std::to_string((uint64_t)updatedEvent.getStatus());
 	updateString += ",recurringIndex = " + std::to_string(parent->getRecurringIndex());
 
 	updateString += " where eventId = " + std::to_string(eventId);

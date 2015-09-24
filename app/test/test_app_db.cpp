@@ -42,6 +42,7 @@ TEST_BASE(AppDBGroupBase)
 	{
     	auto newEvent = std::make_shared<Core::Event>(1,2);
     	auto parent = insertDummyTask();
+    	newEvent->setStatus(Core::Event::Status::Running);
 		newEvent->setParent(parent);
 		newEvent->setEventId(testDB.insertEvent(*newEvent));
     	return newEvent;
@@ -52,6 +53,7 @@ TEST_BASE(AppDBGroupBase)
     	auto updatedEvent = std::make_shared<Core::Event>(2,3);
     	auto parent = insertDummyTask();
 		parent->setTaskId(2);
+		updatedEvent->setStatus(Core::Event::Status::Logged);
 		updatedEvent->setParent(parent);
 		testDB.updateEvent(eventId,*updatedEvent);
 
@@ -353,7 +355,7 @@ TEST(AppDBGroup, ValidateEventInsertByStatus)
 	auto result = testDB.getLoggedEvents();
 
 	auto insertedEvent = result->at(newEvent->getEventId());
-	CHECK(Core::Event::Status::Logged == insertedEvent->getStatus());
+	CHECK(Core::Event::Status::Running == insertedEvent->getStatus());
 }
 
 TEST(AppDBGroup, ValidateEventInsertByParentTaskId)
@@ -407,6 +409,16 @@ TEST(AppDBGroup, ValidateEventUpdateByDuration)
 	auto result = testDB.getLoggedEvents();
 	auto updatedDbEvent = result->at(newEvent->getEventId());
     LONGS_EQUAL(updatedEvent->getDuration(),updatedDbEvent->getDuration());
+}
+
+TEST(AppDBGroup, ValidateEventUpdateByStatus)
+{
+	auto newEvent = insertDummyEvent();
+	auto updatedEvent = updateDummyEvent(newEvent->getEventId());
+
+	auto result = testDB.getLoggedEvents();
+	auto updatedDbEvent = result->at(newEvent->getEventId());
+    CHECK(Core::Event::Status::Logged == updatedDbEvent->getStatus());
 }
 
 TEST(AppDBGroup, ValidateEventUpdateByParentTaskId)
