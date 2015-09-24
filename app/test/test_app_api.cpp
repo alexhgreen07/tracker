@@ -301,6 +301,7 @@ TEST(AppApiGroup, InsertEvent)
 	params["startTime"] = "2";
 	params["duration"] = "3";
 	params["taskId"] = std::to_string(taskId);
+	params["status"] = "Running";
 
 	procedures["insertEvent"]->call(params,results);
 
@@ -312,6 +313,7 @@ TEST(AppApiGroup, InsertEvent)
 	LONGS_EQUAL(2,event->getStartTime());
 	LONGS_EQUAL(3,event->getDuration());
 	LONGS_EQUAL(taskId,event->getParent()->getTaskId());
+	CHECK(event->getStatus() == Core::Event::Status::Running);
 }
 
 TEST(AppApiGroup, UpdateEvent)

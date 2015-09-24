@@ -46,6 +46,7 @@ protected:
 	static Core::Task::Status taskStatusFromString(std::string status);
 	void fillJsonValueFromEvent(Json::Value& row, const Core::Event & event);
 	std::string eventStatusToString(Core::Event::Status status);
+	static Core::Event::Status eventStatusFromString(std::string status);
 
 	std::shared_ptr<AppDB> db;
 	std::shared_ptr<Clock> clock;

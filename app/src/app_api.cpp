@@ -182,6 +182,26 @@ std::string AppApi::eventStatusToString(Core::Event::Status status)
 	return statusString;
 }
 
+Core::Event::Status AppApi::eventStatusFromString(std::string status)
+{
+	Core::Event::Status returnValue;
+
+	if(status == "Logged")
+	{
+		returnValue = Core::Event::Status::Logged;
+	}
+	else if(status == "Running")
+	{
+		returnValue = Core::Event::Status::Running;
+	}
+	else
+	{
+		returnValue = Core::Event::Status::Scheduled;
+	}
+
+	return returnValue;
+}
+
 void AppApi::InsertTask::call(const Json::Value& request, Json::Value& response)
 {
 	uint64_t earliestStartTime;
@@ -272,6 +292,7 @@ void AppApi::InsertEvent::call(const Json::Value& request, Json::Value& response
 	uint64_t duration;
 	uint64_t parentTaskId;
 	uint64_t recurringIndex;
+	Core::Event::Status status;
 
 	std::istringstream input_stream(request["startTime"].asString());
 	input_stream >> startTime;
@@ -285,6 +306,8 @@ void AppApi::InsertEvent::call(const Json::Value& request, Json::Value& response
 	input_stream = std::istringstream(request["recurringIndex"].asString());
 	input_stream >> recurringIndex;
 
+	status = eventStatusFromString(request["status"].asString());
+
 	auto result = parent.db->getTasks();
 	auto parentTaskAtId = result->at(parentTaskId);
 
@@ -296,6 +319,7 @@ void AppApi::InsertEvent::call(const Json::Value& request, Json::Value& response
 	}
 
 	Core::Event newEvent(startTime,duration);
+	newEvent.setStatus(status);
 	newEvent.setParent(parentTask);
 
 	parent.db->insertEvent(newEvent);
