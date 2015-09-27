@@ -8,6 +8,7 @@ define([ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ],fu
 		this.recurringIndexInput = null;
 		this.startTimeInput = null;
 		this.durationInput = null;
+		this.statusInput = null;
 		
 		this.resultsDiv = null;
 		
@@ -35,6 +36,7 @@ define([ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ],fu
 			parseInt(this.taskIdInput.getValue()),
 			this.startTimeInput.getValue().getTime() / 1000,
 			this.durationInput.getValue(),
+			this.statusInput.getValue(),
 			parseInt(this.recurringIndexInput.getValue()),
 			this.submitSuccess.bind(this),
 			this.submitError.bind(this)
@@ -54,6 +56,9 @@ define([ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ],fu
 		
 		this.durationInput = new libFormHelpers.DurationFormField("Duration",3600);
 		this.durationInput.render(div);
+		
+		this.statusInput = new libFormHelpers.TextFormField("Status","Logged");
+		this.statusInput.render(div);
 	}
 	
 	AddEventForm.prototype.render = function(parent)

@@ -32,11 +32,13 @@ define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyA
 			var taskId = 1;
 			var startTime = new Date();
 			var duration = 3600;
+			var status = "Logged";
 			var recurringIndex = 1;
 			
 			testForm.taskIdInput.setValue(taskId);
 			testForm.startTimeInput.setValue(startTime);
 			testForm.durationInput.setValue(duration);
+			testForm.statusInput.setValue(status);
 			testForm.recurringIndexInput.setValue(recurringIndex);
 			
 			testForm.submitButton.click();
@@ -46,7 +48,8 @@ define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyA
 			expect(callArgs[0]).toBe(taskId);
 			expect(callArgs[1]).toBe(roundTimeToMinute(startTime) / 1000);
 			expect(callArgs[2]).toBe(duration);
-			expect(callArgs[3]).toBe(recurringIndex);
+			expect(callArgs[3]).toBe(status);
+			expect(callArgs[4]).toBe(recurringIndex);
 		});
 		
 		afterEach(function() {
