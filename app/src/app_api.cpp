@@ -186,9 +186,9 @@ Core::Event::Status AppApi::eventStatusFromString(std::string status)
 {
 	Core::Event::Status returnValue;
 
-	if(status == "Logged")
+	if(status == "Scheduled")
 	{
-		returnValue = Core::Event::Status::Logged;
+		returnValue = Core::Event::Status::Scheduled;
 	}
 	else if(status == "Running")
 	{
@@ -196,7 +196,7 @@ Core::Event::Status AppApi::eventStatusFromString(std::string status)
 	}
 	else
 	{
-		returnValue = Core::Event::Status::Scheduled;
+		returnValue = Core::Event::Status::Logged;
 	}
 
 	return returnValue;

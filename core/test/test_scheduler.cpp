@@ -158,6 +158,7 @@ TEST(SchedulerGroup, ScheduleSingleEventWithLoggedTime)
 
 	auto loggedEventsList = std::make_shared<std::vector<std::shared_ptr<Event>>>();
 	auto loggedEvent = std::make_shared<Event>(0,1);
+	loggedEvent->setStatus(Event::Status::Logged);
 	loggedEvent->setParent(parentTask);
 	loggedEventsList->push_back(loggedEvent);
 
@@ -167,6 +168,30 @@ TEST(SchedulerGroup, ScheduleSingleEventWithLoggedTime)
 
 	auto event = testScheduler->getScheduledEvent(0);
 	CHECK_EVENT(parentTask,parentTask->getEarliestStartTime(),parentTask->getDuration() - loggedEvent->getDuration(),event);
+}
+
+TEST(SchedulerGroup, ScheduleSingleEventWithRunningEvent)
+{
+	const unsigned int duration = 10;
+	const unsigned int count = 1;
+	const unsigned int startTime = 1;
+	auto newTaskList = createNonOverlappingTasks(duration,count);
+
+	auto parentTask = newTaskList->at(0);
+
+	auto loggedEventsList = std::make_shared<std::vector<std::shared_ptr<Event>>>();
+	auto loggedEvent = std::make_shared<Event>(0,0);
+	loggedEvent->setStatus(Event::Status::Running);
+	loggedEvent->setParent(parentTask);
+	loggedEventsList->push_back(loggedEvent);
+
+	testScheduler->setLoggedEventList(loggedEventsList);
+	testScheduler->setTaskList(newTaskList);
+	testScheduler->schedule(startTime);
+
+	uint64_t eventRunningTime = startTime - loggedEvent->getStartTime();
+	auto event = testScheduler->getScheduledEvent(0);
+	CHECK_EVENT(parentTask,startTime,parentTask->getDuration() - eventRunningTime,event);
 }
 
 TEST(SchedulerGroup, ScheduleMultipleNonOverlappingEvents)
