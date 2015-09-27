@@ -79,6 +79,9 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 		this.api = api;
 		this.taskActionForm = taskActionForm;
 		
+		this.refreshInterval = 60000;
+		this.timedRefreshIntervalId = -1;
+		
 		this.calendarDiv = null;
 		this.calendar = null;
 		this.taskActionFormDiv = null;
@@ -175,6 +178,16 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 			
 		}).bind(this),error);
 	};
+	CalendarForm.prototype.timedRefresh = function()
+	{
+		//TODO: add proper error callback
+		this.refresh(function(){},function(){});
+	};
+	CalendarForm.prototype.stopTimedRefresh = function()
+	{
+		clearInterval(this.timedRefreshIntervalId);
+		this.timedRefreshIntervalId = -1;
+	};
 	CalendarForm.prototype.render = function(parent)
 	{
 		this.calendarDiv = parent.appendChild(document.createElement("div"));
@@ -210,6 +223,8 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 		$(this.backButton).click(this.backButtonClick.bind(this));
 		
 		this.refresh(function(){});
+		
+		this.timedRefreshIntervalId = setInterval(this.timedRefresh.bind(this), this.refreshInterval);
 	};
 	
 	return {

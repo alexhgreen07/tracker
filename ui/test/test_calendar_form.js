@@ -168,6 +168,7 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 		});
 		
 		afterEach(function() {
+			testForm.stopTimedRefresh();
 			testForm = null;
 			testDiv.innerHTML = "";
 		});
