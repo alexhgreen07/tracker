@@ -78,6 +78,7 @@ define( [ 'js/api' ], function(libapi) {
 					expectedDummyEvent.taskId,
 					expectedDummyEvent.startTime + 1,
 					expectedDummyEvent.duration + 1,
+					expectedDummyEvent.status,
 					expectedDummyEvent.recurringIndex
 					success,
 					error);

@@ -111,13 +111,16 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 				parentTask.recurringPeriod,
 				parentTask.recurringLateOffset);
 		
-		this.taskActionForm.addEventForm.setEventData(parentTask.taskId,calEvent.serverEvent.recurringIndex);
+		this.taskActionForm.addEventForm.setEventData(
+				parentTask.taskId,
+				calEvent.serverEvent.recurringIndex);
 		
 		this.taskActionForm.editEventForm.setEventData(
 				calEvent.serverEvent.eventId,
 				calEvent.serverEvent.taskId,
 				calEvent.serverEvent.startTime,
 				calEvent.serverEvent.duration,
+				calEvent.serverEvent.status,
 				calEvent.serverEvent.recurringIndex);
 	};
 	CalendarForm.prototype.convertServerEventToCalendarEvent = function(serverEvent)
@@ -137,6 +140,10 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 		else if(serverEvent.status == "Scheduled")
 		{
 			eventColour = "cornflowerblue";
+		}
+		else if(serverEvent.status == "Running")
+		{
+			eventColour = "indianred";
 		}
 		
 		var calEvent = {

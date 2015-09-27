@@ -87,9 +87,10 @@ define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyA
 			var now = new Date();
 			var startTime = Math.round(roundTimeToMinute(now) / 1000);
 			var duration = 2 * 3600;
+			var status = "Logged";
 			var recurringIndex = 1;
 			
-			testForm.setEventData(eventId,taskId,startTime,duration,recurringIndex);
+			testForm.setEventData(eventId,taskId,startTime,duration,status,recurringIndex);
 			
 			testForm.submitButton.click();
 			
@@ -98,7 +99,8 @@ define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyA
 			expect(callArgs[1]).toBe(taskId);
 			expect(callArgs[2]).toBe(startTime);
 			expect(callArgs[3]).toBe(duration);
-			expect(callArgs[4]).toBe(recurringIndex);
+			expect(callArgs[4]).toBe(status);
+			expect(callArgs[5]).toBe(recurringIndex);
 		});
 		
 		it("removes event on remove button click", function() {
