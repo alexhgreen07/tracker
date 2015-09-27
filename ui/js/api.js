@@ -159,7 +159,7 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			error : error
 		});
 	};
-	Api.prototype.insertEvent = function(taskId,startTime,duration,recurringIndex,success,error)
+	Api.prototype.insertEvent = function(taskId,startTime,duration,status,recurringIndex,success,error)
 	{
 		error = error || function(data){};
 		this.rpc.request('insertEvent', {
@@ -167,6 +167,7 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 				taskId: taskId.toString(),
 				startTime: startTime.toString(),
 				duration: duration.toString(),
+				status: status,
 				recurringIndex: recurringIndex.toString()
 			},
 			success : function(data){
