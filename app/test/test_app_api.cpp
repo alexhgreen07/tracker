@@ -333,6 +333,7 @@ TEST(AppApiGroup, UpdateEvent)
 	params["startTime"] = "2";
 	params["duration"] = "3";
 	params["taskId"] = std::to_string(updatedParent->getTaskId());
+	params["status"] = "Running";
 
 	procedures["updateEvent"]->call(params,results);
 
@@ -341,6 +342,7 @@ TEST(AppApiGroup, UpdateEvent)
 	LONGS_EQUAL(2,event->getStartTime());
 	LONGS_EQUAL(3,event->getDuration());
 	LONGS_EQUAL(updatedParent->getTaskId(),event->getParent()->getTaskId());
+	LONGS_EQUAL(Core::Event::Status::Running,event->getStatus());
 }
 
 TEST(AppApiGroup, RemoveEvent)

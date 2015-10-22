@@ -334,6 +334,7 @@ void AppApi::UpdateEvent::call(const Json::Value& request, Json::Value& response
 	uint64_t duration;
 	uint64_t parentTaskId;
 	uint64_t recurringIndex;
+	Core::Event::Status status;
 
 	std::istringstream input_stream(request["eventId"].asString());
 	input_stream >> eventId;
@@ -350,6 +351,8 @@ void AppApi::UpdateEvent::call(const Json::Value& request, Json::Value& response
 	input_stream = std::istringstream(request["recurringIndex"].asString());
 	input_stream >> recurringIndex;
 
+	status = eventStatusFromString(request["status"].asString());
+
 	auto result = parent.db->getTasks();
 	auto parentTaskAtId = result->at(parentTaskId);
 
@@ -361,7 +364,7 @@ void AppApi::UpdateEvent::call(const Json::Value& request, Json::Value& response
 	}
 
 	Core::Event updatedEvent(startTime,duration);
-	updatedEvent.setStatus(Core::Event::Status::Logged);
+	updatedEvent.setStatus(status);
 	updatedEvent.setParent(parentTask);
 
 	parent.db->updateEvent(eventId,updatedEvent);
