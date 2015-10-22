@@ -121,13 +121,15 @@ define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyA
 			var now = new Date();
 			var startTime = Math.round(roundTimeToMinute(now) / 1000);
 			var duration = 2 * 3600;
+			var status = "Running";
 			
-			testForm.setEventData(eventId,taskId,startTime,duration);
+			testForm.setEventData(eventId,taskId,startTime,duration,status);
 			
 			expect(parseInt(testForm.eventIdInput.getValue())).toBe(eventId);
 			expect(parseInt(testForm.taskIdInput.getValue())).toBe(taskId);
 			expect(testForm.startTimeInput.getValue().getTime()).toBe(startTime * 1000);
 			expect(testForm.durationInput.getValue()).toBe(duration);
+			expect(testForm.statusInput.getValue()).toBe(status);
 		});
 		
 		afterEach(function() {
