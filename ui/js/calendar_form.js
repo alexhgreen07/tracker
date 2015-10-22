@@ -14,6 +14,8 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 		this.editTaskButton = null;
 		this.addEventButton = null;
 		this.editEventButton = null;
+		
+		this.startStopButton = null;
 	}
 	TaskActionForm.prototype.editTaskButtonClick = function()
 	{
@@ -29,6 +31,20 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 	{
 		$(this.buttonsDiv).hide();
 		$(this.editEventFormDiv).show();
+	};
+	TaskActionForm.prototype.startStopButtonClick = function()
+	{
+		//TODO: find a more elegant way to do this
+		if(this.startStopButton.value == "Start")
+		{
+			this.addEventForm.statusInput.setValue("Running");
+			this.addEventForm.submitButtonClick();
+		}
+		else
+		{
+			this.editEventForm.statusInput.setValue("Logged");
+			this.editEventForm.submitButtonClick();
+		}
 	};
 	TaskActionForm.prototype.showOnlyButtons = function()
 	{
@@ -62,6 +78,13 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 		this.editEventButton.type = "submit";
 		this.editEventButton.value = "Edit Event";
 		
+		this.buttonsDiv.appendChild(document.createElement("br"));
+		this.buttonsDiv.appendChild(document.createElement("br"));
+		
+		this.startStopButton = this.buttonsDiv.appendChild(document.createElement("input"));
+		this.startStopButton.type = "submit";
+		this.startStopButton.value = "Start";
+		
 		this.showOnlyButtons();
 		
 		$(this.editTaskButton).button();
@@ -72,6 +95,9 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 		
 		$(this.editEventButton).button();
 		$(this.editEventButton).click(this.editEventButtonClick.bind(this));
+		
+		$(this.startStopButton).button();
+		$(this.startStopButton).click(this.startStopButtonClick.bind(this));
 	};
 	
 	function CalendarForm(api,taskActionForm)
@@ -100,6 +126,16 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 	};
 	CalendarForm.prototype.eventClick = function(calEvent, jsEvent, view)
 	{
+		//TODO: find a more elegant way to do this
+		if(calEvent.serverEvent.status == "Running")
+		{
+			this.taskActionForm.startStopButton.value = "Stop";
+		}
+		else
+		{
+			this.taskActionForm.startStopButton.value = "Start";
+		}
+		
 		$(this.calendarDiv).hide();
 		$(this.taskActionFormDiv).show();
 		
