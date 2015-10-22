@@ -57,8 +57,17 @@ define([ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ],fu
 		this.durationInput = new libFormHelpers.DurationFormField("Duration",3600);
 		this.durationInput.render(div);
 		
-		this.statusInput = new libFormHelpers.TextFormField("Status","Logged");
+		this.statusInput = new libFormHelpers.SelectFormField(
+				"Status",
+				[
+				 	new Option("Logged","Logged"),
+				 	new Option("Running","Running")
+				],
+				"Logged");
 		this.statusInput.render(div);
+		
+		div.appendChild(document.createElement("br"));
+		div.appendChild(document.createElement("br"));
 	}
 	
 	AddEventForm.prototype.render = function(parent)
