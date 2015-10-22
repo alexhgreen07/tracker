@@ -361,6 +361,7 @@ void AppApi::UpdateEvent::call(const Json::Value& request, Json::Value& response
 	}
 
 	Core::Event updatedEvent(startTime,duration);
+	updatedEvent.setStatus(Core::Event::Status::Logged);
 	updatedEvent.setParent(parentTask);
 
 	parent.db->updateEvent(eventId,updatedEvent);
@@ -395,6 +396,17 @@ void AppApi::GetEvents::call(const Json::Value& request, Json::Value& response)
 	{
 		auto & row = response[rowCount];
 		auto event = iter->second;
+
+		//ensure we set the duration for running tasks
+		if(event->getStatus() == Core::Event::Status::Running)
+		{
+			if(event->getStartTime() < parent.clock->getNowTimestamp())
+			{
+				uint64_t runningDuration = parent.clock->getNowTimestamp() - event->getStartTime();
+				event->setDuration(runningDuration);
+			}
+		}
+
 		parent.fillJsonValueFromEvent(row,*event);
 
 		rowCount++;
