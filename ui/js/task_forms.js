@@ -39,7 +39,7 @@ define( [ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], 
 				this.earliestStartTimeInput.getValue().getTime() / 1000,
 				this.latestEndTimeInput.getValue().getTime() / 1000,
 				this.durationInput.getValue(),
-				this.statusInput.value,
+				this.statusInput.getValue(),
 				this.recurrancePeriodInput.getValue(),
 				this.recurranceLateOffsetInput.getValue(),
 				this.submitSuccess.bind(this),
@@ -59,12 +59,15 @@ define( [ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], 
 		this.durationInput = new libFormHelpers.DurationFormField("Duration",3600);
 		this.durationInput.render(div);
 		
-		div.appendChild(document.createTextNode("Status"));
-		div.appendChild(document.createElement("br"));
-		this.statusInput = div.appendChild(document.createElement("select"));
-		this.statusInput.options[this.statusInput.options.length] = new Option("Incomplete","Incomplete");
-		this.statusInput.options[this.statusInput.options.length] = new Option("Complete","Complete");
-		this.statusInput.options[this.statusInput.options.length] = new Option("Missed","Missed");
+		this.statusInput = new libFormHelpers.SelectFormField(
+				"Status",
+				[
+				 	new Option("Incomplete","Incomplete"),
+				 	new Option("Complete","Complete"),
+				 	new Option("Missed","Missed")
+				],
+				"Logged");
+		this.statusInput.render(div);
 		
 		div.appendChild(document.createElement("br"));
 		div.appendChild(document.createElement("br"));
@@ -131,7 +134,7 @@ define( [ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], 
 				this.earliestStartTimeInput.getValue().getTime() / 1000,
 				this.latestEndTimeInput.getValue().getTime() / 1000,
 				this.durationInput.getValue(),
-				this.statusInput.value,
+				this.statusInput.getValue(),
 				this.recurrancePeriodInput.getValue(),
 				this.recurranceLateOffsetInput.getValue(),
 				this.submitSuccess.bind(this),
