@@ -1,6 +1,10 @@
 #include "app.hpp"
 
+#include <iostream>
 #include <sys/time.h>
+
+using std::cout;
+using std::endl;
 
 namespace Tracker
 {
@@ -25,9 +29,12 @@ TrackerApp::TrackerApp(
 	
 bool TrackerApp::start()
 {
+	cout << "Starting application with database '" << dbName << "'" << endl;
 	sqliteDB->open(dbName);
+	cout << "Updating database" << endl;
 	db->updateDatabase();
 
+	cout << "Starting server" << endl;
     return server->start();
 }
 
