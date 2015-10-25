@@ -65,7 +65,7 @@ define( [ 'js/api' ], function(libapi) {
 					expectedDummyEvent.startTime,
 					expectedDummyEvent.duration,
 					expectedDummyEvent.status,
-					expectedDummyEvent.recurringIndex
+					expectedDummyEvent.recurringIndex,
 					success,
 					error);
 			});
@@ -79,7 +79,7 @@ define( [ 'js/api' ], function(libapi) {
 					expectedDummyEvent.startTime + 1,
 					expectedDummyEvent.duration + 1,
 					expectedDummyEvent.status,
-					expectedDummyEvent.recurringIndex
+					expectedDummyEvent.recurringIndex,
 					success,
 					error);
 		}
@@ -179,6 +179,20 @@ define( [ 'js/api' ], function(libapi) {
 						done();
 					});
 				});
+			});
+		});
+		
+		it("updates a single recurring task status", function(done) {
+			
+			insertDummyTask(function(){
+				testApi.updateRecurringTaskStatus(
+					expectedDummyEvent.taskId,
+					0,
+					1,
+					function(result){
+						expect(result).toEqual(true);
+						done();
+					});
 			});
 		});
 		

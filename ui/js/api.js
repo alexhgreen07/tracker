@@ -226,6 +226,34 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 	};
 	
 	/**
+	@method updateRecurringTaskStatus
+	@memberof module:api~Api
+	@instance
+	@param {string} taskId
+	@param {string} recurringIndex
+	@param {number} status
+	@param success
+	@param error
+	*/
+	Api.prototype.updateRecurringTaskStatus = function(taskId,recurringIndex,status,success,error)
+	{
+		error = error || function(data){};
+		this.rpc.request('updateRecurringTaskStatus', {
+			params : {
+				taskId: taskId.toString(),
+				recurringIndex: recurringIndex.toString(),
+				status: status.toString(),
+			},
+			success : function(data){
+				this.getTasks(function(){
+					success(data.result);
+				},error);
+			}.bind(this),
+			error : error
+		});
+	};
+	
+	/**
 	@method removeTask
 	@memberof module:api~Api
 	@instance
