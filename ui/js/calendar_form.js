@@ -6,7 +6,17 @@ Contains the calendar form and associated helper forms
 @requires module:jqueryui
 @requires module:fullcalendar
 */
-define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
+define( [ './task_forms', 
+          './event_forms',
+          'moment', 
+          'jquery', 
+          'jqueryui', 
+          'fullcalendar' ], 
+          function(
+		  libTaskForms,
+		  libEventForms,
+		  moment,
+		  $) {
 	
 	/**
 	@class The form containing buttons for actions to add/edit tasks/events
@@ -391,9 +401,27 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 		this.timedRefreshIntervalId = setInterval(this.timedRefresh.bind(this), this.refreshInterval);
 	};
 	
+	/**
+	Builds the Calendar Form object with its associated dependencies
+	@function buildCalendarForm
+	@param {module:api~Api} api
+	@return {module:calendar_form~CalendarForm}
+	*/
+	function buildCalendarForm(api)
+	{
+		var editTaskForm = new libTaskForms.UpdateTaskForm(api);
+		var addEventForm = new libEventForms.AddEventForm(api);
+		var editEventForm = new libEventForms.EditEventForm(api);
+		var taskActionsForm = new TaskActionForm(editTaskForm,addEventForm,editEventForm);
+		var calendarForm = new CalendarForm(api,taskActionsForm);
+		
+		return calendarForm;
+	}
+	
 	return {
 		TaskActionForm: TaskActionForm,
-		CalendarForm: CalendarForm
+		CalendarForm: CalendarForm,
+		buildCalendarForm: buildCalendarForm
 	};
 	
 });

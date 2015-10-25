@@ -10,15 +10,13 @@ A module representing the main application objects.
 */
 define( [ './api', 
           './calendar_form', 
-          './task_forms', 
-          './event_forms',
+          './task_forms',
           'jquery', 
           'jqueryui' ], 
           function(
 		  libApi,
 		  libCalendarForm,
 		  libTaskForms,
-		  libEventForms,
 		  $) {
 	
 	/**
@@ -106,11 +104,7 @@ define( [ './api',
 	{
 		var api = new libApi.Api();
 		var addTaskForm = new libTaskForms.AddTaskForm(api);
-		var editTaskForm = new libTaskForms.UpdateTaskForm(api);
-		var addEventForm = new libEventForms.AddEventForm(api);
-		var editEventForm = new libEventForms.EditEventForm(api);
-		var taskActionsForm = new libCalendarForm.TaskActionForm(editTaskForm,addEventForm,editEventForm);
-		var calendarForm = new libCalendarForm.CalendarForm(api,taskActionsForm);
+		var calendarForm = new libCalendarForm.buildCalendarForm(api);
 		
 		return new Application(api,calendarForm,addTaskForm);
 	};
