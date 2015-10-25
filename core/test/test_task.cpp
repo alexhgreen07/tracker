@@ -12,6 +12,13 @@ TEST_GROUP(TaskGroup)
     {
         testTask = std::make_shared<Task>();
     }
+
+    void setRecurringChildParameters(unsigned int duration, unsigned int period)
+	{
+		testTask->setLatestEndTime(duration * period);
+		testTask->setDuration(duration);
+		testTask->setRecurranceParameters(period,duration);
+	}
 };
 
 TEST(TaskGroup, BasicInitialize)
@@ -129,11 +136,9 @@ TEST(TaskGroup, CheckParentofChildAfterRemoval)
 
 TEST(TaskGroup, SetRecurringParameters)
 {
-    const unsigned int duration = 5;
-    const unsigned int period = 10;
-    testTask->setLatestEndTime(duration * period);
-    testTask->setDuration(duration);
-    testTask->setRecurranceParameters(period,duration);
+	const unsigned int duration = 5;
+	const unsigned int period = 10;
+	setRecurringChildParameters(duration,period);
     
     LONGS_EQUAL(5,testTask->getRecurringTaskCount());
     
@@ -152,13 +157,25 @@ TEST(TaskGroup, SetRecurringParameters)
 
 TEST(TaskGroup, ClearRecurringParameters)
 {
-    const unsigned int duration = 5;
-    const unsigned int period = 10;
-    testTask->setLatestEndTime(duration * period);
-    testTask->setDuration(duration);
-    testTask->setRecurranceParameters(period,duration);
+	const unsigned int duration = 5;
+	const unsigned int period = 10;
+	setRecurringChildParameters(duration,period);
     
     testTask->clearRecurranceParameters();
     
     CHECK_FALSE(testTask->getIsRecurringParent());
+}
+
+TEST(TaskGroup, SetRecurringChildStatus)
+{
+	const unsigned int recurringIndex = 0;
+	const Task::Status testStatus = Task::Status::Complete;
+	const unsigned int duration = 5;
+	const unsigned int period = 10;
+	setRecurringChildParameters(duration,period);
+
+	testTask->setRecurringChildStatus(recurringIndex,testStatus);
+	auto child = testTask->getRecurringChild(recurringIndex);
+
+	CHECK(child->getStatus() == testStatus);
 }
