@@ -32,6 +32,7 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 		this.editEventButton = null;
 		
 		this.startStopButton = null;
+		this.completeButton = null;
 	}
 	
 	/**
@@ -88,6 +89,17 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 	};
 	
 	/**
+	@method completeButtonClick
+	@memberof module:calendar_form~TaskActionForm
+	@instance
+	*/
+	TaskActionForm.prototype.completeButtonClick = function()
+	{
+		//TODO: implement
+		alert("Not implemented");
+	};
+	
+	/**
 	@method showOnlyButtons
 	@memberof module:calendar_form~TaskActionForm
 	@instance
@@ -138,6 +150,10 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 		this.startStopButton.type = "submit";
 		this.startStopButton.value = "Start";
 		
+		this.completeButton = this.buttonsDiv.appendChild(document.createElement("input"));
+		this.completeButton.type = "submit";
+		this.completeButton.value = "Complete";
+		
 		this.showOnlyButtons();
 		
 		$(this.editTaskButton).button();
@@ -151,6 +167,9 @@ define( [ 'moment', 'jquery', 'jqueryui', 'fullcalendar' ], function(moment,$) {
 		
 		$(this.startStopButton).button();
 		$(this.startStopButton).click(this.startStopButtonClick.bind(this));
+		
+		$(this.completeButton).button();
+		$(this.completeButton).click(this.completeButtonClick.bind(this));
 	};
 	
 	/**
