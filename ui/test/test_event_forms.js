@@ -32,11 +32,13 @@ define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyA
 			var taskId = 1;
 			var startTime = new Date();
 			var duration = 3600;
+			var status = "Logged";
 			var recurringIndex = 1;
 			
 			testForm.taskIdInput.setValue(taskId);
 			testForm.startTimeInput.setValue(startTime);
 			testForm.durationInput.setValue(duration);
+			testForm.statusInput.setValue(status);
 			testForm.recurringIndexInput.setValue(recurringIndex);
 			
 			testForm.submitButton.click();
@@ -46,7 +48,8 @@ define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyA
 			expect(callArgs[0]).toBe(taskId);
 			expect(callArgs[1]).toBe(roundTimeToMinute(startTime) / 1000);
 			expect(callArgs[2]).toBe(duration);
-			expect(callArgs[3]).toBe(recurringIndex);
+			expect(callArgs[3]).toBe(status);
+			expect(callArgs[4]).toBe(recurringIndex);
 		});
 		
 		afterEach(function() {
@@ -84,9 +87,10 @@ define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyA
 			var now = new Date();
 			var startTime = Math.round(roundTimeToMinute(now) / 1000);
 			var duration = 2 * 3600;
+			var status = "Logged";
 			var recurringIndex = 1;
 			
-			testForm.setEventData(eventId,taskId,startTime,duration,recurringIndex);
+			testForm.setEventData(eventId,taskId,startTime,duration,status,recurringIndex);
 			
 			testForm.submitButton.click();
 			
@@ -95,7 +99,8 @@ define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyA
 			expect(callArgs[1]).toBe(taskId);
 			expect(callArgs[2]).toBe(startTime);
 			expect(callArgs[3]).toBe(duration);
-			expect(callArgs[4]).toBe(recurringIndex);
+			expect(callArgs[4]).toBe(status);
+			expect(callArgs[5]).toBe(recurringIndex);
 		});
 		
 		it("removes event on remove button click", function() {
@@ -116,13 +121,15 @@ define( [ 'js/event_forms', 'test/dummy_api' ], function(libEventForms,libDummyA
 			var now = new Date();
 			var startTime = Math.round(roundTimeToMinute(now) / 1000);
 			var duration = 2 * 3600;
+			var status = "Running";
 			
-			testForm.setEventData(eventId,taskId,startTime,duration);
+			testForm.setEventData(eventId,taskId,startTime,duration,status);
 			
 			expect(parseInt(testForm.eventIdInput.getValue())).toBe(eventId);
 			expect(parseInt(testForm.taskIdInput.getValue())).toBe(taskId);
 			expect(testForm.startTimeInput.getValue().getTime()).toBe(startTime * 1000);
 			expect(testForm.durationInput.getValue()).toBe(duration);
+			expect(testForm.statusInput.getValue()).toBe(status);
 		});
 		
 		afterEach(function() {

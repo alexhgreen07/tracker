@@ -5,32 +5,36 @@
 
 #include "app_db.hpp"
 
+using std::make_shared;
+using std::shared_ptr;
+
 using namespace Tracker;
 using namespace Application;
+using namespace Core;
 
 TEST_BASE(AppDBGroupBase)
 {
-    std::shared_ptr<Database::DatabaseSqlite3> mysqlDB;
+    shared_ptr<Database::DatabaseSqlite3> mysqlDB;
     AppDB testDB;
     
     AppDBGroupBase() :
-    	mysqlDB(std::make_shared<Database::DatabaseSqlite3>()),
+    	mysqlDB(make_shared<Database::DatabaseSqlite3>()),
         testDB(mysqlDB)
     {
     }
 
-    std::shared_ptr<Core::Task> insertDummyTask()
+    shared_ptr<Task> insertDummyTask()
 	{
-    	auto newTask = std::make_shared<Core::Task>();
+    	auto newTask = make_shared<Task>();
     	uint64_t taskId = testDB.insertTask(*newTask);
     	newTask->setTaskId(taskId);
 
     	return newTask;
 	}
 
-    std::shared_ptr<Core::Task> insertDummyRecurringTask()
+    shared_ptr<Task> insertDummyRecurringTask()
 	{
-    	auto newTask = std::make_shared<Core::Task>("",0,10,1);
+    	auto newTask = make_shared<Task>("",0,10,1);
     	newTask->setRecurranceParameters(1,0);
 		uint64_t taskId = testDB.insertTask(*newTask);
 		newTask->setTaskId(taskId);
@@ -38,38 +42,40 @@ TEST_BASE(AppDBGroupBase)
 		return newTask;
 	}
 
-    std::shared_ptr<Core::Event> insertDummyEvent()
+    shared_ptr<Event> insertDummyEvent()
 	{
-    	auto newEvent = std::make_shared<Core::Event>(1,2);
+    	auto newEvent = make_shared<Event>(1,2);
     	auto parent = insertDummyTask();
+    	newEvent->setStatus(Event::Status::Running);
 		newEvent->setParent(parent);
 		newEvent->setEventId(testDB.insertEvent(*newEvent));
     	return newEvent;
 	}
 
-    std::shared_ptr<Core::Event> updateDummyEvent(uint64_t eventId)
+    shared_ptr<Event> updateDummyEvent(uint64_t eventId)
 	{
-    	auto updatedEvent = std::make_shared<Core::Event>(2,3);
+    	auto updatedEvent = make_shared<Event>(2,3);
     	auto parent = insertDummyTask();
 		parent->setTaskId(2);
+		updatedEvent->setStatus(Event::Status::Logged);
 		updatedEvent->setParent(parent);
 		testDB.updateEvent(eventId,*updatedEvent);
 
     	return updatedEvent;
 	}
 
-    std::shared_ptr<Core::Event> insertDummyRecurringEvent()
+    shared_ptr<Event> insertDummyRecurringEvent()
 	{
-    	auto newEvent = std::make_shared<Core::Event>(1,2);
+    	auto newEvent = make_shared<Event>(1,2);
 		auto parent = insertDummyRecurringTask();
 		newEvent->setParent(parent->getRecurringChild(1));
 		newEvent->setEventId(testDB.insertEvent(*newEvent));
 		return newEvent;
 	}
 
-    std::shared_ptr<Core::Event> updateRecurringDummyEvent(uint64_t eventId)
+    shared_ptr<Event> updateRecurringDummyEvent(uint64_t eventId)
 	{
-		auto updatedEvent = std::make_shared<Core::Event>(1,2);
+		auto updatedEvent = make_shared<Event>(1,2);
 		auto parent = insertDummyRecurringTask();
 		updatedEvent->setParent(parent->getRecurringChild(2));
 		testDB.updateEvent(eventId,*updatedEvent);
@@ -109,7 +115,7 @@ TEST(AppDBGroup, ValidateTasksTableExists)
 
 TEST(AppDBGroup, ValidateTaskInsert)
 {
-    Core::Task newTask;
+    Task newTask;
     
     testDB.insertTask(newTask);
     
@@ -120,7 +126,7 @@ TEST(AppDBGroup, ValidateTaskInsert)
 
 TEST(AppDBGroup, ValidateTaskInsertByTaskId)
 {
-	Core::Task newTask;
+	Task newTask;
 
 	testDB.insertTask(newTask);
 
@@ -132,7 +138,7 @@ TEST(AppDBGroup, ValidateTaskInsertByTaskId)
 
 TEST(AppDBGroup, ValidateTaskInsertByName)
 {
-	Core::Task newTask;
+	Task newTask;
 
 	newTask.setName("test task");
 	unsigned int taskId = testDB.insertTask(newTask);
@@ -144,7 +150,7 @@ TEST(AppDBGroup, ValidateTaskInsertByName)
 
 TEST(AppDBGroup, ValidateTaskInsertByEarliestStartTime)
 {
-    Core::Task newTask;
+    Task newTask;
     
     newTask.setEarliestStartTime(2);
     unsigned int taskId = testDB.insertTask(newTask);
@@ -156,7 +162,7 @@ TEST(AppDBGroup, ValidateTaskInsertByEarliestStartTime)
 
 TEST(AppDBGroup, ValidateTaskInsertByLatestEndTime)
 {
-    Core::Task newTask;
+    Task newTask;
     
     newTask.setLatestEndTime(2);
     unsigned int taskId = testDB.insertTask(newTask);
@@ -168,7 +174,7 @@ TEST(AppDBGroup, ValidateTaskInsertByLatestEndTime)
 
 TEST(AppDBGroup, ValidateTaskInsertByDuration)
 {
-    Core::Task newTask;
+    Task newTask;
     
     newTask.setDuration(2);
     unsigned int taskId = testDB.insertTask(newTask);
@@ -180,9 +186,9 @@ TEST(AppDBGroup, ValidateTaskInsertByDuration)
 
 TEST(AppDBGroup, ValidateTaskInsertByStatus)
 {
-	Core::Task newTask;
+	Task newTask;
 
-	newTask.setStatus(Core::Task::Status::Complete);
+	newTask.setStatus(Task::Status::Complete);
 	unsigned int taskId = testDB.insertTask(newTask);
 
 	auto result = testDB.getTasks();
@@ -192,7 +198,7 @@ TEST(AppDBGroup, ValidateTaskInsertByStatus)
 
 TEST(AppDBGroup, ValidateTaskInsertByRecurringChildrenCount)
 {
-	auto newTask = std::make_shared<Core::Task>("",0,50,5);
+	auto newTask = make_shared<Task>("",0,50,5);
 
 	newTask->setRecurranceParameters(10,5);
 	unsigned int taskId = testDB.insertTask(*newTask);
@@ -204,7 +210,7 @@ TEST(AppDBGroup, ValidateTaskInsertByRecurringChildrenCount)
 
 TEST(AppDBGroup, ValidateTaskDelete)
 {
-    Core::Task newTask;
+    Task newTask;
     
     uint64_t taskId = testDB.insertTask(newTask);
     testDB.removeTask(taskId);
@@ -216,7 +222,7 @@ TEST(AppDBGroup, ValidateTaskDelete)
 
 TEST(AppDBGroup, ValidateTaskUpdateByName)
 {
-	Core::Task newTask;
+	Task newTask;
 
 	auto taskId = testDB.insertTask(newTask);
 
@@ -230,7 +236,7 @@ TEST(AppDBGroup, ValidateTaskUpdateByName)
 
 TEST(AppDBGroup, ValidateTaskUpdateByEarliestStartTime)
 {
-    Core::Task newTask;
+    Task newTask;
     
     auto taskId = testDB.insertTask(newTask);
     
@@ -244,7 +250,7 @@ TEST(AppDBGroup, ValidateTaskUpdateByEarliestStartTime)
 
 TEST(AppDBGroup, ValidateTaskUpdateByLatestEndTime)
 {
-    Core::Task newTask;
+    Task newTask;
     
     auto taskId = testDB.insertTask(newTask);
     
@@ -258,7 +264,7 @@ TEST(AppDBGroup, ValidateTaskUpdateByLatestEndTime)
 
 TEST(AppDBGroup, ValidateTaskUpdateByDuration)
 {
-    Core::Task newTask;
+    Task newTask;
     
     auto taskId = testDB.insertTask(newTask);
     
@@ -272,11 +278,11 @@ TEST(AppDBGroup, ValidateTaskUpdateByDuration)
 
 TEST(AppDBGroup, ValidateTaskUpdateByStatus)
 {
-    Core::Task newTask;
+    Task newTask;
 
     auto taskId = testDB.insertTask(newTask);
 
-    newTask.setStatus(Core::Task::Status::Complete);
+    newTask.setStatus(Task::Status::Complete);
     testDB.updateTask(taskId, newTask);
 
     auto result = testDB.getTasks();
@@ -286,7 +292,7 @@ TEST(AppDBGroup, ValidateTaskUpdateByStatus)
 
 TEST(AppDBGroup, ValidateTaskUpdateByRecurringChildrenCount)
 {
-	auto newTask = std::make_shared<Core::Task>("",0,50,5);
+	auto newTask = make_shared<Task>("",0,50,5);
 
 	newTask->setRecurranceParameters(10,5);
 	unsigned int taskId = testDB.insertTask(*newTask);
@@ -297,6 +303,22 @@ TEST(AppDBGroup, ValidateTaskUpdateByRecurringChildrenCount)
 	auto result = testDB.getTasks();
 	auto retrievedTask = result->at(taskId);
 	LONGS_EQUAL(newTask->getRecurringTaskCount(), retrievedTask->getRecurringTaskCount());
+}
+
+TEST(AppDBGroup, ValidateRecurringTaskStatusUpdate)
+{
+	const unsigned int recurringChildIndex = 0;
+	auto newTask = make_shared<Task>("",0,50,5);
+
+	newTask->setRecurranceParameters(10,5);
+	unsigned int taskId = testDB.insertTask(*newTask);
+
+	testDB.updateRecurringTaskStatus(taskId,recurringChildIndex,Task::Status::Complete);
+
+	auto result = testDB.getTasks();
+	auto retrievedTask = result->at(taskId);
+	auto recurringChild = retrievedTask->getRecurringChild(recurringChildIndex);
+	CHECK(recurringChild->getStatus() == Task::Status::Complete);
 }
 
 TEST(AppDBGroup, ValidateEventsTableExists)
@@ -353,7 +375,7 @@ TEST(AppDBGroup, ValidateEventInsertByStatus)
 	auto result = testDB.getLoggedEvents();
 
 	auto insertedEvent = result->at(newEvent->getEventId());
-	CHECK(Core::Event::Status::Logged == insertedEvent->getStatus());
+	CHECK(Event::Status::Running == insertedEvent->getStatus());
 }
 
 TEST(AppDBGroup, ValidateEventInsertByParentTaskId)
@@ -407,6 +429,16 @@ TEST(AppDBGroup, ValidateEventUpdateByDuration)
 	auto result = testDB.getLoggedEvents();
 	auto updatedDbEvent = result->at(newEvent->getEventId());
     LONGS_EQUAL(updatedEvent->getDuration(),updatedDbEvent->getDuration());
+}
+
+TEST(AppDBGroup, ValidateEventUpdateByStatus)
+{
+	auto newEvent = insertDummyEvent();
+	auto updatedEvent = updateDummyEvent(newEvent->getEventId());
+
+	auto result = testDB.getLoggedEvents();
+	auto updatedDbEvent = result->at(newEvent->getEventId());
+    CHECK(Event::Status::Logged == updatedDbEvent->getStatus());
 }
 
 TEST(AppDBGroup, ValidateEventUpdateByParentTaskId)

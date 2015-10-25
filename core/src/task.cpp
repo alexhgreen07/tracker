@@ -150,8 +150,13 @@ size_t Task::getRecurringTaskCount() const
 
 std::shared_ptr<const Task> Task::getRecurringChild(unsigned int index) const
 {
-    std::shared_ptr<const Task> returnValue = recurringChildren[index];
-    return returnValue;
+    return recurringChildren[index];
+}
+
+void Task::setRecurringChildStatus(unsigned int index, Status status)
+{
+	auto recurringChild = recurringChildren[index];
+	recurringChild->setStatus(status);
 }
 
 std::weak_ptr<Task> Task::getRecurranceParent() const

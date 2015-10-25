@@ -41,9 +41,7 @@ define( [ 'js/task_forms', 'test/dummy_api' ], function(libTaskForms,libDummyApi
 			testForm.nameInput.setValue(testName);
 			$(testForm.earliestStartTimeInput).datetimepicker('setDate', now );
 			$(testForm.latestEndTimeInput).datetimepicker('setDate', now );
-			
-			testForm.statusInput.value = testStatus;
-			
+			testForm.statusInput.setValue(testStatus);
 			testForm.durationInput.setValue(testDuration);
 			testForm.recurrancePeriodInput.setValue(testRecurrancePeriod);
 			testForm.recurranceLateOffsetInput.setValue(testRecurranceLateOffset);
@@ -104,9 +102,7 @@ define( [ 'js/task_forms', 'test/dummy_api' ], function(libTaskForms,libDummyApi
 			testForm.nameInput.setValue(testName);
 			testForm.earliestStartTimeInput.setValue(now);
 			testForm.latestEndTimeInput.setValue(now);
-			
-			testForm.statusInput.value = testStatus;
-			
+			testForm.statusInput.setValue(testStatus);
 			testForm.durationInput.setValue(testDuration);
 			testForm.recurrancePeriodInput.setValue(testRecurrancePeriod);
 			testForm.recurranceLateOffsetInput.setValue(testRecurranceLateOffset);

@@ -50,6 +50,41 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 		this.parent.appendChild(document.createElement("br"));
 	}
 	
+	SelectFormField.prototype = new FormField();
+	SelectFormField.prototype.constructor = SelectFormField;
+	function SelectFormField(name,options,defaultValue)
+	{
+		FormField.prototype.constructor.call(this,name);
+		
+		this.options = options;
+		this.defaultValue = defaultValue;
+		this.selectInput = null;
+	}
+	SelectFormField.prototype.getValue = function()
+	{
+		return this.selectInput.value;
+	}
+	SelectFormField.prototype.setValue = function(value)
+	{
+		this.selectInput.value = value;
+	}
+	SelectFormField.prototype.render = function(parent)
+	{
+		FormField.prototype.render.call(this,parent);
+		
+		this.parent.appendChild(document.createTextNode(this.name));
+		this.parent.appendChild(document.createElement("br"));
+		this.selectInput = this.parent.appendChild(document.createElement("select"));
+		for(var key in this.options)
+		{
+			this.selectInput.options[this.selectInput.options.length] = this.options[key];
+		}
+		this.selectInput.value = this.defaultValue;
+		
+		this.parent.appendChild(document.createElement("br"));
+		this.parent.appendChild(document.createElement("br"));
+	}
+	
 	DateTimeFormField.prototype = new TextFormField();
 	DateTimeFormField.prototype.constructor = DateTimeFormField;
 	function DateTimeFormField(name,defaultValue)
@@ -126,6 +161,7 @@ define( [ 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], function(moment,$)
 	return {
 		FormField: FormField,
 		TextFormField: TextFormField,
+		SelectFormField: SelectFormField,
 		DateTimeFormField: DateTimeFormField,
 		DurationFormField: DurationFormField
 	};

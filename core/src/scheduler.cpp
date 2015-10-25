@@ -69,6 +69,20 @@ void Scheduler::schedule(uint64_t minStartTime)
 					auto loggedEvent = *eventIter;
 					if(loggedEvent->getParent() == currentEntry->task)
 					{
+						if(loggedEvent->getStatus() == Event::Status::Running)
+						{
+							//set the running duration for running events
+							if(loggedEvent->getStartTime() < minStartTime)
+							{
+								uint64_t runningTime = minStartTime - loggedEvent->getStartTime();
+								loggedEvent->setDuration(runningTime);
+							}
+							else
+							{
+								loggedEvent->setDuration(0);
+							}
+						}
+
 						currentEntry->loggedDuration += loggedEvent->getDuration();
 					}
 				}

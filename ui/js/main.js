@@ -1,3 +1,13 @@
+/**
+A module representing the main application objects.
+@module main
+@requires module:api
+@requires module:calendar_form
+@requires module:task_forms
+@requires module:event_forms
+@requires module:jquery
+@requires module:jqueryui
+*/
 define( [ './api', 
           './calendar_form', 
           './task_forms', 
@@ -11,6 +21,14 @@ define( [ './api',
 		  libEventForms,
 		  $) {
 	
+	/**
+	@class The main application object
+	@constructor Application
+	@alias module:main
+	@param {Api} api - The JSON-RPC API object
+	@param {CalendarForm} calendarForm - The calendar form
+	@param {AddTaskForm} addTaskForm - The add task form
+	*/
 	function Application(api,calendarForm,addTaskForm)
 	{
 		this.api = api;
@@ -35,6 +53,13 @@ define( [ './api',
 		
 		this.tabsDiv = null;
 	}
+	
+	/**
+	Renders the main application.
+	@method render
+	@memberof module:main~Application
+	@instance
+	*/
 	Application.prototype.render = function(parent)
 	{
 		var element = null;
@@ -73,6 +98,10 @@ define( [ './api',
 		
 	};
 	
+	/**
+	Builds the main application object with all dependencies.
+	@function buildApplication
+	*/
 	function buildApplication()
 	{
 		var api = new libApi.Api();
@@ -85,7 +114,11 @@ define( [ './api',
 		
 		return new Application(api,calendarForm,addTaskForm);
 	};
-
+	
+	/**
+	Builds and runs the main application.
+	@function main
+	*/
 	function main()
 	{
 		if(!isTest)
@@ -100,7 +133,7 @@ define( [ './api',
 	}
 	
 	main();
-	
+
 	return {
 		Application: Application,
 		buildApplication: buildApplication

@@ -1,5 +1,16 @@
+/**
+Contains JSON RPC API object
+@module api
+@requires module:jquery
+@requires module:jqueryjsonrpc
+*/
 define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 	
+	/**
+	@class The API object interfacing to the server
+	@constructor Api
+	@alias module:api
+	*/
 	function Api()
 	{
 		this.rpc = $.jsonRPC.setup( {
@@ -10,6 +21,12 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 		this.taskLookup = {};
 	}
 	
+	/**
+	@method fillTaskLookup
+	@memberof module:api~Api
+	@instance
+	@param {Object} results
+	*/
 	Api.prototype.fillTaskLookup = function(results)
 	{
 		this.taskLookup = {};
@@ -20,6 +37,12 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 		}
 	};
 	
+	/**
+	@method converTaskDateStringsToInts
+	@memberof module:api~Api
+	@instance
+	@param {Object} results
+	*/
 	Api.prototype.converTaskDateStringsToInts = function(results)
 	{
 		for(var key in results)
@@ -33,6 +56,12 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 		}
 	}
 	
+	/**
+	@method converEventDateStringsToInts
+	@memberof module:api~Api
+	@instance
+	@param {Object} results
+	*/
 	Api.prototype.converEventDateStringsToInts = function(results)
 	{
 		for(var key in results)
@@ -45,6 +74,13 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 		}
 	};
 	
+	/**
+	@method exit
+	@memberof module:api~Api
+	@instance
+	@param success
+	@param error
+	*/
 	Api.prototype.exit = function(success,error)
 	{
 		error = error || function(data){};
@@ -55,6 +91,14 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			error : error
 		});
 	};
+	
+	/**
+	@method reset
+	@memberof module:api~Api
+	@instance
+	@param success
+	@param error
+	*/
 	Api.prototype.reset = function(success,error)
 	{
 		error = error || function(data){};
@@ -64,6 +108,15 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			error : error
 		});
 	};
+	
+	/**
+	@method sayHello
+	@memberof module:api~Api
+	@instance
+	@param {string} name
+	@param success
+	@param error
+	*/
 	Api.prototype.sayHello = function(name,success,error)
 	{
 		error = error || function(data){};
@@ -75,6 +128,14 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			error : error
 		});
 	};
+	
+	/**
+	@method getTasks
+	@memberof module:api~Api
+	@instance
+	@param success
+	@param error
+	*/
 	Api.prototype.getTasks = function(success,error)
 	{
 		error = error || function(data){};
@@ -89,6 +150,21 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			error : error
 		});
 	};
+	
+	/**
+	@method insertTask
+	@memberof module:api~Api
+	@instance
+	@param {string} name
+	@param earliestStartTime
+	@param latestEndTime
+	@param duration
+	@param {string} status
+	@param recurringPeriod
+	@param recurringLateOffset
+	@param success
+	@param error
+	*/
 	Api.prototype.insertTask = function(name,earliestStartTime,latestEndTime,duration,status,recurringPeriod,recurringLateOffset,success,error)
 	{
 		error = error || function(data){};
@@ -110,6 +186,22 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			error : error
 		});
 	};
+	
+	/**
+	@method updateTask
+	@memberof module:api~Api
+	@instance
+	@param {number} taskId
+	@param {string} name
+	@param earliestStartTime
+	@param latestEndTime
+	@param duration
+	@param {string} status
+	@param recurringPeriod
+	@param recurringLateOffset
+	@param success
+	@param error
+	*/
 	Api.prototype.updateTask = function(taskId,name,earliestStartTime,latestEndTime,duration,status,recurringPeriod,recurringLateOffset,success,error)
 	{
 		error = error || function(data){};
@@ -132,6 +224,15 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			error : error
 		});
 	};
+	
+	/**
+	@method removeTask
+	@memberof module:api~Api
+	@instance
+	@param {number} taskId
+	@param success
+	@param error
+	*/
 	Api.prototype.removeTask = function(taskId,success,error)
 	{
 		error = error || function(data){};
@@ -147,6 +248,14 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			error : error
 		});
 	};
+	
+	/**
+	@method getEvents
+	@memberof module:api~Api
+	@instance
+	@param success
+	@param error
+	*/
 	Api.prototype.getEvents = function(success,error)
 	{
 		error = error || function(data){};
@@ -159,7 +268,20 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			error : error
 		});
 	};
-	Api.prototype.insertEvent = function(taskId,startTime,duration,recurringIndex,success,error)
+	
+	/**
+	@method insertEvent
+	@memberof module:api~Api
+	@instance
+	@param {number} taskId
+	@param startTime
+	@param duration
+	@param {string} status
+	@param recurringIndex
+	@param success
+	@param error
+	*/
+	Api.prototype.insertEvent = function(taskId,startTime,duration,status,recurringIndex,success,error)
 	{
 		error = error || function(data){};
 		this.rpc.request('insertEvent', {
@@ -167,6 +289,7 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 				taskId: taskId.toString(),
 				startTime: startTime.toString(),
 				duration: duration.toString(),
+				status: status,
 				recurringIndex: recurringIndex.toString()
 			},
 			success : function(data){
@@ -175,7 +298,21 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			error : error
 		});
 	};
-	Api.prototype.updateEvent = function(eventId,taskId,startTime,duration,recurringIndex,success,error)
+	
+	/**
+	@method updateEvent
+	@memberof module:api~Api
+	@instance
+	@param {number} eventId
+	@param {number} taskId
+	@param startTime
+	@param duration
+	@param {string} status
+	@param recurringIndex
+	@param success
+	@param error
+	*/
+	Api.prototype.updateEvent = function(eventId,taskId,startTime,duration,status,recurringIndex,success,error)
 	{
 		error = error || function(data){};
 		this.rpc.request('updateEvent', {
@@ -184,6 +321,7 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 				taskId: taskId.toString(),
 				startTime: startTime.toString(),
 				duration: duration.toString(),
+				status: status,
 				recurringIndex: recurringIndex.toString()
 			},
 			success : function(data){
@@ -192,6 +330,15 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 			error : error
 		});
 	};
+	
+	/**
+	@method removeEvent
+	@memberof module:api~Api
+	@instance
+	@param {number} eventId
+	@param success
+	@param error
+	*/
 	Api.prototype.removeEvent = function(eventId,success,error)
 	{
 		error = error || function(data){};

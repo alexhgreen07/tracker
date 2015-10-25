@@ -54,6 +54,7 @@ public:
     unsigned int getRecurringIndex() const;
     
     std::shared_ptr<const Task> getRecurringChild(unsigned int index) const;
+    void setRecurringChildStatus(unsigned int index, Status status);
     
 protected:
     void setParent(const std::shared_ptr<Task> & parent);

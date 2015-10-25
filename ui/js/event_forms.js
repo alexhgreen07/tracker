@@ -8,6 +8,7 @@ define([ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ],fu
 		this.recurringIndexInput = null;
 		this.startTimeInput = null;
 		this.durationInput = null;
+		this.statusInput = null;
 		
 		this.resultsDiv = null;
 		
@@ -35,6 +36,7 @@ define([ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ],fu
 			parseInt(this.taskIdInput.getValue()),
 			this.startTimeInput.getValue().getTime() / 1000,
 			this.durationInput.getValue(),
+			this.statusInput.getValue(),
 			parseInt(this.recurringIndexInput.getValue()),
 			this.submitSuccess.bind(this),
 			this.submitError.bind(this)
@@ -54,6 +56,18 @@ define([ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ],fu
 		
 		this.durationInput = new libFormHelpers.DurationFormField("Duration",3600);
 		this.durationInput.render(div);
+		
+		this.statusInput = new libFormHelpers.SelectFormField(
+				"Status",
+				[
+				 	new Option("Logged","Logged"),
+				 	new Option("Running","Running")
+				],
+				"Logged");
+		this.statusInput.render(div);
+		
+		div.appendChild(document.createElement("br"));
+		div.appendChild(document.createElement("br"));
 	}
 	
 	AddEventForm.prototype.render = function(parent)
@@ -95,13 +109,14 @@ define([ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ],fu
 		this.removeButton = null;
 	}
 	
-	EditEventForm.prototype.setEventData = function(eventId,taskId,startTime,duration,recurringIndex)
+	EditEventForm.prototype.setEventData = function(eventId,taskId,startTime,duration,status,recurringIndex)
 	{
 		AddEventForm.prototype.setEventData.call(this,taskId,recurringIndex);
 		
 		this.eventIdInput.setValue(eventId);
 		this.startTimeInput.setValue(new Date(startTime * 1000));
 		this.durationInput.setValue(duration);
+		this.statusInput.setValue(status);
 	};
 	
 	EditEventForm.prototype.submitButtonClick = function()
@@ -111,6 +126,7 @@ define([ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ],fu
 			parseInt(this.taskIdInput.getValue()),
 			this.startTimeInput.getValue().getTime() / 1000,
 			this.durationInput.getValue(),
+			this.statusInput.getValue(),
 			parseInt(this.recurringIndexInput.getValue()),
 			this.submitSuccess.bind(this),
 			this.submitError.bind(this)

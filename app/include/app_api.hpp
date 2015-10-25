@@ -3,8 +3,13 @@
 #include "app_db.hpp"
 #include <scheduler.hpp>
 
+using std::shared_ptr;
+using std::string;
+
 namespace Tracker
 {
+using namespace Core;
+
 namespace Application
 {
 using namespace Network;
@@ -25,7 +30,7 @@ public:
 		virtual uint64_t getNowTimestamp() = 0;
 	};
 
-	AppApi(const std::shared_ptr<AppDB> & db, const std::shared_ptr<Clock> & clock);
+	AppApi(const shared_ptr<AppDB> & db, const shared_ptr<Clock> & clock);
 
 	JsonMethods & getProcedures();
 	JsonNotifications & getNotifications();
@@ -41,15 +46,16 @@ protected:
 		AppApi & parent;
 	};
 
-	void fillJsonValueFromTask(Json::Value& row, const Core::Task & task);
-	std::string taskStatusToString(Core::Task::Status status);
-	static Core::Task::Status taskStatusFromString(std::string status);
-	void fillJsonValueFromEvent(Json::Value& row, const Core::Event & event);
-	std::string eventStatusToString(Core::Event::Status status);
+	void fillJsonValueFromTask(Json::Value& row, const Task & task);
+	string taskStatusToString(Task::Status status);
+	static Task::Status taskStatusFromString(string status);
+	void fillJsonValueFromEvent(Json::Value& row, const Event & event);
+	string eventStatusToString(Event::Status status);
+	static Event::Status eventStatusFromString(string status);
 
-	std::shared_ptr<AppDB> db;
-	std::shared_ptr<Clock> clock;
-	Core::Scheduler scheduler;
+	shared_ptr<AppDB> db;
+	shared_ptr<Clock> clock;
+	Scheduler scheduler;
 
 	APP_API_PROCEDURE(ExitProcedure) exitProcedure;
 	APP_API_PROCEDURE(ResetProcedure) resetProcedure;
@@ -58,6 +64,7 @@ protected:
 	APP_API_PROCEDURE(GetTasksProcedure) getTasks;
 	APP_API_PROCEDURE(InsertTask) insertTask;
 	APP_API_PROCEDURE(UpdateTask) updateTask;
+	APP_API_PROCEDURE(UpdateRecurringTaskStatus) updateRecurringTaskStatus;
 	APP_API_PROCEDURE(RemoveTask) removeTask;
 	APP_API_PROCEDURE(InsertEvent) insertEvent;
 	APP_API_PROCEDURE(UpdateEvent) updateEvent;
