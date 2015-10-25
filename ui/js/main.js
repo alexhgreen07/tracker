@@ -99,6 +99,7 @@ define( [ './api',
 	/**
 	Builds the main application object with all dependencies.
 	@function buildApplication
+	@return {module:main~Application}
 	*/
 	function buildApplication()
 	{
