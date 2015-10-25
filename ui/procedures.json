@@ -32,6 +32,11 @@
         "params": {}
     },
     {
+        "method": "updateRecurringTaskStatus",
+        "isNotification": false,
+        "params": {}
+    },
+    {
         "method": "removeTask",
         "isNotification": false,
         "params": {}
