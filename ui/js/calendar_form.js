@@ -22,12 +22,14 @@ define( [ './task_forms',
 	@class The form containing buttons for actions to add/edit tasks/events
 	@constructor TaskActionForm
 	@alias module:calendar_form
+	@param {module:api~Api} api
 	@param editTaskForm
 	@param addEventForm
 	@param editEventForm
 	*/
-	function TaskActionForm(editTaskForm,addEventForm,editEventForm)
+	function TaskActionForm(api,editTaskForm,addEventForm,editEventForm)
 	{
+		this.api = api;
 		this.editTaskForm = editTaskForm;
 		this.addEventForm = addEventForm;
 		this.editEventForm = editEventForm;
@@ -43,7 +45,24 @@ define( [ './task_forms',
 		
 		this.startStopButton = null;
 		this.completeButton = null;
+		this.missedButton = null;
+		
+		this.currentEvent = null;
+		this.currentTask = null;
 	}
+	
+	/**
+	@method setSelectEventAndTask
+	@memberof module:calendar_form~TaskActionForm
+	@instance
+	@param currentEvent
+	@param currentTask
+	*/
+	TaskActionForm.prototype.setSelectEventAndTask = function(currentEvent, currentTask)
+	{
+		this.currentEvent = currentEvent;
+		this.currentTask = currentTask;
+	};
 	
 	/**
 	@method editTaskButtonClick
@@ -98,6 +117,23 @@ define( [ './task_forms',
 		}
 	};
 	
+	TaskActionForm.prototype.setTaskStatus = function(status)
+	{
+		if(this.currentTask.recurringCount == 0)
+		{
+			this.editTaskForm.statusInput.setValue(status);
+			this.editTaskForm.submitClickEvent();
+		}
+		else
+		{
+			this.api.updateRecurringTaskStatus(
+					this.currentTask.taskId,
+					this.currentEvent.recurringIndex,
+					status,
+					function(){});
+		}
+	};
+	
 	/**
 	@method completeButtonClick
 	@memberof module:calendar_form~TaskActionForm
@@ -105,8 +141,24 @@ define( [ './task_forms',
 	*/
 	TaskActionForm.prototype.completeButtonClick = function()
 	{
-		//TODO: implement
-		alert("Not implemented");
+		var desiredValue = "Incomplete";
+		
+		if(this.completeButton.value == "Complete")
+		{
+			desiredValue = "Complete";
+		}
+		
+		this.setTaskStatus(desiredValue);
+	};
+	
+	/**
+	@method missedButtonClick
+	@memberof module:calendar_form~TaskActionForm
+	@instance
+	*/
+	TaskActionForm.prototype.missedButtonClick = function()
+	{
+		this.setTaskStatus("Missed");
 	};
 	
 	/**
@@ -164,6 +216,10 @@ define( [ './task_forms',
 		this.completeButton.type = "submit";
 		this.completeButton.value = "Complete";
 		
+		this.missedButton = this.buttonsDiv.appendChild(document.createElement("input"));
+		this.missedButton.type = "submit";
+		this.missedButton.value = "Missed";
+		
 		this.showOnlyButtons();
 		
 		$(this.editTaskButton).button();
@@ -180,6 +236,9 @@ define( [ './task_forms',
 		
 		$(this.completeButton).button();
 		$(this.completeButton).click(this.completeButtonClick.bind(this));
+		
+		$(this.missedButton).button();
+		$(this.missedButton).click(this.missedButtonClick.bind(this));
 	};
 	
 	/**
@@ -240,10 +299,21 @@ define( [ './task_forms',
 			this.taskActionForm.startStopButton.value = "Start";
 		}
 		
+		if(calEvent.serverEvent.taskStatus == "Incomplete")
+		{
+			this.taskActionForm.completeButton.value = "Complete";
+		}
+		else
+		{
+			this.taskActionForm.completeButton.value = "Incomplete";
+		}
+		
 		$(this.calendarDiv).hide();
 		$(this.taskActionFormDiv).show();
 		
 		var parentTask = this.api.taskLookup[calEvent.serverEvent.taskId];
+		
+		this.taskActionForm.setSelectEventAndTask(calEvent.serverEvent,parentTask);
 		
 		this.taskActionForm.editTaskForm.setTaskData(
 				parentTask.taskId,
@@ -279,11 +349,11 @@ define( [ './task_forms',
 		
 		var eventColour = "blue";
 		
-		if(parentTask.status == "Complete")
+		if(serverEvent.taskStatus == "Complete")
 		{
 			eventColour = "green";
 		}
-		else if(parentTask.status == "Missed")
+		else if(serverEvent.taskStatus == "Missed")
 		{
 			eventColour = "crimson";
 		}
@@ -412,7 +482,7 @@ define( [ './task_forms',
 		var editTaskForm = new libTaskForms.UpdateTaskForm(api);
 		var addEventForm = new libEventForms.AddEventForm(api);
 		var editEventForm = new libEventForms.EditEventForm(api);
-		var taskActionsForm = new TaskActionForm(editTaskForm,addEventForm,editEventForm);
+		var taskActionsForm = new TaskActionForm(api,editTaskForm,addEventForm,editEventForm);
 		var calendarForm = new CalendarForm(api,taskActionsForm);
 		
 		return calendarForm;
