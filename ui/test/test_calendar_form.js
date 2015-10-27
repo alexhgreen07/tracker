@@ -96,6 +96,8 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 			dummyTaskActionsForm.editEventForm = {
 				setEventData: function(){}
 			};
+			dummyTaskActionsForm.startStopButton = {value: null};
+			dummyTaskActionsForm.showOnlyButtons = function(){};
 			testForm = new libCalendarForm.CalendarForm(testApi,dummyTaskActionsForm);
 			
 			testApi.taskLookup = dummyTaskLookup;

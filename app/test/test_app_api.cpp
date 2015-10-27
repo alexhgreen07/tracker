@@ -260,7 +260,7 @@ TEST(AppApiGroup, UpdateRecurringTaskStatus)
 
 	params["taskId"] = to_string(parentTaskId);
 	params["recurringIndex"] = to_string(recurringIndex);
-	params["status"] = to_string((unsigned int)testStatus);
+	params["status"] = "Complete";
 
 	procedures["updateRecurringTaskStatus"]->call(params,results);
 

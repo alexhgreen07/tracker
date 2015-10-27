@@ -163,6 +163,8 @@ void AppApi::fillJsonValueFromEvent(Json::Value& row, const Core::Event & event)
 	row["duration"] = to_string(event.getDuration());
 	row["status"] = eventStatusToString(event.getStatus());
 	row["recurringIndex"] = event.getParent()->getRecurringIndex();
+
+	row["taskStatus"] = taskStatusToString(event.getParent()->getStatus());
 }
 
 string AppApi::eventStatusToString(Core::Event::Status status)
@@ -289,7 +291,7 @@ void AppApi::UpdateRecurringTaskStatus::call(const Json::Value& request, Json::V
 {
 	uint64_t taskId;
 	uint64_t recurringIndex;
-	uint64_t status;
+	Task::Status status;
 
 	istringstream input_stream(request["taskId"].asString());
 	input_stream >> taskId;
@@ -297,8 +299,7 @@ void AppApi::UpdateRecurringTaskStatus::call(const Json::Value& request, Json::V
 	input_stream = istringstream(request["recurringIndex"].asString());
 	input_stream >> recurringIndex;
 
-	input_stream = istringstream(request["status"].asString());
-	input_stream >> status;
+	status = taskStatusFromString(request["status"].asString());
 
 	parent.db->updateRecurringTaskStatus(taskId,recurringIndex,(Task::Status)status);
 

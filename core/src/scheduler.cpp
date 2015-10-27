@@ -48,10 +48,14 @@ void Scheduler::schedule(uint64_t minStartTime)
 					for(unsigned int j = 0; j < taskToCheck->getRecurringTaskCount(); j++)
 					{
 						auto taskToAdd = taskToCheck->getRecurringChild(j);
-						auto newEntry = std::make_shared<TaskEntry>();
-						newEntry->task = taskToAdd;
-						newEntry->loggedDuration = 0;
-						taskEntriesToSchedule->push_back(newEntry);
+
+						if(taskToAdd->getStatus() == Task::Status::Incomplete)
+						{
+							auto newEntry = std::make_shared<TaskEntry>();
+							newEntry->task = taskToAdd;
+							newEntry->loggedDuration = 0;
+							taskEntriesToSchedule->push_back(newEntry);
+						}
 					}
 				}
     		}
