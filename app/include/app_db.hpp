@@ -10,6 +10,7 @@
 #include <event.hpp>
 
 using std::shared_ptr;
+using std::numeric_limits;
 
 namespace Tracker
 {
@@ -46,7 +47,7 @@ public:
     void updateEvent(uint64_t eventId, const Event & updatedEvent);
     void removeEvent(uint64_t eventId);
 
-    shared_ptr<AppData> getAppData();
+    shared_ptr<AppData> getAppData(uint64_t startTime = 0, uint64_t endTime = numeric_limits<uint64_t>::max());
 
     std::string getCurrentVersion();
 private:
@@ -58,8 +59,10 @@ private:
     void createRecurringTasksStatusTable();
     void createEventsTable();
 
-    shared_ptr<std::map<uint64_t, shared_ptr<Task>>> getTasks();
-    shared_ptr<std::map<uint64_t, shared_ptr<Event>>> getLoggedEvents(shared_ptr<std::map<uint64_t, shared_ptr<Task>>> & tasks);
+    shared_ptr<std::map<uint64_t, shared_ptr<Task>>> getTasks(uint64_t startTime = 0, uint64_t endTime = numeric_limits<uint64_t>::max());
+    shared_ptr<std::map<uint64_t, shared_ptr<Event>>> getLoggedEvents(
+    		shared_ptr<std::map<uint64_t, shared_ptr<Task>>> & tasks,
+			uint64_t startTime = 0, uint64_t endTime = numeric_limits<uint64_t>::max());
 
     uint64_t insertRecurringTaskStatus(uint64_t taskId, uint64_t recurringIndex, Task::Status status);
     void removeRecurringTaskStatus(uint64_t taskId);

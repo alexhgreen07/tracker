@@ -464,3 +464,19 @@ TEST(AppDBGroup, ValidateRecurringEventUpdate)
 			insertedEvent->getParent()->getRecurringIndex());
 }
 
+
+TEST(AppDBGroup, ValidateAppDataInWindow)
+{
+	auto newTask = make_shared<Task>("",10,20,1);
+	newTask->setTaskId(testDB.insertTask(*newTask));
+	Event newEvent(15,1);
+	newEvent.setParent(newTask);
+	testDB.insertEvent(newEvent);
+
+	auto result = testDB.getAppData(0,10);
+	LONGS_EQUAL(1, result->tasks->size());
+	LONGS_EQUAL(0, result->loggedEvents->size());
+	result = testDB.getAppData(10,20);
+	LONGS_EQUAL(1, result->tasks->size());
+	LONGS_EQUAL(1, result->loggedEvents->size());
+}

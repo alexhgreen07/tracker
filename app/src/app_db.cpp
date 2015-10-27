@@ -108,12 +108,18 @@ void AppDB::createEventsTable()
 	database->execute(createSql);
 }
 
-shared_ptr<map<uint64_t, shared_ptr<Task>>> AppDB::getTasks()
+shared_ptr<std::map<uint64_t, shared_ptr<Task>>> AppDB::getTasks(uint64_t startTime, uint64_t endTime)
 {
-    auto tasksTable = database->select("select taskId, name, earliestStartTime, latestEndTime, duration, status, recurringPeriod, recurringLateOffset from tasks");
-    auto tasks = make_shared<map<uint64_t, shared_ptr<Task>>>();
-    
-    auto recurringTasksStatusTable =
+	string queryString = "select taskId, name, earliestStartTime, latestEndTime, duration, status, recurringPeriod, recurringLateOffset from tasks";
+	if(!((startTime == 0) && (endTime == numeric_limits<uint64_t>::max())))
+	{
+		queryString += " where (earliestStartTime >= " + to_string(startTime) + ") and (earliestStartTime < " + to_string(endTime) + ")";
+	}
+
+	auto tasksTable = database->select(queryString);
+	auto tasks = make_shared<map<uint64_t, shared_ptr<Task>>>();
+
+	auto recurringTasksStatusTable =
 			database->select("select taskId, recurringIndex, status from recurring_task_status");
 	auto recurringTaskStatusMap = map<uint64_t,map<uint64_t,Task::Status>>();
 	for(unsigned int i = 0; i < recurringTasksStatusTable->size(); i++)
@@ -133,53 +139,53 @@ shared_ptr<map<uint64_t, shared_ptr<Task>>> AppDB::getTasks()
 		recurringTaskStatusMap[taskId][recurringIndex] = (Task::Status)status;
 	}
 
-    for(unsigned int i = 0; i < tasksTable->size(); i++)
-    {
-        auto nextTask = make_shared<Task>();
-        auto row = tasksTable->at(i);
+	for(unsigned int i = 0; i < tasksTable->size(); i++)
+	{
+		auto nextTask = make_shared<Task>();
+		auto row = tasksTable->at(i);
 
-        uint64_t value;
-        uint64_t taskId;
+		uint64_t value;
+		uint64_t taskId;
 
-        istringstream input_stream(row[0]);
-        input_stream >> taskId;
-        nextTask->setTaskId(taskId);
+		istringstream input_stream(row[0]);
+		input_stream >> taskId;
+		nextTask->setTaskId(taskId);
 
-        nextTask->setName(row[1]);
-        input_stream = istringstream(row[2]);
-        input_stream >> value;
-        nextTask->setEarliestStartTime(value);
-
-        input_stream = istringstream(row[3]);
-        input_stream >> value;
-        nextTask->setLatestEndTime(value);
-
-        input_stream = istringstream(row[4]);
+		nextTask->setName(row[1]);
+		input_stream = istringstream(row[2]);
 		input_stream >> value;
-        nextTask->setDuration(value);
+		nextTask->setEarliestStartTime(value);
 
-        input_stream = istringstream(row[5]);
+		input_stream = istringstream(row[3]);
+		input_stream >> value;
+		nextTask->setLatestEndTime(value);
+
+		input_stream = istringstream(row[4]);
+		input_stream >> value;
+		nextTask->setDuration(value);
+
+		input_stream = istringstream(row[5]);
 		input_stream >> value;
 		nextTask->setStatus((Task::Status)value);
 
-        uint64_t recurrancePeriod;
-        uint64_t recurranceLateOffset;
-        input_stream = istringstream(row[6]);
+		uint64_t recurrancePeriod;
+		uint64_t recurranceLateOffset;
+		input_stream = istringstream(row[6]);
 		input_stream >> recurrancePeriod;
 		input_stream = istringstream(row[7]);
 		input_stream >> recurranceLateOffset;
-        nextTask->setRecurranceParameters(recurrancePeriod,recurranceLateOffset);
+		nextTask->setRecurranceParameters(recurrancePeriod,recurranceLateOffset);
 
-        auto recurringStatusEntry = recurringTaskStatusMap[taskId];
-        for(unsigned int j = 0; j < nextTask->getRecurringTaskCount(); j++)
-        {
-        	nextTask->setRecurringChildStatus(j,recurringStatusEntry[j]);
-        }
-		
+		auto recurringStatusEntry = recurringTaskStatusMap[taskId];
+		for(unsigned int j = 0; j < nextTask->getRecurringTaskCount(); j++)
+		{
+			nextTask->setRecurringChildStatus(j,recurringStatusEntry[j]);
+		}
+
 		(*tasks)[taskId] = nextTask;
-    }
+	}
 
-    return tasks;
+	return tasks;
 }
 
 uint64_t AppDB::insertTask(const Task & newTask)
@@ -286,9 +292,16 @@ void AppDB::removeRecurringTaskStatus(uint64_t taskId)
 	database->execute(deleteString);
 }
 
-shared_ptr<map<uint64_t, shared_ptr<Event>>> AppDB::getLoggedEvents(shared_ptr<std::map<uint64_t, shared_ptr<Task>>> & tasks)
+shared_ptr<std::map<uint64_t, shared_ptr<Event>>> AppDB::getLoggedEvents(
+    		shared_ptr<std::map<uint64_t, shared_ptr<Task>>> & tasks, uint64_t startTime, uint64_t endTime)
 {
-	auto eventsTable = database->select("select eventId, startTime, duration, taskId, recurringIndex, status from events");
+	string queryString = "select eventId, startTime, duration, taskId, recurringIndex, status from events";
+	if(!((startTime == 0) && (endTime == numeric_limits<uint64_t>::max())))
+	{
+		queryString += " where (startTime >= " + to_string(startTime) + ") and (startTime < " + to_string(endTime) + ")";
+	}
+
+	auto eventsTable = database->select(queryString);
 	auto events = make_shared<map<uint64_t, shared_ptr<Event>>>();
 
 	for(unsigned int i = 0; i < eventsTable->size(); i++)
@@ -410,12 +423,12 @@ void AppDB::removeEvent(uint64_t eventId)
 	database->execute(deleteString);
 }
 
-shared_ptr<AppDB::AppData> AppDB::getAppData()
+shared_ptr<AppDB::AppData> AppDB::getAppData(uint64_t startTime, uint64_t endTime)
 {
 	auto data = make_shared<AppData>();
 
 	data->tasks = getTasks();
-	data->loggedEvents = getLoggedEvents(data->tasks);
+	data->loggedEvents = getLoggedEvents(data->tasks,startTime,endTime);
 
 	return data;
 }
