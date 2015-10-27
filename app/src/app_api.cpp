@@ -17,7 +17,6 @@ AppApi::AppApi(const shared_ptr<AppDB> & db, const shared_ptr<Clock> & clock) :
 	exitProcedure(*this),
 	resetProcedure(*this),
 	sayHello(*this),
-	getTasks(*this),
 	insertTask(*this),
 	updateTask(*this),
 	updateRecurringTaskStatus(*this),
@@ -25,12 +24,11 @@ AppApi::AppApi(const shared_ptr<AppDB> & db, const shared_ptr<Clock> & clock) :
 	insertEvent(*this),
 	updateEvent(*this),
 	removeEvent(*this),
-	getEvents(*this)
+	getAppData(*this)
 {
 	procedurePointers["exit"] = &exitProcedure;
 	procedurePointers["reset"] = &resetProcedure;
 	procedurePointers["sayHello"] = &sayHello;
-	procedurePointers["getTasks"] = &getTasks;
 	procedurePointers["insertTask"] = &insertTask;
 	procedurePointers["updateTask"] = &updateTask;
 	procedurePointers["updateRecurringTaskStatus"] = &updateRecurringTaskStatus;
@@ -38,7 +36,8 @@ AppApi::AppApi(const shared_ptr<AppDB> & db, const shared_ptr<Clock> & clock) :
 	procedurePointers["insertEvent"] = &insertEvent;
 	procedurePointers["updateEvent"] = &updateEvent;
 	procedurePointers["removeEvent"] = &removeEvent;
-	procedurePointers["getEvents"] = &getEvents;
+
+	procedurePointers["getAppData"] = &getAppData;
 }
 
 JsonMethods & AppApi::getProcedures()
@@ -70,25 +69,6 @@ void AppApi::ResetProcedure::call(const Json::Value& request, Json::Value& respo
 void AppApi::SayHelloProcedure::call(const Json::Value& request, Json::Value& response)
 {
 	response = "Hello: " + request["name"].asString();
-}
-	
-void AppApi::GetTasksProcedure::call(const Json::Value& request, Json::Value& response)
-{
-	auto result = parent.db->getAppData()->tasks;
-	
-	unsigned int i = 0;
-
-	response = Json::Value(Json::arrayValue);
-	
-	for(auto outer_iter=result->begin(); outer_iter!=result->end(); ++outer_iter) {
-		
-		auto task = outer_iter->second;
-		auto & row = response[i];
-		
-		parent.fillJsonValueFromTask(row,*task);
-		
-		i++;
-	}
 }
 
 void AppApi::fillJsonValueFromTask(Json::Value& row, const Core::Task & task)
@@ -411,21 +391,40 @@ void AppApi::RemoveEvent::call(const Json::Value& request, Json::Value& response
 	response = true;
 }
 
-void AppApi::GetEvents::call(const Json::Value& request, Json::Value& response)
+void AppApi::GetAppData::call(const Json::Value& request, Json::Value& response)
 {
 	unsigned int rowCount = 0;
-	response = Json::Value(Json::arrayValue);
-
-	auto taskList = make_shared<vector<shared_ptr<Core::Task>>>();
 	auto data = parent.db->getAppData();
 	auto result = data->tasks;
+
+	rowCount = 0;
+
+	//build the tasks array
+	response["tasks"] = Json::Value(Json::arrayValue);
+
+	for(auto outer_iter=result->begin(); outer_iter!=result->end(); ++outer_iter) {
+
+		auto task = outer_iter->second;
+		auto & row = response["tasks"][rowCount];
+
+		parent.fillJsonValueFromTask(row,*task);
+
+		rowCount++;
+	}
+
+	//build the events array
+	response["events"] = Json::Value(Json::arrayValue);
+
+	auto taskList = make_shared<vector<shared_ptr<Core::Task>>>();
 	
 	auto loggedEvents = data->loggedEvents;
 	auto loggedEventsList = make_shared<vector<shared_ptr<Core::Event>>>();
 
+	rowCount = 0;
+
 	for(auto iter = loggedEvents->begin(); iter != loggedEvents->end(); ++iter)
 	{
-		auto & row = response[rowCount];
+		auto & row = response["events"][rowCount];
 		auto event = iter->second;
 
 		//ensure we set the duration for running tasks
@@ -460,14 +459,13 @@ void AppApi::GetEvents::call(const Json::Value& request, Json::Value& response)
 
 	for(unsigned int i = 0; i < eventCount; i++)
 	{
-		auto & row = response[rowCount];
+		auto & row = response["events"][rowCount];
 		auto event = parent.scheduler.getScheduledEvent(i);
 
 		parent.fillJsonValueFromEvent(row,*event);
 
 		rowCount++;
 	}
-
 }
 
 	
