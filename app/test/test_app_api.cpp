@@ -164,7 +164,7 @@ TEST(AppApiGroup, InsertTask)
 	
 	procedures["insertTask"]->call(params,results);
 	
-	auto result = db->getTasks();
+	auto result = db->getAppData()->tasks;
 	
 	LONGS_EQUAL(1,result->size());
 	
@@ -189,7 +189,7 @@ TEST(AppApiGroup, InsertRecurringTask)
 
 	procedures["insertTask"]->call(params,results);
 
-	auto result = db->getTasks();
+	auto result = db->getAppData()->tasks;
 
 	auto task = result->at(1);
 	LONGS_EQUAL(5,task->getRecurringTaskCount());
@@ -212,7 +212,7 @@ TEST(AppApiGroup, UpdateTask)
 	
 	procedures["updateTask"]->call(params,results);
 	
-	auto result = db->getTasks();
+	auto result = db->getAppData()->tasks;
 	
 	auto task = result->at(parentTaskId);
 	
@@ -240,7 +240,7 @@ TEST(AppApiGroup, UpdateRecurringTask)
 
 	procedures["updateTask"]->call(params,results);
 
-	auto result = db->getTasks();
+	auto result = db->getAppData()->tasks;
 
 	auto task = result->at(parentTaskId);
 
@@ -264,7 +264,7 @@ TEST(AppApiGroup, UpdateRecurringTaskStatus)
 
 	procedures["updateRecurringTaskStatus"]->call(params,results);
 
-	auto result = db->getTasks();
+	auto result = db->getAppData()->tasks;
 
 	auto task = result->at(parentTaskId);
 
@@ -281,7 +281,7 @@ TEST(AppApiGroup, RemoveTask)
 	params["taskId"] = 1;
 	procedures["removeTask"]->call(params,results);
 	
-	auto result = db->getTasks();
+	auto result = db->getAppData()->tasks;
 	
 	LONGS_EQUAL(0,result->size());
 }
@@ -336,7 +336,7 @@ TEST(AppApiGroup, InsertEvent)
 
 	procedures["insertEvent"]->call(params,results);
 
-	auto result = db->getLoggedEvents();
+	auto result = db->getAppData()->loggedEvents;
 
 	LONGS_EQUAL(1,result->size());
 
@@ -368,7 +368,7 @@ TEST(AppApiGroup, UpdateEvent)
 
 	procedures["updateEvent"]->call(params,results);
 
-	auto result = db->getLoggedEvents();
+	auto result = db->getAppData()->loggedEvents;
 	auto event = result->at(newEvent->getEventId());
 	LONGS_EQUAL(2,event->getStartTime());
 	LONGS_EQUAL(3,event->getDuration());
@@ -389,7 +389,7 @@ TEST(AppApiGroup, RemoveEvent)
 
 	procedures["removeEvent"]->call(params,results);
 
-	auto result = db->getLoggedEvents();
+	auto result = db->getAppData()->loggedEvents;
 
 	LONGS_EQUAL(0,result->size());
 }
@@ -408,8 +408,9 @@ TEST(AppApiGroup, InsertRecurringEvent)
 
 	procedures["insertEvent"]->call(params,results);
 
-	auto tasks = db->getTasks();
-	auto result = db->getLoggedEvents();
+	auto data = db->getAppData();
+	auto tasks = data->tasks;
+	auto result = data->loggedEvents;
 
 	LONGS_EQUAL(1,result->size());
 
@@ -423,6 +424,7 @@ TEST(AppApiGroup, UpdateRecurringEvent)
 	newTask->setRecurranceParameters(1,0);
 	newTask->setStatus(Task::Status::Complete);
 	uint64_t taskId = db->insertTask(*newTask);
+	newTask->setTaskId(taskId);
 	auto newEvent = make_shared<Event>(1,2);
 	newEvent->setParent(newTask->getRecurringChild(1));
 	newEvent->setEventId(db->insertEvent(*newEvent));
@@ -435,8 +437,9 @@ TEST(AppApiGroup, UpdateRecurringEvent)
 
 	procedures["updateEvent"]->call(params,results);
 
-	auto tasks = db->getTasks();
-	auto result = db->getLoggedEvents();
+	auto data = db->getAppData();
+	auto tasks = data->tasks;
+	auto result = data->loggedEvents;
 
 	LONGS_EQUAL(1,result->size());
 

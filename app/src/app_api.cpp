@@ -74,7 +74,7 @@ void AppApi::SayHelloProcedure::call(const Json::Value& request, Json::Value& re
 	
 void AppApi::GetTasksProcedure::call(const Json::Value& request, Json::Value& response)
 {
-	auto result = parent.db->getTasks();
+	auto result = parent.db->getAppData()->tasks;
 	
 	unsigned int i = 0;
 
@@ -335,7 +335,7 @@ void AppApi::InsertEvent::call(const Json::Value& request, Json::Value& response
 
 	status = eventStatusFromString(request["status"].asString());
 
-	auto result = parent.db->getTasks();
+	auto result = parent.db->getAppData()->tasks;
 	auto parentTaskAtId = result->at(parentTaskId);
 
 	shared_ptr<const Core::Task> parentTask = parentTaskAtId;
@@ -380,7 +380,7 @@ void AppApi::UpdateEvent::call(const Json::Value& request, Json::Value& response
 
 	status = eventStatusFromString(request["status"].asString());
 
-	auto result = parent.db->getTasks();
+	auto result = parent.db->getAppData()->tasks;
 	auto parentTaskAtId = result->at(parentTaskId);
 
 	shared_ptr<const Core::Task> parentTask = parentTaskAtId;
@@ -417,9 +417,10 @@ void AppApi::GetEvents::call(const Json::Value& request, Json::Value& response)
 	response = Json::Value(Json::arrayValue);
 
 	auto taskList = make_shared<vector<shared_ptr<Core::Task>>>();
-	auto result = parent.db->getTasks();
+	auto data = parent.db->getAppData();
+	auto result = data->tasks;
 	
-	auto loggedEvents = parent.db->getLoggedEvents();
+	auto loggedEvents = data->loggedEvents;
 	auto loggedEventsList = make_shared<vector<shared_ptr<Core::Event>>>();
 
 	for(auto iter = loggedEvents->begin(); iter != loggedEvents->end(); ++iter)

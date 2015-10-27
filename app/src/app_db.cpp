@@ -2,7 +2,6 @@
 
 #include <sstream>
 
-using std::shared_ptr;
 using std::make_shared;
 
 using std::map;
@@ -112,7 +111,7 @@ void AppDB::createEventsTable()
 shared_ptr<map<uint64_t, shared_ptr<Task>>> AppDB::getTasks()
 {
     auto tasksTable = database->select("select taskId, name, earliestStartTime, latestEndTime, duration, status, recurringPeriod, recurringLateOffset from tasks");
-    tasks = make_shared<map<uint64_t, shared_ptr<Task>>>();
+    auto tasks = make_shared<map<uint64_t, shared_ptr<Task>>>();
     
     auto recurringTasksStatusTable =
 			database->select("select taskId, recurringIndex, status from recurring_task_status");
@@ -218,8 +217,6 @@ uint64_t AppDB::insertTask(const Task & newTask)
     	insertRecurringTaskStatus(taskInsertedRowId,index,recurringChild->getStatus());
     }
 
-    getTasks();
-
     return taskInsertedRowId;
 }
 
@@ -238,8 +235,6 @@ void AppDB::updateTask(uint64_t taskId, Task & task)
     updateString += " where taskId = " + to_string(taskId);
     
     database->execute(updateString);
-
-    getTasks();
 }
 
 void AppDB::removeTask(uint64_t taskId)
@@ -250,8 +245,6 @@ void AppDB::removeTask(uint64_t taskId)
     database->execute(deleteString);
 
     removeRecurringTaskStatus(taskId);
-
-    getTasks();
 }
 
 uint64_t AppDB::insertRecurringTaskStatus(uint64_t taskId, uint64_t recurringIndex, Task::Status status)
@@ -293,15 +286,10 @@ void AppDB::removeRecurringTaskStatus(uint64_t taskId)
 	database->execute(deleteString);
 }
 
-shared_ptr<map<uint64_t, shared_ptr<Event>>> AppDB::getLoggedEvents()
+shared_ptr<map<uint64_t, shared_ptr<Event>>> AppDB::getLoggedEvents(shared_ptr<std::map<uint64_t, shared_ptr<Task>>> & tasks)
 {
 	auto eventsTable = database->select("select eventId, startTime, duration, taskId, recurringIndex, status from events");
-	events = make_shared<map<uint64_t, shared_ptr<Event>>>();
-
-	if(!tasks)
-	{
-		getTasks();
-	}
+	auto events = make_shared<map<uint64_t, shared_ptr<Event>>>();
 
 	for(unsigned int i = 0; i < eventsTable->size(); i++)
 	{
@@ -420,6 +408,16 @@ void AppDB::removeEvent(uint64_t eventId)
 	"delete from events where eventId = " + to_string(eventId);
 
 	database->execute(deleteString);
+}
+
+shared_ptr<AppDB::AppData> AppDB::getAppData()
+{
+	auto data = make_shared<AppData>();
+
+	data->tasks = getTasks();
+	data->loggedEvents = getLoggedEvents(data->tasks);
+
+	return data;
 }
 
 string AppDB::getCurrentVersion()
