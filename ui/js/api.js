@@ -153,6 +153,32 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 	};
 	
 	/**
+	@method getAppDataInWindow
+	@memberof module:api~Api
+	@instance
+	@param success
+	@param error
+	*/
+	Api.prototype.getAppDataInWindow = function(startTime,endTime,success,error)
+	{
+		error = error || function(data){};
+		this.rpc.request('getAppData', {
+			params : {
+				startTime: startTime,
+				endTime: endTime
+			},
+			success : function(data){
+				this.converTaskDateStringsToInts(data.result.tasks);
+				this.fillTaskLookup(data.result.tasks);
+				this.converEventDateStringsToInts(data.result.events);
+				
+				success(data.result);
+			}.bind(this),
+			error : error
+		});
+	};
+	
+	/**
 	@method insertTask
 	@memberof module:api~Api
 	@instance
@@ -180,9 +206,7 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 				recurringLateOffset: recurringLateOffset.toString()
 			},
 			success : function(data){
-				this.getAppData(function(){
-					success(data.result);
-				},error);
+				success(data.result);
 			}.bind(this),
 			error : error
 		});
@@ -218,9 +242,7 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 				recurringLateOffset: recurringLateOffset.toString()
 			},
 			success : function(data){
-				this.getAppData(function(){
-					success(data.result);
-				},error);
+				success(data.result);
 			}.bind(this),
 			error : error
 		});
@@ -246,9 +268,7 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 				status: status.toString(),
 			},
 			success : function(data){
-				this.getAppData(function(){
-					success(data.result);
-				},error);
+				success(data.result);
 			}.bind(this),
 			error : error
 		});
@@ -270,9 +290,7 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 				taskId: taskId
 			},
 			success : function(data){
-				this.getAppData(function(){
-					success(data.result);
-				},error);
+				success(data.result);
 			}.bind(this),
 			error : error
 		});

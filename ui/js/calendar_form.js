@@ -359,7 +359,15 @@ define( [ './task_forms',
 		}
 		else if(serverEvent.status == "Scheduled")
 		{
-			eventColour = "cornflowerblue";
+			
+			if(serverEvent.isLate)
+			{
+				eventColour = "orange";
+			}
+			else
+			{
+				eventColour = "cornflowerblue";
+			}
 		}
 		else if(serverEvent.status == "Running")
 		{
@@ -386,22 +394,38 @@ define( [ './task_forms',
 	*/
 	CalendarForm.prototype.refresh = function(success,error)
 	{
-		this.api.getAppData((function(result){
-			
-			var newEvents = [];
-			
-			for(var key in result.events)
-			{
-				var calendarEvent = this.convertServerEventToCalendarEvent(result.events[key]);
-				newEvents.push(calendarEvent);
-			}
-			
-			this.calendar.fullCalendar( 'removeEvents' );
-			this.calendar.fullCalendar( 'addEventSource', newEvents);
-			
-			success();
-			
-		}).bind(this),error);
+		this.calendar.fullCalendar( 'refetchEvents' );
+		success();
+	};
+	
+	/**
+	@method refreshCalendarEvents
+	@memberof module:calendar_form~CalendarForm
+	@instance
+	@param {Moment} start
+	@param {Moment} end
+	@param {string} timezone
+	@param callback
+	*/
+	CalendarForm.prototype.refreshCalendarEvents = function(start, end, timezone, callback)
+	{
+		this.api.getAppDataInWindow(
+			start.unix().toString(), 
+			end.unix().toString(),
+			(function(result){
+				
+				var newEvents = [];
+				
+				for(var key in result.events)
+				{
+					var calendarEvent = this.convertServerEventToCalendarEvent(result.events[key]);
+					newEvents.push(calendarEvent);
+				}
+				
+				callback(newEvents);
+				
+			}).bind(this)
+		);
 	};
 	
 	/**
@@ -448,7 +472,7 @@ define( [ './task_forms',
 			editable: false,
 			eventLimit: true,
 			eventClick: this.eventClick.bind(this),
-			events: []
+			events: this.refreshCalendarEvents.bind(this)
 		});
 		
 		this.taskActionFormDiv = parent.appendChild(document.createElement("div"));
