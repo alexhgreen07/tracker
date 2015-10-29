@@ -69,6 +69,9 @@ protected:
 	APP_API_PROCEDURE(UpdateEvent) updateEvent;
 	APP_API_PROCEDURE(RemoveEvent) removeEvent;
 	
+	void fillTaskData(shared_ptr<AppDB::AppData> data, Json::Value& response);
+	void fillEventData(shared_ptr<AppDB::AppData> data, Json::Value& response);
+
 	APP_API_PROCEDURE(GetAppData) getAppData;
 
 	JsonMethods procedurePointers;

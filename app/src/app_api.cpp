@@ -391,15 +391,13 @@ void AppApi::RemoveEvent::call(const Json::Value& request, Json::Value& response
 	response = true;
 }
 
-void AppApi::GetAppData::call(const Json::Value& request, Json::Value& response)
+void AppApi::fillTaskData(shared_ptr<AppDB::AppData> data, Json::Value& response)
 {
 	unsigned int rowCount = 0;
-	auto data = parent.db->getAppData();
 	auto result = data->tasks;
 
 	rowCount = 0;
 
-	//build the tasks array
 	response["tasks"] = Json::Value(Json::arrayValue);
 
 	for(auto outer_iter=result->begin(); outer_iter!=result->end(); ++outer_iter) {
@@ -407,10 +405,15 @@ void AppApi::GetAppData::call(const Json::Value& request, Json::Value& response)
 		auto task = outer_iter->second;
 		auto & row = response["tasks"][rowCount];
 
-		parent.fillJsonValueFromTask(row,*task);
+		fillJsonValueFromTask(row,*task);
 
 		rowCount++;
 	}
+}
+
+void AppApi::fillEventData(shared_ptr<AppDB::AppData> data, Json::Value& response)
+{
+	unsigned int rowCount = 0;
 
 	//build the events array
 	response["events"] = Json::Value(Json::arrayValue);
@@ -430,42 +433,50 @@ void AppApi::GetAppData::call(const Json::Value& request, Json::Value& response)
 		//ensure we set the duration for running tasks
 		if(event->getStatus() == Core::Event::Status::Running)
 		{
-			if(event->getStartTime() < parent.clock->getNowTimestamp())
+			if(event->getStartTime() < clock->getNowTimestamp())
 			{
-				uint64_t runningDuration = parent.clock->getNowTimestamp() - event->getStartTime();
+				uint64_t runningDuration = clock->getNowTimestamp() - event->getStartTime();
 				event->setDuration(runningDuration);
 			}
 		}
 
-		parent.fillJsonValueFromEvent(row,*event);
+		fillJsonValueFromEvent(row,*event);
 
 		rowCount++;
 
 		loggedEventsList->push_back(event);
 	}
 
-	for(auto iter = result->begin(); iter != result->end(); ++iter) {
+	for(auto iter = data->tasks->begin(); iter != data->tasks->end(); ++iter) {
 		
 		auto task = iter->second;
 		
 		taskList->push_back(task);
 	}
 	
-	parent.scheduler.setLoggedEventList(loggedEventsList);
-	parent.scheduler.setTaskList(taskList);
-	parent.scheduler.schedule(parent.clock->getNowTimestamp());
+	scheduler.setLoggedEventList(loggedEventsList);
+	scheduler.setTaskList(taskList);
+	scheduler.schedule(clock->getNowTimestamp());
 	
-	unsigned int eventCount = parent.scheduler.getScheduledEventCount();
+	unsigned int eventCount = scheduler.getScheduledEventCount();
 
 	for(unsigned int i = 0; i < eventCount; i++)
 	{
 		auto & row = response["events"][rowCount];
-		auto event = parent.scheduler.getScheduledEvent(i);
+		auto event = scheduler.getScheduledEvent(i);
 
-		parent.fillJsonValueFromEvent(row,*event);
+		fillJsonValueFromEvent(row,*event);
 
 		rowCount++;
 	}
+}
+
+void AppApi::GetAppData::call(const Json::Value& request, Json::Value& response)
+{
+	auto data = parent.db->getAppData();
+
+	parent.fillTaskData(data,response);
+	parent.fillEventData(data,response);
 }
 
 	
