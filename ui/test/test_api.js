@@ -54,7 +54,8 @@ define( [ 'js/api' ], function(libapi) {
 			startTime: 2,
 			duration: 3,
 			status: "Logged",
-			recurringIndex: 0
+			recurringIndex: 0,
+			taskStatus: expectedDummyTask.status
 		};
 		
 		function insertDummyEvent(success,error)
@@ -109,8 +110,8 @@ define( [ 'js/api' ], function(libapi) {
 		});
 		
 		it("gets empty tasks table", function(done) {
-			testApi.getTasks(function(result){
-				expect(result).toEqual([]);
+			testApi.getAppData(function(result){
+				expect(result.tasks).toEqual([]);
 				done();
 			});
 		});
@@ -127,8 +128,8 @@ define( [ 'js/api' ], function(libapi) {
 			var expectedTable = [expectedDummyTask];
 			
 			insertDummyTask(function(){
-				testApi.getTasks(function(result){
-					expect(result).toEqual(expectedTable);
+				testApi.getAppData(function(result){
+					expect(result.tasks).toEqual(expectedTable);
 					done();
 				});
 			});
@@ -174,8 +175,8 @@ define( [ 'js/api' ], function(libapi) {
 			
 			insertDummyTask(function(){
 				updateDummyTask(function(){
-					testApi.getTasks(function(result){
-						expect(result).toEqual(expectedTable);
+					testApi.getAppData(function(result){
+						expect(result.tasks).toEqual(expectedTable);
 						done();
 					});
 				});
@@ -208,8 +209,8 @@ define( [ 'js/api' ], function(libapi) {
 		it("gets empty tasks table after remove", function(done) {
 			insertDummyTask(function(){
 				removeDummyTask(function(){
-					testApi.getTasks(function(result){
-						expect(result).toEqual([]);
+					testApi.getAppData(function(result){
+						expect(result.tasks).toEqual([]);
 						done();
 					});
 				});
@@ -217,8 +218,8 @@ define( [ 'js/api' ], function(libapi) {
 		});
 
 		it("gets empty events table", function(done) {
-			testApi.getEvents(function(result){
-				expect(result).toEqual([]);
+			testApi.getAppData(function(result){
+				expect(result.events).toEqual([]);
 				done();
 			});
 		});
@@ -236,7 +237,7 @@ define( [ 'js/api' ], function(libapi) {
 					expectedDummyTask.recurringPeriod,
 					expectedDummyTask.recurringLateOffset,
 					function(){
-						testApi.getEvents(function(result){
+						testApi.getAppData(function(result){
 							
 							var expectedTable = [
 			                     {
@@ -245,11 +246,12 @@ define( [ 'js/api' ], function(libapi) {
 			                    	 startTime: dummyStartTime,
 			                    	 duration: expectedDummyTask.duration,
 			                    	 status: "Scheduled",
-			             			 recurringIndex: 0
+			             			 recurringIndex: 0,
+			             			 taskStatus: 'Incomplete'
 			                	 }
 			    			];
 							
-							expect(result).toEqual(expectedTable);
+							expect(result.events).toEqual(expectedTable);
 							done();
 						});
 					});
@@ -267,8 +269,8 @@ define( [ 'js/api' ], function(libapi) {
 			var expectedTable = [expectedDummyEvent];
 			
 			insertDummyEvent(function(){
-				testApi.getEvents(function(result){
-					expect(result).toEqual(expectedTable);
+				testApi.getAppData(function(result){
+					expect(result.events).toEqual(expectedTable);
 					done();
 				});
 			});
@@ -282,13 +284,14 @@ define( [ 'js/api' ], function(libapi) {
 				startTime: expectedDummyEvent.startTime + 1,
 				duration: expectedDummyEvent.duration + 1,
 				status: "Logged",
-				recurringIndex: 0
+				recurringIndex: 0,
+    			taskStatus: expectedDummyTask.status
 			}];
 			
 			insertDummyEvent(function(){
 				updateDummyEvent(function(){
-					testApi.getEvents(function(result){
-						expect(result).toEqual(expectedTable);
+					testApi.getAppData(function(result){
+						expect(result.events).toEqual(expectedTable);
 						done();
 					});
 				});
@@ -308,8 +311,8 @@ define( [ 'js/api' ], function(libapi) {
 		it("gets empty events table after remove", function(done) {
 			insertDummyEvent(function(){
 				removeDummyEvent(function(result){
-					testApi.getEvents(function(result){
-						expect(result).toEqual([]);
+					testApi.getAppData(function(result){
+						expect(result.events).toEqual([]);
 						done();
 					});
 				});

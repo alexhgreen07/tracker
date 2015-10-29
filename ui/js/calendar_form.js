@@ -386,13 +386,13 @@ define( [ './task_forms',
 	*/
 	CalendarForm.prototype.refresh = function(success,error)
 	{
-		this.api.getEvents((function(result){
+		this.api.getAppData((function(result){
 			
 			var newEvents = [];
 			
-			for(var key in result)
+			for(var key in result.events)
 			{
-				var calendarEvent = this.convertServerEventToCalendarEvent(result[key]);
+				var calendarEvent = this.convertServerEventToCalendarEvent(result.events[key]);
 				newEvents.push(calendarEvent);
 			}
 			

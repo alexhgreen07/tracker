@@ -16,10 +16,6 @@ define( [ ], function() {
 	{
 		success(true);
 	};
-	DummyApi.prototype.getEvents = function(success,error)
-	{
-		success([]);
-	};
 	DummyApi.prototype.insertEvent = function(taskId,startTime,duration,recurringIndex,success,error)
 	{
 		success(true);
