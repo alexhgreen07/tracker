@@ -396,22 +396,20 @@ void AppApi::fillEventData(shared_ptr<AppDB::AppData> data, Json::Value& respons
 		auto event = iter->second;
 		loggedEventsList->push_back(event);
 
+		//ensure we set the duration for running tasks
+		if(event->getStatus() == Core::Event::Status::Running)
+		{
+			if(event->getStartTime() < clock->getNowTimestamp())
+			{
+				uint64_t runningDuration = clock->getNowTimestamp() - event->getStartTime();
+				event->setDuration(runningDuration);
+			}
+		}
+
 		if(event->overlaps(startTime,endTime))
 		{
 			auto & row = response["events"][rowCount];
-
-			//ensure we set the duration for running tasks
-			if(event->getStatus() == Core::Event::Status::Running)
-			{
-				if(event->getStartTime() < clock->getNowTimestamp())
-				{
-					uint64_t runningDuration = clock->getNowTimestamp() - event->getStartTime();
-					event->setDuration(runningDuration);
-				}
-			}
-
 			fillJsonValueFromEvent(row,*event);
-
 			rowCount++;
 		}
 	}
@@ -419,7 +417,35 @@ void AppApi::fillEventData(shared_ptr<AppDB::AppData> data, Json::Value& respons
 	for(auto iter = data->tasks->begin(); iter != data->tasks->end(); ++iter) {
 		
 		auto task = iter->second;
-		
+
+		//TODO: make this more elegant for missed/complete events
+
+		//add completed/missed events
+		auto event = make_shared<Event>(task->getLatestEndTime(),0);
+		event->setParent(task);
+		if((task->getStatus() == Task::Status::Complete || task->getStatus() == Task::Status::Missed) &&
+				event->overlaps(startTime,endTime))
+		{
+			auto & row = response["events"][rowCount];
+			fillJsonValueFromEvent(row,*event);
+			rowCount++;
+		}
+
+		//add completed/missed events recurring events
+		for(unsigned int i = 0; i < task->getRecurringTaskCount(); i++)
+		{
+			auto child = task->getRecurringChild(i);
+			auto event = make_shared<Event>(child->getLatestEndTime(),0);
+			event->setParent(child);
+			if((child->getStatus() == Task::Status::Complete || child->getStatus() == Task::Status::Missed) &&
+					event->overlaps(startTime,endTime))
+			{
+				auto & row = response["events"][rowCount];
+				fillJsonValueFromEvent(row,*event);
+				rowCount++;
+			}
+		}
+
 		taskList->push_back(task);
 	}
 	
@@ -436,9 +462,7 @@ void AppApi::fillEventData(shared_ptr<AppDB::AppData> data, Json::Value& respons
 		if(event->overlaps(startTime,endTime))
 		{
 			auto & row = response["events"][rowCount];
-
 			fillJsonValueFromEvent(row,*event);
-
 			rowCount++;
 		}
 
