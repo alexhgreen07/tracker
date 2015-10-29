@@ -199,22 +199,12 @@ void AppApi::InsertTask::call(const Json::Value& request, Json::Value& response)
 	uint64_t recurringLateOffset;
 	Core::Task::Status status;
 
-	istringstream input_stream(request["earliestStartTime"].asString());
-	input_stream >> earliestStartTime;
-
-	input_stream = istringstream(request["latestEndTime"].asString());
-	input_stream >> latestEndTime;
-
-	input_stream = istringstream(request["duration"].asString());
-	input_stream >> duration;
-
+	istringstream(request["earliestStartTime"].asString()) >> earliestStartTime;
+	istringstream(request["latestEndTime"].asString()) >> latestEndTime;
+	istringstream(request["duration"].asString()) >> duration;
 	status = taskStatusFromString(request["status"].asString());
-
-	input_stream = istringstream(request["recurringPeriod"].asString());
-	input_stream >> recurringPeriod;
-
-	input_stream = istringstream(request["recurringLateOffset"].asString());
-	input_stream >> recurringLateOffset;
+	istringstream(request["recurringPeriod"].asString()) >> recurringPeriod;
+	istringstream(request["recurringLateOffset"].asString()) >> recurringLateOffset;
 
 	auto newTask = make_shared<Core::Task>(
 			request["name"].asString(),
@@ -237,22 +227,12 @@ void AppApi::UpdateTask::call(const Json::Value& request, Json::Value& response)
 	uint64_t recurringLateOffset;
 	Core::Task::Status status;
 
-	istringstream input_stream(request["earliestStartTime"].asString());
-	input_stream >> earliestStartTime;
-
-	input_stream = istringstream(request["latestEndTime"].asString());
-	input_stream >> latestEndTime;
-
-	input_stream = istringstream(request["duration"].asString());
-	input_stream >> duration;
-
+	istringstream(request["earliestStartTime"].asString()) >> earliestStartTime;
+	istringstream(request["latestEndTime"].asString()) >> latestEndTime;
+	istringstream(request["duration"].asString()) >> duration;
 	status = taskStatusFromString(request["status"].asString());
-
-	input_stream = istringstream(request["recurringPeriod"].asString());
-	input_stream >> recurringPeriod;
-
-	input_stream = istringstream(request["recurringLateOffset"].asString());
-	input_stream >> recurringLateOffset;
+	istringstream(request["recurringPeriod"].asString()) >> recurringPeriod;
+	istringstream(request["recurringLateOffset"].asString()) >> recurringLateOffset;
 
 	auto updatedTask = make_shared<Core::Task>(
 				request["name"].asString(),
@@ -273,12 +253,8 @@ void AppApi::UpdateRecurringTaskStatus::call(const Json::Value& request, Json::V
 	uint64_t recurringIndex;
 	Task::Status status;
 
-	istringstream input_stream(request["taskId"].asString());
-	input_stream >> taskId;
-
-	input_stream = istringstream(request["recurringIndex"].asString());
-	input_stream >> recurringIndex;
-
+	istringstream(request["taskId"].asString()) >> taskId;
+	istringstream(request["recurringIndex"].asString()) >> recurringIndex;
 	status = taskStatusFromString(request["status"].asString());
 
 	parent.db->updateRecurringTaskStatus(taskId,recurringIndex,(Task::Status)status);
@@ -301,18 +277,10 @@ void AppApi::InsertEvent::call(const Json::Value& request, Json::Value& response
 	uint64_t recurringIndex;
 	Core::Event::Status status;
 
-	istringstream input_stream(request["startTime"].asString());
-	input_stream >> startTime;
-
-	input_stream = istringstream(request["duration"].asString());
-	input_stream >> duration;
-
-	input_stream = istringstream(request["taskId"].asString());
-	input_stream >> parentTaskId;
-
-	input_stream = istringstream(request["recurringIndex"].asString());
-	input_stream >> recurringIndex;
-
+	istringstream(request["startTime"].asString()) >> startTime;
+	istringstream(request["duration"].asString()) >> duration;
+	istringstream(request["taskId"].asString()) >> parentTaskId;
+	istringstream(request["recurringIndex"].asString()) >> recurringIndex;
 	status = eventStatusFromString(request["status"].asString());
 
 	auto result = parent.db->getAppData()->tasks;
@@ -343,21 +311,11 @@ void AppApi::UpdateEvent::call(const Json::Value& request, Json::Value& response
 	uint64_t recurringIndex;
 	Core::Event::Status status;
 
-	istringstream input_stream(request["eventId"].asString());
-	input_stream >> eventId;
-
-	input_stream = istringstream(request["startTime"].asString());
-	input_stream >> startTime;
-
-	input_stream = istringstream(request["duration"].asString());
-	input_stream >> duration;
-
-	input_stream = istringstream(request["taskId"].asString());
-	input_stream >> parentTaskId;
-
-	input_stream = istringstream(request["recurringIndex"].asString());
-	input_stream >> recurringIndex;
-
+	istringstream(request["eventId"].asString()) >> eventId;
+	istringstream(request["startTime"].asString()) >> startTime;
+	istringstream(request["duration"].asString()) >> duration;
+	istringstream(request["taskId"].asString()) >> parentTaskId;
+	istringstream(request["recurringIndex"].asString()) >> recurringIndex;
 	status = eventStatusFromString(request["status"].asString());
 
 	auto result = parent.db->getAppData()->tasks;
@@ -411,7 +369,8 @@ void AppApi::fillTaskData(shared_ptr<AppDB::AppData> data, Json::Value& response
 	}
 }
 
-void AppApi::fillEventData(shared_ptr<AppDB::AppData> data, Json::Value& response)
+void AppApi::fillEventData(shared_ptr<AppDB::AppData> data, Json::Value& response,
+		uint64_t startTime, uint64_t endTime)
 {
 	unsigned int rowCount = 0;
 
@@ -427,24 +386,27 @@ void AppApi::fillEventData(shared_ptr<AppDB::AppData> data, Json::Value& respons
 
 	for(auto iter = loggedEvents->begin(); iter != loggedEvents->end(); ++iter)
 	{
-		auto & row = response["events"][rowCount];
 		auto event = iter->second;
-
-		//ensure we set the duration for running tasks
-		if(event->getStatus() == Core::Event::Status::Running)
-		{
-			if(event->getStartTime() < clock->getNowTimestamp())
-			{
-				uint64_t runningDuration = clock->getNowTimestamp() - event->getStartTime();
-				event->setDuration(runningDuration);
-			}
-		}
-
-		fillJsonValueFromEvent(row,*event);
-
-		rowCount++;
-
 		loggedEventsList->push_back(event);
+
+		if(event->overlaps(startTime,endTime))
+		{
+			auto & row = response["events"][rowCount];
+
+			//ensure we set the duration for running tasks
+			if(event->getStatus() == Core::Event::Status::Running)
+			{
+				if(event->getStartTime() < clock->getNowTimestamp())
+				{
+					uint64_t runningDuration = clock->getNowTimestamp() - event->getStartTime();
+					event->setDuration(runningDuration);
+				}
+			}
+
+			fillJsonValueFromEvent(row,*event);
+
+			rowCount++;
+		}
 	}
 
 	for(auto iter = data->tasks->begin(); iter != data->tasks->end(); ++iter) {
@@ -462,21 +424,34 @@ void AppApi::fillEventData(shared_ptr<AppDB::AppData> data, Json::Value& respons
 
 	for(unsigned int i = 0; i < eventCount; i++)
 	{
-		auto & row = response["events"][rowCount];
 		auto event = scheduler.getScheduledEvent(i);
 
-		fillJsonValueFromEvent(row,*event);
+		if(event->overlaps(startTime,endTime))
+		{
+			auto & row = response["events"][rowCount];
 
-		rowCount++;
+			fillJsonValueFromEvent(row,*event);
+
+			rowCount++;
+		}
+
 	}
 }
 
 void AppApi::GetAppData::call(const Json::Value& request, Json::Value& response)
 {
+	uint64_t startTime = 0;
+	uint64_t endTime = numeric_limits<uint64_t>::max();
+	if(request.isMember("startTime") && request.isMember("endTime"))
+	{
+		istringstream(request["startTime"].asString()) >> startTime;
+		istringstream(request["endTime"].asString()) >> endTime;
+	}
+
 	auto data = parent.db->getAppData();
 
 	parent.fillTaskData(data,response);
-	parent.fillEventData(data,response);
+	parent.fillEventData(data,response,startTime,endTime);
 }
 
 	

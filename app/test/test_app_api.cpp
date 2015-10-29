@@ -447,3 +447,24 @@ TEST(AppApiGroup, UpdateRecurringEvent)
 	LONGS_EQUAL(2,event->getParent()->getRecurringIndex());
 }
 
+TEST(AppApiGroup, ValidateAppDataInWindow)
+{
+	auto newTask = make_shared<Task>("",2,4,1);
+	newTask->setStatus(Task::Status::Incomplete);
+	newTask->setRecurranceParameters(10,1);
+	unsigned int expectedIndex = 0;
+
+	unsigned int taskId = db->insertTask(*newTask);
+
+	params["startTime"] = to_string(10);
+	params["endTime"] = to_string(20);
+	procedures["getAppData"]->call(params,results);
+
+	LONGS_EQUAL(0,results["events"].size());
+
+	params["startTime"] = to_string(0);
+	params["endTime"] = to_string(10);
+	procedures["getAppData"]->call(params,results);
+
+	LONGS_EQUAL(1,results["events"].size());
+}

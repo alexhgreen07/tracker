@@ -70,7 +70,8 @@ protected:
 	APP_API_PROCEDURE(RemoveEvent) removeEvent;
 	
 	void fillTaskData(shared_ptr<AppDB::AppData> data, Json::Value& response);
-	void fillEventData(shared_ptr<AppDB::AppData> data, Json::Value& response);
+	void fillEventData(shared_ptr<AppDB::AppData> data, Json::Value& response,
+			uint64_t startTime, uint64_t endTime);
 
 	APP_API_PROCEDURE(GetAppData) getAppData;
 
