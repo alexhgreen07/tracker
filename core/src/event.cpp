@@ -76,11 +76,20 @@ void Event::setParent(const std::shared_ptr<const Task> & parent)
 
 bool Event::overlaps(const std::shared_ptr<Event> & eventToCheck) const
 {
-    return
-        ((eventToCheck->getStartTime() >= startTime) &&
-       (eventToCheck->getStartTime() < getEndTime())) ||
-       ((eventToCheck->getEndTime() > startTime) &&
-        (eventToCheck->getEndTime() < getEndTime()));
+	return overlaps(eventToCheck->getStartTime(),
+			eventToCheck->getEndTime());
+}
+
+bool Event::overlaps(uint64_t startTimeToCheck, uint64_t endTimeToCheck) const
+{
+	bool overlapsStart = (startTimeToCheck >= startTime) &&
+			   (startTimeToCheck < getEndTime());
+	bool overlapsEnd = (endTimeToCheck > startTime) &&
+			(endTimeToCheck < getEndTime());
+	bool overlapsBetween = (startTimeToCheck < startTime)
+			&& (endTimeToCheck > getEndTime());
+
+	return (overlapsStart || overlapsEnd || overlapsBetween);
 }
     
 }
