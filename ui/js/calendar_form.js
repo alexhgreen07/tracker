@@ -409,6 +409,9 @@ define( [ './task_forms',
 	*/
 	CalendarForm.prototype.refreshCalendarEvents = function(start, end, timezone, callback)
 	{
+		//TODO: figure out overlap issue so we don't have to add days here
+		start.subtract(1,'days');
+		end.add(1,'days');
 		this.api.getAppDataInWindow(
 			start.unix().toString(), 
 			end.unix().toString(),
