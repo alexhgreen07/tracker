@@ -101,9 +101,22 @@ void Scheduler::schedule(uint64_t minStartTime)
             auto currentEntry = *taskIter;
             auto newEvents = scheduleInFreeSpace(currentEntry,minStartTime);
             
+            bool taskIsLate = false;
+
+            for(auto eventIter = newEvents->begin(); eventIter != newEvents->end(); eventIter++)
+			{
+				auto newEvent = *eventIter;
+				if(newEvent->getEndTime() > currentEntry->task->getLatestEndTime())
+				{
+					taskIsLate = true;
+					break;
+				}
+			}
+
             for(auto eventIter = newEvents->begin(); eventIter != newEvents->end(); eventIter++)
             {
                 auto newEvent = *eventIter;
+                newEvent->setIsLate(taskIsLate);
                 auto upperBound =
                     std::upper_bound(scheduledEvents.begin(),scheduledEvents.end(),newEvent,compareEventsByStartTime);
                 scheduledEvents.insert(upperBound,newEvent);

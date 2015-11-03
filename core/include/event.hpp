@@ -30,6 +30,8 @@ public:
     void setStartTime(uint64_t startTime);
     Status getStatus() const;
     void setStatus(Status type);
+    bool getIsLate() const;
+    void setIsLate(bool isLate);
     void setEventId(uint64_t eventId);
     uint64_t getEventId() const;
     std::shared_ptr<const Task> getParent() const;
@@ -42,6 +44,7 @@ private:
     std::shared_ptr<const Task> parent;
     Status status;
     uint64_t eventId;
+    bool isLate;
 };
     
 }

@@ -9,14 +9,16 @@ Event::Event() :
     startTime(0),
     duration(0),
 	status(Status::Scheduled),
-	eventId(0)
+	eventId(0),
+	isLate(false)
 {}
 
 Event::Event(unsigned int startTime, unsigned int duration) :
     startTime(startTime),
     duration(duration),
 	status(Status::Scheduled),
-	eventId(0)
+	eventId(0),
+	isLate(false)
 {}
 
 uint64_t Event::getDuration() const
@@ -52,6 +54,16 @@ Event::Status Event::getStatus() const
 void Event::setStatus(Status status)
 {
 	this->status = status;
+}
+
+bool Event::getIsLate() const
+{
+	return isLate;
+}
+
+void Event::setIsLate(bool isLate)
+{
+	this->isLate = isLate;
 }
 
 void Event::setEventId(uint64_t eventId)

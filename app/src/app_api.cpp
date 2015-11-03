@@ -146,12 +146,7 @@ void AppApi::fillJsonValueFromEvent(Json::Value& row, const Core::Event & event)
 
 	row["taskStatus"] = taskStatusToString(event.getParent()->getStatus());
 
-	row["isLate"] = false;
-	if((event.getStatus() == Event::Status::Scheduled) &&
-			(event.getEndTime() > event.getParent()->getLatestEndTime()))
-	{
-		row["isLate"] = true;
-	}
+	row["isLate"] = event.getIsLate();
 }
 
 string AppApi::eventStatusToString(Core::Event::Status status)
