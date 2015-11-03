@@ -120,9 +120,7 @@ define( [ './api',
 		{
 			$(document).ready(function() {
 				var application = buildApplication();
-				application.api.getTasks(function(){
-					application.render(document.body);
-				});
+				application.render(document.body);
 			});
 		}
 	}

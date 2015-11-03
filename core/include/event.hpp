@@ -35,6 +35,7 @@ public:
     std::shared_ptr<const Task> getParent() const;
     void setParent(const std::shared_ptr<const Task> & parent);
     bool overlaps(const std::shared_ptr<Event> & eventToCheck) const;
+    bool overlaps(uint64_t startTime, uint64_t endTime) const;
 private:
     uint64_t startTime;
     uint64_t duration;

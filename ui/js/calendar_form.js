@@ -49,7 +49,25 @@ define( [ './task_forms',
 		
 		this.currentEvent = null;
 		this.currentTask = null;
+		
+		this.submitCallback = function(){};
+		
+		this.addEventForm.submitCallback = this.childSubmitCallback.bind(this);
+		this.editEventForm.submitCallback = this.childSubmitCallback.bind(this);
 	}
+	
+	/**
+	Callback for when children execute a submission. This then
+	calls submitCallback.
+	@method childSubmitCallback
+	@memberof module:calendar_form~TaskActionForm
+	@instance
+	@private
+	*/
+	TaskActionForm.prototype.childSubmitCallback = function()
+	{
+		this.submitCallback();
+	};
 	
 	/**
 	@method setSelectEventAndTask
@@ -68,6 +86,7 @@ define( [ './task_forms',
 	@method editTaskButtonClick
 	@memberof module:calendar_form~TaskActionForm
 	@instance
+	@private
 	*/
 	TaskActionForm.prototype.editTaskButtonClick = function()
 	{
@@ -79,6 +98,7 @@ define( [ './task_forms',
 	@method addEventButtonClick
 	@memberof module:calendar_form~TaskActionForm
 	@instance
+	@private
 	*/
 	TaskActionForm.prototype.addEventButtonClick = function()
 	{
@@ -90,6 +110,7 @@ define( [ './task_forms',
 	@method editEventButtonClick
 	@memberof module:calendar_form~TaskActionForm
 	@instance
+	@private
 	*/
 	TaskActionForm.prototype.editEventButtonClick = function()
 	{
@@ -101,6 +122,7 @@ define( [ './task_forms',
 	@method startStopButtonClick
 	@memberof module:calendar_form~TaskActionForm
 	@instance
+	@private
 	*/
 	TaskActionForm.prototype.startStopButtonClick = function()
 	{
@@ -117,6 +139,12 @@ define( [ './task_forms',
 		}
 	};
 	
+	/**
+	@method setTaskStatus
+	@memberof module:calendar_form~TaskActionForm
+	@instance
+	@private
+	*/
 	TaskActionForm.prototype.setTaskStatus = function(status)
 	{
 		if(this.currentTask.recurringCount == 0)
@@ -130,7 +158,7 @@ define( [ './task_forms',
 					this.currentTask.taskId,
 					this.currentEvent.recurringIndex,
 					status,
-					function(){});
+					this.childSubmitCallback.bind(this));
 		}
 	};
 	
@@ -138,6 +166,7 @@ define( [ './task_forms',
 	@method completeButtonClick
 	@memberof module:calendar_form~TaskActionForm
 	@instance
+	@private
 	*/
 	TaskActionForm.prototype.completeButtonClick = function()
 	{
@@ -155,6 +184,7 @@ define( [ './task_forms',
 	@method missedButtonClick
 	@memberof module:calendar_form~TaskActionForm
 	@instance
+	@private
 	*/
 	TaskActionForm.prototype.missedButtonClick = function()
 	{
@@ -267,6 +297,7 @@ define( [ './task_forms',
 	@method backButtonClick
 	@memberof module:calendar_form~CalendarForm
 	@instance
+	@private
 	*/
 	CalendarForm.prototype.backButtonClick = function()
 	{
@@ -283,6 +314,7 @@ define( [ './task_forms',
 	@method eventClick
 	@memberof module:calendar_form~CalendarForm
 	@instance
+	@private
 	@param calEvent
 	@param jsEvent
 	@param view
@@ -341,6 +373,7 @@ define( [ './task_forms',
 	@method convertServerEventToCalendarEvent
 	@memberof module:calendar_form~CalendarForm
 	@instance
+	@private
 	@param serverEvent
 	*/
 	CalendarForm.prototype.convertServerEventToCalendarEvent = function(serverEvent)
@@ -359,7 +392,15 @@ define( [ './task_forms',
 		}
 		else if(serverEvent.status == "Scheduled")
 		{
-			eventColour = "cornflowerblue";
+			
+			if(serverEvent.isLate)
+			{
+				eventColour = "orange";
+			}
+			else
+			{
+				eventColour = "cornflowerblue";
+			}
 		}
 		else if(serverEvent.status == "Running")
 		{
@@ -386,28 +427,49 @@ define( [ './task_forms',
 	*/
 	CalendarForm.prototype.refresh = function(success,error)
 	{
-		this.api.getEvents((function(result){
-			
-			var newEvents = [];
-			
-			for(var key in result)
-			{
-				var calendarEvent = this.convertServerEventToCalendarEvent(result[key]);
-				newEvents.push(calendarEvent);
-			}
-			
-			this.calendar.fullCalendar( 'removeEvents' );
-			this.calendar.fullCalendar( 'addEventSource', newEvents);
-			
-			success();
-			
-		}).bind(this),error);
+		this.calendar.fullCalendar( 'refetchEvents' );
+		success();
+	};
+	
+	/**
+	@method refreshCalendarEvents
+	@memberof module:calendar_form~CalendarForm
+	@instance
+	@private
+	@param {Moment} start
+	@param {Moment} end
+	@param {string} timezone
+	@param callback
+	*/
+	CalendarForm.prototype.refreshCalendarEvents = function(start, end, timezone, callback)
+	{
+		//TODO: figure out overlap issue so we don't have to add days here
+		start.subtract(1,'days');
+		end.add(1,'days');
+		this.api.getAppDataInWindow(
+			start.unix().toString(), 
+			end.unix().toString(),
+			(function(result){
+				
+				var newEvents = [];
+				
+				for(var key in result.events)
+				{
+					var calendarEvent = this.convertServerEventToCalendarEvent(result.events[key]);
+					newEvents.push(calendarEvent);
+				}
+				
+				callback(newEvents);
+				
+			}).bind(this)
+		);
 	};
 	
 	/**
 	@method timedRefresh
 	@memberof module:calendar_form~CalendarForm
 	@instance
+	@private
 	*/
 	CalendarForm.prototype.timedRefresh = function()
 	{
@@ -448,7 +510,7 @@ define( [ './task_forms',
 			editable: false,
 			eventLimit: true,
 			eventClick: this.eventClick.bind(this),
-			events: []
+			events: this.refreshCalendarEvents.bind(this)
 		});
 		
 		this.taskActionFormDiv = parent.appendChild(document.createElement("div"));
@@ -469,6 +531,8 @@ define( [ './task_forms',
 		this.refresh(function(){});
 		
 		this.timedRefreshIntervalId = setInterval(this.timedRefresh.bind(this), this.refreshInterval);
+		
+		this.taskActionForm.submitCallback = this.backButtonClick.bind(this);
 	};
 	
 	/**

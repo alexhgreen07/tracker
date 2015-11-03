@@ -9,6 +9,9 @@
 #include <task.hpp>
 #include <event.hpp>
 
+using std::shared_ptr;
+using std::numeric_limits;
+
 namespace Tracker
 {
 
@@ -20,38 +23,46 @@ namespace Application
 class AppDB
 {
 public:
-    AppDB(const std::shared_ptr<Database::Database> & database);
+	struct AppData
+	{
+		shared_ptr<std::map<uint64_t, shared_ptr<Task>>> tasks;
+		shared_ptr<std::map<uint64_t, shared_ptr<Event>>> loggedEvents;
+	};
+
+    AppDB(const shared_ptr<Database::Database> & database);
     
-    std::shared_ptr<Database::Database> getDatabase();
+    shared_ptr<Database::Database> getDatabase();
 
     void updateDatabase();
 
     void initializeNewDatabase();
 
-    std::shared_ptr<std::map<uint64_t, std::shared_ptr<Task>>> getTasks();
     uint64_t insertTask(const Task & newTask);
     void updateTask(uint64_t taskId, Task & task);
     void removeTask(uint64_t taskId);
 
     void updateRecurringTaskStatus(uint64_t taskId, uint64_t recurringIndex, Task::Status status);
 
-    std::shared_ptr<std::map<uint64_t, std::shared_ptr<Event>>> getLoggedEvents();
     uint64_t insertEvent(const Event & newEvent);
     void updateEvent(uint64_t eventId, const Event & updatedEvent);
     void removeEvent(uint64_t eventId);
 
+    shared_ptr<AppData> getAppData(uint64_t startTime = 0, uint64_t endTime = numeric_limits<uint64_t>::max());
+
     std::string getCurrentVersion();
 private:
-    std::shared_ptr<Database::Database> database;
+    shared_ptr<Database::Database> database;
     std::string currentVersion;
-
-    std::shared_ptr<std::map<uint64_t, std::shared_ptr<Task>>> tasks;
-    std::shared_ptr<std::map<uint64_t, std::shared_ptr<Event>>> events;
 
     void createVersionTable();
     void createTasksTable();
     void createRecurringTasksStatusTable();
     void createEventsTable();
+
+    shared_ptr<std::map<uint64_t, shared_ptr<Task>>> getTasks(uint64_t startTime = 0, uint64_t endTime = numeric_limits<uint64_t>::max());
+    shared_ptr<std::map<uint64_t, shared_ptr<Event>>> getLoggedEvents(
+    		shared_ptr<std::map<uint64_t, shared_ptr<Task>>> & tasks,
+			uint64_t startTime = 0, uint64_t endTime = numeric_limits<uint64_t>::max());
 
     uint64_t insertRecurringTaskStatus(uint64_t taskId, uint64_t recurringIndex, Task::Status status);
     void removeRecurringTaskStatus(uint64_t taskId);

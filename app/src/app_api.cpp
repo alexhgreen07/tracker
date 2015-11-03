@@ -17,7 +17,6 @@ AppApi::AppApi(const shared_ptr<AppDB> & db, const shared_ptr<Clock> & clock) :
 	exitProcedure(*this),
 	resetProcedure(*this),
 	sayHello(*this),
-	getTasks(*this),
 	insertTask(*this),
 	updateTask(*this),
 	updateRecurringTaskStatus(*this),
@@ -25,12 +24,11 @@ AppApi::AppApi(const shared_ptr<AppDB> & db, const shared_ptr<Clock> & clock) :
 	insertEvent(*this),
 	updateEvent(*this),
 	removeEvent(*this),
-	getEvents(*this)
+	getAppData(*this)
 {
 	procedurePointers["exit"] = &exitProcedure;
 	procedurePointers["reset"] = &resetProcedure;
 	procedurePointers["sayHello"] = &sayHello;
-	procedurePointers["getTasks"] = &getTasks;
 	procedurePointers["insertTask"] = &insertTask;
 	procedurePointers["updateTask"] = &updateTask;
 	procedurePointers["updateRecurringTaskStatus"] = &updateRecurringTaskStatus;
@@ -38,7 +36,8 @@ AppApi::AppApi(const shared_ptr<AppDB> & db, const shared_ptr<Clock> & clock) :
 	procedurePointers["insertEvent"] = &insertEvent;
 	procedurePointers["updateEvent"] = &updateEvent;
 	procedurePointers["removeEvent"] = &removeEvent;
-	procedurePointers["getEvents"] = &getEvents;
+
+	procedurePointers["getAppData"] = &getAppData;
 }
 
 JsonMethods & AppApi::getProcedures()
@@ -70,25 +69,6 @@ void AppApi::ResetProcedure::call(const Json::Value& request, Json::Value& respo
 void AppApi::SayHelloProcedure::call(const Json::Value& request, Json::Value& response)
 {
 	response = "Hello: " + request["name"].asString();
-}
-	
-void AppApi::GetTasksProcedure::call(const Json::Value& request, Json::Value& response)
-{
-	auto result = parent.db->getTasks();
-	
-	unsigned int i = 0;
-
-	response = Json::Value(Json::arrayValue);
-	
-	for(auto outer_iter=result->begin(); outer_iter!=result->end(); ++outer_iter) {
-		
-		auto task = outer_iter->second;
-		auto & row = response[i];
-		
-		parent.fillJsonValueFromTask(row,*task);
-		
-		i++;
-	}
 }
 
 void AppApi::fillJsonValueFromTask(Json::Value& row, const Core::Task & task)
@@ -165,6 +145,13 @@ void AppApi::fillJsonValueFromEvent(Json::Value& row, const Core::Event & event)
 	row["recurringIndex"] = event.getParent()->getRecurringIndex();
 
 	row["taskStatus"] = taskStatusToString(event.getParent()->getStatus());
+
+	row["isLate"] = false;
+	if((event.getStatus() == Event::Status::Scheduled) &&
+			(event.getEndTime() > event.getParent()->getLatestEndTime()))
+	{
+		row["isLate"] = true;
+	}
 }
 
 string AppApi::eventStatusToString(Core::Event::Status status)
@@ -219,22 +206,12 @@ void AppApi::InsertTask::call(const Json::Value& request, Json::Value& response)
 	uint64_t recurringLateOffset;
 	Core::Task::Status status;
 
-	istringstream input_stream(request["earliestStartTime"].asString());
-	input_stream >> earliestStartTime;
-
-	input_stream = istringstream(request["latestEndTime"].asString());
-	input_stream >> latestEndTime;
-
-	input_stream = istringstream(request["duration"].asString());
-	input_stream >> duration;
-
+	istringstream(request["earliestStartTime"].asString()) >> earliestStartTime;
+	istringstream(request["latestEndTime"].asString()) >> latestEndTime;
+	istringstream(request["duration"].asString()) >> duration;
 	status = taskStatusFromString(request["status"].asString());
-
-	input_stream = istringstream(request["recurringPeriod"].asString());
-	input_stream >> recurringPeriod;
-
-	input_stream = istringstream(request["recurringLateOffset"].asString());
-	input_stream >> recurringLateOffset;
+	istringstream(request["recurringPeriod"].asString()) >> recurringPeriod;
+	istringstream(request["recurringLateOffset"].asString()) >> recurringLateOffset;
 
 	auto newTask = make_shared<Core::Task>(
 			request["name"].asString(),
@@ -257,22 +234,12 @@ void AppApi::UpdateTask::call(const Json::Value& request, Json::Value& response)
 	uint64_t recurringLateOffset;
 	Core::Task::Status status;
 
-	istringstream input_stream(request["earliestStartTime"].asString());
-	input_stream >> earliestStartTime;
-
-	input_stream = istringstream(request["latestEndTime"].asString());
-	input_stream >> latestEndTime;
-
-	input_stream = istringstream(request["duration"].asString());
-	input_stream >> duration;
-
+	istringstream(request["earliestStartTime"].asString()) >> earliestStartTime;
+	istringstream(request["latestEndTime"].asString()) >> latestEndTime;
+	istringstream(request["duration"].asString()) >> duration;
 	status = taskStatusFromString(request["status"].asString());
-
-	input_stream = istringstream(request["recurringPeriod"].asString());
-	input_stream >> recurringPeriod;
-
-	input_stream = istringstream(request["recurringLateOffset"].asString());
-	input_stream >> recurringLateOffset;
+	istringstream(request["recurringPeriod"].asString()) >> recurringPeriod;
+	istringstream(request["recurringLateOffset"].asString()) >> recurringLateOffset;
 
 	auto updatedTask = make_shared<Core::Task>(
 				request["name"].asString(),
@@ -293,12 +260,8 @@ void AppApi::UpdateRecurringTaskStatus::call(const Json::Value& request, Json::V
 	uint64_t recurringIndex;
 	Task::Status status;
 
-	istringstream input_stream(request["taskId"].asString());
-	input_stream >> taskId;
-
-	input_stream = istringstream(request["recurringIndex"].asString());
-	input_stream >> recurringIndex;
-
+	istringstream(request["taskId"].asString()) >> taskId;
+	istringstream(request["recurringIndex"].asString()) >> recurringIndex;
 	status = taskStatusFromString(request["status"].asString());
 
 	parent.db->updateRecurringTaskStatus(taskId,recurringIndex,(Task::Status)status);
@@ -321,21 +284,13 @@ void AppApi::InsertEvent::call(const Json::Value& request, Json::Value& response
 	uint64_t recurringIndex;
 	Core::Event::Status status;
 
-	istringstream input_stream(request["startTime"].asString());
-	input_stream >> startTime;
-
-	input_stream = istringstream(request["duration"].asString());
-	input_stream >> duration;
-
-	input_stream = istringstream(request["taskId"].asString());
-	input_stream >> parentTaskId;
-
-	input_stream = istringstream(request["recurringIndex"].asString());
-	input_stream >> recurringIndex;
-
+	istringstream(request["startTime"].asString()) >> startTime;
+	istringstream(request["duration"].asString()) >> duration;
+	istringstream(request["taskId"].asString()) >> parentTaskId;
+	istringstream(request["recurringIndex"].asString()) >> recurringIndex;
 	status = eventStatusFromString(request["status"].asString());
 
-	auto result = parent.db->getTasks();
+	auto result = parent.db->getAppData()->tasks;
 	auto parentTaskAtId = result->at(parentTaskId);
 
 	shared_ptr<const Core::Task> parentTask = parentTaskAtId;
@@ -363,24 +318,14 @@ void AppApi::UpdateEvent::call(const Json::Value& request, Json::Value& response
 	uint64_t recurringIndex;
 	Core::Event::Status status;
 
-	istringstream input_stream(request["eventId"].asString());
-	input_stream >> eventId;
-
-	input_stream = istringstream(request["startTime"].asString());
-	input_stream >> startTime;
-
-	input_stream = istringstream(request["duration"].asString());
-	input_stream >> duration;
-
-	input_stream = istringstream(request["taskId"].asString());
-	input_stream >> parentTaskId;
-
-	input_stream = istringstream(request["recurringIndex"].asString());
-	input_stream >> recurringIndex;
-
+	istringstream(request["eventId"].asString()) >> eventId;
+	istringstream(request["startTime"].asString()) >> startTime;
+	istringstream(request["duration"].asString()) >> duration;
+	istringstream(request["taskId"].asString()) >> parentTaskId;
+	istringstream(request["recurringIndex"].asString()) >> recurringIndex;
 	status = eventStatusFromString(request["status"].asString());
 
-	auto result = parent.db->getTasks();
+	auto result = parent.db->getAppData()->tasks;
 	auto parentTaskAtId = result->at(parentTaskId);
 
 	shared_ptr<const Core::Task> parentTask = parentTaskAtId;
@@ -411,62 +356,133 @@ void AppApi::RemoveEvent::call(const Json::Value& request, Json::Value& response
 	response = true;
 }
 
-void AppApi::GetEvents::call(const Json::Value& request, Json::Value& response)
+void AppApi::fillTaskData(shared_ptr<AppDB::AppData> data, Json::Value& response)
 {
 	unsigned int rowCount = 0;
-	response = Json::Value(Json::arrayValue);
+	auto result = data->tasks;
+
+	rowCount = 0;
+
+	response["tasks"] = Json::Value(Json::arrayValue);
+
+	for(auto outer_iter=result->begin(); outer_iter!=result->end(); ++outer_iter) {
+
+		auto task = outer_iter->second;
+		auto & row = response["tasks"][rowCount];
+
+		fillJsonValueFromTask(row,*task);
+
+		rowCount++;
+	}
+}
+
+void AppApi::fillEventData(shared_ptr<AppDB::AppData> data, Json::Value& response,
+		uint64_t startTime, uint64_t endTime)
+{
+	unsigned int rowCount = 0;
+
+	//build the events array
+	response["events"] = Json::Value(Json::arrayValue);
 
 	auto taskList = make_shared<vector<shared_ptr<Core::Task>>>();
-	auto result = parent.db->getTasks();
 	
-	auto loggedEvents = parent.db->getLoggedEvents();
+	auto loggedEvents = data->loggedEvents;
 	auto loggedEventsList = make_shared<vector<shared_ptr<Core::Event>>>();
+
+	rowCount = 0;
 
 	for(auto iter = loggedEvents->begin(); iter != loggedEvents->end(); ++iter)
 	{
-		auto & row = response[rowCount];
 		auto event = iter->second;
+		loggedEventsList->push_back(event);
 
 		//ensure we set the duration for running tasks
 		if(event->getStatus() == Core::Event::Status::Running)
 		{
-			if(event->getStartTime() < parent.clock->getNowTimestamp())
+			if(event->getStartTime() < clock->getNowTimestamp())
 			{
-				uint64_t runningDuration = parent.clock->getNowTimestamp() - event->getStartTime();
+				uint64_t runningDuration = clock->getNowTimestamp() - event->getStartTime();
 				event->setDuration(runningDuration);
 			}
 		}
 
-		parent.fillJsonValueFromEvent(row,*event);
-
-		rowCount++;
-
-		loggedEventsList->push_back(event);
+		if(event->overlaps(startTime,endTime))
+		{
+			auto & row = response["events"][rowCount];
+			fillJsonValueFromEvent(row,*event);
+			rowCount++;
+		}
 	}
 
-	for(auto iter = result->begin(); iter != result->end(); ++iter) {
+	for(auto iter = data->tasks->begin(); iter != data->tasks->end(); ++iter) {
 		
 		auto task = iter->second;
-		
+
+		//TODO: make this more elegant for missed/complete events
+
+		//add completed/missed events
+		auto event = make_shared<Event>(task->getLatestEndTime(),0);
+		event->setParent(task);
+		if((task->getStatus() == Task::Status::Complete || task->getStatus() == Task::Status::Missed) &&
+				event->overlaps(startTime,endTime))
+		{
+			auto & row = response["events"][rowCount];
+			fillJsonValueFromEvent(row,*event);
+			rowCount++;
+		}
+
+		//add completed/missed events recurring events
+		for(unsigned int i = 0; i < task->getRecurringTaskCount(); i++)
+		{
+			auto child = task->getRecurringChild(i);
+			auto event = make_shared<Event>(child->getLatestEndTime(),0);
+			event->setParent(child);
+			if((child->getStatus() == Task::Status::Complete || child->getStatus() == Task::Status::Missed) &&
+					event->overlaps(startTime,endTime))
+			{
+				auto & row = response["events"][rowCount];
+				fillJsonValueFromEvent(row,*event);
+				rowCount++;
+			}
+		}
+
 		taskList->push_back(task);
 	}
 	
-	parent.scheduler.setLoggedEventList(loggedEventsList);
-	parent.scheduler.setTaskList(taskList);
-	parent.scheduler.schedule(parent.clock->getNowTimestamp());
+	scheduler.setLoggedEventList(loggedEventsList);
+	scheduler.setTaskList(taskList);
+	scheduler.schedule(clock->getNowTimestamp());
 	
-	unsigned int eventCount = parent.scheduler.getScheduledEventCount();
+	unsigned int eventCount = scheduler.getScheduledEventCount();
 
 	for(unsigned int i = 0; i < eventCount; i++)
 	{
-		auto & row = response[rowCount];
-		auto event = parent.scheduler.getScheduledEvent(i);
+		auto event = scheduler.getScheduledEvent(i);
 
-		parent.fillJsonValueFromEvent(row,*event);
+		if(event->overlaps(startTime,endTime))
+		{
+			auto & row = response["events"][rowCount];
+			fillJsonValueFromEvent(row,*event);
+			rowCount++;
+		}
 
-		rowCount++;
+	}
+}
+
+void AppApi::GetAppData::call(const Json::Value& request, Json::Value& response)
+{
+	uint64_t startTime = 0;
+	uint64_t endTime = numeric_limits<uint64_t>::max();
+	if(request.isMember("startTime") && request.isMember("endTime"))
+	{
+		istringstream(request["startTime"].asString()) >> startTime;
+		istringstream(request["endTime"].asString()) >> endTime;
 	}
 
+	auto data = parent.db->getAppData();
+
+	parent.fillTaskData(data,response);
+	parent.fillEventData(data,response,startTime,endTime);
 }
 
 	

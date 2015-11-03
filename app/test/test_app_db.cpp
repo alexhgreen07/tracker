@@ -108,7 +108,7 @@ TEST(AppDBGroup, ValidateVersionTable)
 
 TEST(AppDBGroup, ValidateTasksTableExists)
 {
-    auto result = testDB.getTasks();
+    auto result = testDB.getAppData()->tasks;
     
     LONGS_EQUAL(0, result->size());
 }
@@ -119,7 +119,7 @@ TEST(AppDBGroup, ValidateTaskInsert)
     
     testDB.insertTask(newTask);
     
-    auto result = testDB.getTasks();
+    auto result = testDB.getAppData()->tasks;
     
     LONGS_EQUAL(1, result->size());
 }
@@ -130,7 +130,7 @@ TEST(AppDBGroup, ValidateTaskInsertByTaskId)
 
 	testDB.insertTask(newTask);
 
-	auto result = testDB.getTasks();
+	auto result = testDB.getAppData()->tasks;
 	auto testTask = result->at(1);
 
 	LONGS_EQUAL(1,testTask->getTaskId());
@@ -143,7 +143,7 @@ TEST(AppDBGroup, ValidateTaskInsertByName)
 	newTask.setName("test task");
 	unsigned int taskId = testDB.insertTask(newTask);
 
-	auto result = testDB.getTasks();
+	auto result = testDB.getAppData()->tasks;
 	auto retrievedTask = result->at(taskId);
 	STRCMP_EQUAL(newTask.getName().c_str(),retrievedTask->getName().c_str());
 }
@@ -155,7 +155,7 @@ TEST(AppDBGroup, ValidateTaskInsertByEarliestStartTime)
     newTask.setEarliestStartTime(2);
     unsigned int taskId = testDB.insertTask(newTask);
     
-    auto result = testDB.getTasks();
+    auto result = testDB.getAppData()->tasks;
     auto retrievedTask = result->at(taskId);
     LONGS_EQUAL(newTask.getEarliestStartTime(),retrievedTask->getEarliestStartTime());
 }
@@ -167,7 +167,7 @@ TEST(AppDBGroup, ValidateTaskInsertByLatestEndTime)
     newTask.setLatestEndTime(2);
     unsigned int taskId = testDB.insertTask(newTask);
     
-    auto result = testDB.getTasks();
+    auto result = testDB.getAppData()->tasks;
     auto retrievedTask = result->at(taskId);
     LONGS_EQUAL(newTask.getLatestEndTime(),retrievedTask->getLatestEndTime());
 }
@@ -179,7 +179,7 @@ TEST(AppDBGroup, ValidateTaskInsertByDuration)
     newTask.setDuration(2);
     unsigned int taskId = testDB.insertTask(newTask);
     
-    auto result = testDB.getTasks();
+    auto result = testDB.getAppData()->tasks;
     auto retrievedTask = result->at(taskId);
     LONGS_EQUAL(newTask.getDuration(),retrievedTask->getDuration());
 }
@@ -191,7 +191,7 @@ TEST(AppDBGroup, ValidateTaskInsertByStatus)
 	newTask.setStatus(Task::Status::Complete);
 	unsigned int taskId = testDB.insertTask(newTask);
 
-	auto result = testDB.getTasks();
+	auto result = testDB.getAppData()->tasks;
 	auto retrievedTask = result->at(taskId);
 	CHECK(newTask.getStatus() == retrievedTask->getStatus());
 }
@@ -203,7 +203,7 @@ TEST(AppDBGroup, ValidateTaskInsertByRecurringChildrenCount)
 	newTask->setRecurranceParameters(10,5);
 	unsigned int taskId = testDB.insertTask(*newTask);
 
-	auto result = testDB.getTasks();
+	auto result = testDB.getAppData()->tasks;
 	auto retrievedTask = result->at(taskId);
 	LONGS_EQUAL(newTask->getRecurringTaskCount(), retrievedTask->getRecurringTaskCount());
 }
@@ -215,7 +215,7 @@ TEST(AppDBGroup, ValidateTaskDelete)
     uint64_t taskId = testDB.insertTask(newTask);
     testDB.removeTask(taskId);
     
-    auto result = testDB.getTasks();
+    auto result = testDB.getAppData()->tasks;
     
     LONGS_EQUAL(0, result->size());
 }
@@ -229,7 +229,7 @@ TEST(AppDBGroup, ValidateTaskUpdateByName)
 	newTask.setName("test name");
 	testDB.updateTask(taskId, newTask);
 
-	auto result = testDB.getTasks();
+	auto result = testDB.getAppData()->tasks;
 	auto retrievedTask = result->at(taskId);
 	STRCMP_EQUAL(newTask.getName().c_str(),retrievedTask->getName().c_str());
 }
@@ -243,7 +243,7 @@ TEST(AppDBGroup, ValidateTaskUpdateByEarliestStartTime)
     newTask.setEarliestStartTime(2);
     testDB.updateTask(taskId, newTask);
     
-    auto result = testDB.getTasks();
+    auto result = testDB.getAppData()->tasks;
     auto retrievedTask = result->at(taskId);
     LONGS_EQUAL(newTask.getEarliestStartTime(),retrievedTask->getEarliestStartTime());
 }
@@ -257,7 +257,7 @@ TEST(AppDBGroup, ValidateTaskUpdateByLatestEndTime)
     newTask.setLatestEndTime(2);
     testDB.updateTask(taskId, newTask);
     
-    auto result = testDB.getTasks();
+    auto result = testDB.getAppData()->tasks;
     auto retrievedTask = result->at(taskId);
     LONGS_EQUAL(newTask.getLatestEndTime(),retrievedTask->getLatestEndTime());
 }
@@ -271,7 +271,7 @@ TEST(AppDBGroup, ValidateTaskUpdateByDuration)
     newTask.setDuration(2);
     testDB.updateTask(taskId, newTask);
     
-    auto result = testDB.getTasks();
+    auto result = testDB.getAppData()->tasks;
     auto retrievedTask = result->at(taskId);
     LONGS_EQUAL(newTask.getDuration(),retrievedTask->getDuration());
 }
@@ -285,7 +285,7 @@ TEST(AppDBGroup, ValidateTaskUpdateByStatus)
     newTask.setStatus(Task::Status::Complete);
     testDB.updateTask(taskId, newTask);
 
-    auto result = testDB.getTasks();
+    auto result = testDB.getAppData()->tasks;
     auto retrievedTask = result->at(taskId);
     CHECK(newTask.getStatus() == retrievedTask->getStatus());
 }
@@ -300,7 +300,7 @@ TEST(AppDBGroup, ValidateTaskUpdateByRecurringChildrenCount)
 	newTask->setRecurranceParameters(5,0);
 	testDB.updateTask(taskId, *newTask);
 
-	auto result = testDB.getTasks();
+	auto result = testDB.getAppData()->tasks;
 	auto retrievedTask = result->at(taskId);
 	LONGS_EQUAL(newTask->getRecurringTaskCount(), retrievedTask->getRecurringTaskCount());
 }
@@ -315,7 +315,7 @@ TEST(AppDBGroup, ValidateRecurringTaskStatusUpdate)
 
 	testDB.updateRecurringTaskStatus(taskId,recurringChildIndex,Task::Status::Complete);
 
-	auto result = testDB.getTasks();
+	auto result = testDB.getAppData()->tasks;
 	auto retrievedTask = result->at(taskId);
 	auto recurringChild = retrievedTask->getRecurringChild(recurringChildIndex);
 	CHECK(recurringChild->getStatus() == Task::Status::Complete);
@@ -323,7 +323,7 @@ TEST(AppDBGroup, ValidateRecurringTaskStatusUpdate)
 
 TEST(AppDBGroup, ValidateEventsTableExists)
 {
-	auto result = testDB.getLoggedEvents();
+	auto result = testDB.getAppData()->loggedEvents;
 
 	LONGS_EQUAL(0, result->size());
 }
@@ -333,7 +333,7 @@ TEST(AppDBGroup, ValidateEventInsert)
 {
 	insertDummyEvent();
 
-    auto result = testDB.getLoggedEvents();
+    auto result = testDB.getAppData()->loggedEvents;
 
     LONGS_EQUAL(1, result->size());
 }
@@ -342,7 +342,7 @@ TEST(AppDBGroup, ValidateEventInsertByStartTime)
 {
 	auto newEvent = insertDummyEvent();
 
-	auto result = testDB.getLoggedEvents();
+	auto result = testDB.getAppData()->loggedEvents;
 
 	auto insertedEvent = result->at(newEvent->getEventId());
 	LONGS_EQUAL(newEvent->getStartTime(), insertedEvent->getStartTime());
@@ -352,7 +352,7 @@ TEST(AppDBGroup, ValidateEventInsertByDuration)
 {
 	auto newEvent = insertDummyEvent();
 
-	auto result = testDB.getLoggedEvents();
+	auto result = testDB.getAppData()->loggedEvents;
 
 	auto insertedEvent = result->at(newEvent->getEventId());
 	LONGS_EQUAL(newEvent->getDuration(), insertedEvent->getDuration());
@@ -362,7 +362,7 @@ TEST(AppDBGroup, ValidateEventInsertByEventId)
 {
 	auto newEvent = insertDummyEvent();
 
-	auto result = testDB.getLoggedEvents();
+	auto result = testDB.getAppData()->loggedEvents;
 
 	auto insertedEvent = result->at(newEvent->getEventId());
 	LONGS_EQUAL(newEvent->getEventId(), insertedEvent->getEventId());
@@ -372,7 +372,7 @@ TEST(AppDBGroup, ValidateEventInsertByStatus)
 {
 	auto newEvent = insertDummyEvent();
 
-	auto result = testDB.getLoggedEvents();
+	auto result = testDB.getAppData()->loggedEvents;
 
 	auto insertedEvent = result->at(newEvent->getEventId());
 	CHECK(Event::Status::Running == insertedEvent->getStatus());
@@ -382,7 +382,7 @@ TEST(AppDBGroup, ValidateEventInsertByParentTaskId)
 {
 	auto newEvent = insertDummyEvent();
 
-	auto result = testDB.getLoggedEvents();
+	auto result = testDB.getAppData()->loggedEvents;
 
 	auto insertedEvent = result->at(newEvent->getEventId());
 	LONGS_EQUAL(newEvent->getParent()->getTaskId(), insertedEvent->getParent()->getTaskId());
@@ -392,7 +392,7 @@ TEST(AppDBGroup, ValidateRecurringEventInsert)
 {
 	auto newEvent = insertDummyRecurringEvent();
 
-	auto result = testDB.getLoggedEvents();
+	auto result = testDB.getAppData()->loggedEvents;
 
 	auto insertedEvent = result->at(newEvent->getEventId());
 	LONGS_EQUAL(
@@ -406,7 +406,7 @@ TEST(AppDBGroup, ValidateEventDelete)
 
     testDB.removeEvent(newEvent->getEventId());
 
-    auto result = testDB.getLoggedEvents();
+    auto result = testDB.getAppData()->loggedEvents;
 
     LONGS_EQUAL(0, result->size());
 }
@@ -416,7 +416,7 @@ TEST(AppDBGroup, ValidateEventUpdateByStartTime)
 	auto newEvent = insertDummyEvent();
 	auto updatedEvent = updateDummyEvent(newEvent->getEventId());
 
-	auto result = testDB.getLoggedEvents();
+	auto result = testDB.getAppData()->loggedEvents;
 	auto updatedDbEvent = result->at(newEvent->getEventId());
     LONGS_EQUAL(updatedEvent->getStartTime(),updatedDbEvent->getStartTime());
 }
@@ -426,7 +426,7 @@ TEST(AppDBGroup, ValidateEventUpdateByDuration)
 	auto newEvent = insertDummyEvent();
 	auto updatedEvent = updateDummyEvent(newEvent->getEventId());
 
-	auto result = testDB.getLoggedEvents();
+	auto result = testDB.getAppData()->loggedEvents;
 	auto updatedDbEvent = result->at(newEvent->getEventId());
     LONGS_EQUAL(updatedEvent->getDuration(),updatedDbEvent->getDuration());
 }
@@ -436,7 +436,7 @@ TEST(AppDBGroup, ValidateEventUpdateByStatus)
 	auto newEvent = insertDummyEvent();
 	auto updatedEvent = updateDummyEvent(newEvent->getEventId());
 
-	auto result = testDB.getLoggedEvents();
+	auto result = testDB.getAppData()->loggedEvents;
 	auto updatedDbEvent = result->at(newEvent->getEventId());
     CHECK(Event::Status::Logged == updatedDbEvent->getStatus());
 }
@@ -446,7 +446,7 @@ TEST(AppDBGroup, ValidateEventUpdateByParentTaskId)
 	auto newEvent = insertDummyEvent();
 	auto updatedEvent = updateDummyEvent(newEvent->getEventId());
 
-	auto result = testDB.getLoggedEvents();
+	auto result = testDB.getAppData()->loggedEvents;
 	auto updatedDbEvent = result->at(newEvent->getEventId());
     LONGS_EQUAL(updatedEvent->getParent()->getTaskId(),updatedDbEvent->getParent()->getTaskId());
 }
@@ -456,7 +456,7 @@ TEST(AppDBGroup, ValidateRecurringEventUpdate)
 	auto newEvent = insertDummyRecurringEvent();
 	auto updatedEvent = updateRecurringDummyEvent(newEvent->getEventId());
 
-	auto result = testDB.getLoggedEvents();
+	auto result = testDB.getAppData()->loggedEvents;
 
 	auto insertedEvent = result->at(newEvent->getEventId());
 	LONGS_EQUAL(
@@ -464,3 +464,19 @@ TEST(AppDBGroup, ValidateRecurringEventUpdate)
 			insertedEvent->getParent()->getRecurringIndex());
 }
 
+
+TEST(AppDBGroup, ValidateAppDataInWindow)
+{
+	auto newTask = make_shared<Task>("",10,20,1);
+	newTask->setTaskId(testDB.insertTask(*newTask));
+	Event newEvent(15,1);
+	newEvent.setParent(newTask);
+	testDB.insertEvent(newEvent);
+
+	auto result = testDB.getAppData(0,10);
+	LONGS_EQUAL(1, result->tasks->size());
+	LONGS_EQUAL(0, result->loggedEvents->size());
+	result = testDB.getAppData(10,20);
+	LONGS_EQUAL(1, result->tasks->size());
+	LONGS_EQUAL(1, result->loggedEvents->size());
+}

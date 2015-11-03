@@ -69,10 +69,10 @@ TEST(AppApiGroup, ValidateSayHello)
 
 TEST(AppApiGroup, ValidateGetEmptyTaskTable)
 {
-	procedures["getTasks"]->call(params,results);
+	procedures["getAppData"]->call(params,results);
 	
 	Json::Value desiredResult = Json::Value(Json::arrayValue);
-	CHECK(results == desiredResult);
+	CHECK(results["tasks"] == desiredResult);
 }
 
 TEST(AppApiGroup, ValidateGetTaskTableWithSingleEntry)
@@ -84,38 +84,38 @@ TEST(AppApiGroup, ValidateGetTaskTableWithSingleEntry)
 	
 	unsigned int taskId = db->insertTask(*newTask);
 
-	procedures["getTasks"]->call(params,results);
+	procedures["getAppData"]->call(params,results);
 	
-	LONGS_EQUAL(1,results.size());
+	LONGS_EQUAL(1,results["tasks"].size());
 	
-	LONGS_EQUAL(taskId,results[expectedIndex]["taskId"].asInt());
-	STRCMP_EQUAL(newTask->getName().c_str(),results[expectedIndex]["name"].asCString());
+	LONGS_EQUAL(taskId,results["tasks"][expectedIndex]["taskId"].asInt());
+	STRCMP_EQUAL(newTask->getName().c_str(),results["tasks"][expectedIndex]["name"].asCString());
 
-	istringstream input_stream(results[expectedIndex]["earliestStartTime"].asString());
+	istringstream input_stream(results["tasks"][expectedIndex]["earliestStartTime"].asString());
 	uint64_t value;
 
 	input_stream >> value;
 	LONGS_EQUAL(newTask->getEarliestStartTime(),value);
 
-	input_stream = istringstream(results[expectedIndex]["latestEndTime"].asString());
+	input_stream = istringstream(results["tasks"][expectedIndex]["latestEndTime"].asString());
 	input_stream >> value;
 	LONGS_EQUAL(newTask->getLatestEndTime(),value);
 
-	input_stream = istringstream(results[expectedIndex]["duration"].asString());
+	input_stream = istringstream(results["tasks"][expectedIndex]["duration"].asString());
 	input_stream >> value;
 	LONGS_EQUAL(newTask->getDuration(),value);
 
-	STRCMP_EQUAL("Complete",results[expectedIndex]["status"].asCString());
+	STRCMP_EQUAL("Complete",results["tasks"][expectedIndex]["status"].asCString());
 
-	input_stream = istringstream(results[expectedIndex]["recurringPeriod"].asString());
+	input_stream = istringstream(results["tasks"][expectedIndex]["recurringPeriod"].asString());
 	input_stream >> value;
 	LONGS_EQUAL(newTask->getRecurringPeriod(),value);
 
-	input_stream = istringstream(results[expectedIndex]["recurringLateOffset"].asString());
+	input_stream = istringstream(results["tasks"][expectedIndex]["recurringLateOffset"].asString());
 	input_stream >> value;
 	LONGS_EQUAL(newTask->getRecurringLateOffset(),value);
 
-	LONGS_EQUAL(newTask->getRecurringTaskCount(),results[expectedIndex]["recurringCount"].asInt());
+	LONGS_EQUAL(newTask->getRecurringTaskCount(),results["tasks"][expectedIndex]["recurringCount"].asInt());
 }
 
 TEST(AppApiGroup, ValidateGetTaskTableWithMultipleEntries)
@@ -128,26 +128,26 @@ TEST(AppApiGroup, ValidateGetTaskTableWithMultipleEntries)
 		db->insertTask(newTask);
 	}
 
-	procedures["getTasks"]->call(params,results);
+	procedures["getAppData"]->call(params,results);
 	
-	LONGS_EQUAL(loopLimit,results.size());
+	LONGS_EQUAL(loopLimit,results["tasks"].size());
 	
 	for(unsigned int i = 0; i < loopLimit; i++)
 	{
-		LONGS_EQUAL(i + 1,results[i]["taskId"].asInt());
-		STRCMP_EQUAL(to_string(i).c_str(),results[i]["name"].asCString());
+		LONGS_EQUAL(i + 1,results["tasks"][i]["taskId"].asInt());
+		STRCMP_EQUAL(to_string(i).c_str(),results["tasks"][i]["name"].asCString());
 		
-		istringstream input_stream(results[i]["earliestStartTime"].asString());
+		istringstream input_stream(results["tasks"][i]["earliestStartTime"].asString());
 		uint64_t value;
 
 		input_stream >> value;
 		LONGS_EQUAL((i),value);
 		
-		input_stream = istringstream(results[i]["latestEndTime"].asString());
+		input_stream = istringstream(results["tasks"][i]["latestEndTime"].asString());
 		input_stream >> value;
 		LONGS_EQUAL((i + 1),value);
 
-		input_stream = istringstream(results[i]["duration"].asString());
+		input_stream = istringstream(results["tasks"][i]["duration"].asString());
 		input_stream >> value;
 		LONGS_EQUAL((i + 2),value);
 	}
@@ -164,7 +164,7 @@ TEST(AppApiGroup, InsertTask)
 	
 	procedures["insertTask"]->call(params,results);
 	
-	auto result = db->getTasks();
+	auto result = db->getAppData()->tasks;
 	
 	LONGS_EQUAL(1,result->size());
 	
@@ -189,7 +189,7 @@ TEST(AppApiGroup, InsertRecurringTask)
 
 	procedures["insertTask"]->call(params,results);
 
-	auto result = db->getTasks();
+	auto result = db->getAppData()->tasks;
 
 	auto task = result->at(1);
 	LONGS_EQUAL(5,task->getRecurringTaskCount());
@@ -212,7 +212,7 @@ TEST(AppApiGroup, UpdateTask)
 	
 	procedures["updateTask"]->call(params,results);
 	
-	auto result = db->getTasks();
+	auto result = db->getAppData()->tasks;
 	
 	auto task = result->at(parentTaskId);
 	
@@ -240,7 +240,7 @@ TEST(AppApiGroup, UpdateRecurringTask)
 
 	procedures["updateTask"]->call(params,results);
 
-	auto result = db->getTasks();
+	auto result = db->getAppData()->tasks;
 
 	auto task = result->at(parentTaskId);
 
@@ -264,7 +264,7 @@ TEST(AppApiGroup, UpdateRecurringTaskStatus)
 
 	procedures["updateRecurringTaskStatus"]->call(params,results);
 
-	auto result = db->getTasks();
+	auto result = db->getAppData()->tasks;
 
 	auto task = result->at(parentTaskId);
 
@@ -281,7 +281,7 @@ TEST(AppApiGroup, RemoveTask)
 	params["taskId"] = 1;
 	procedures["removeTask"]->call(params,results);
 	
-	auto result = db->getTasks();
+	auto result = db->getAppData()->tasks;
 	
 	LONGS_EQUAL(0,result->size());
 }
@@ -295,31 +295,31 @@ TEST(AppApiGroup, GetEvents)
 
 	db->insertTask(*newTask);
 	
-	procedures["getEvents"]->call(params,results);
+	procedures["getAppData"]->call(params,results);
 	
-	LONGS_EQUAL(1,results.size());
+	LONGS_EQUAL(1,results["events"].size());
 	
 	uint64_t value;
 
-	istringstream input_stream(results[expectedIndex]["eventId"].asString());
+	istringstream input_stream(results["events"][expectedIndex]["eventId"].asString());
 	input_stream >> value;
 	LONGS_EQUAL(0,value);
 
-	input_stream = istringstream(results[expectedIndex]["taskId"].asString());
+	input_stream = istringstream(results["events"][expectedIndex]["taskId"].asString());
 	input_stream >> value;
 	LONGS_EQUAL(1,value);
 
-	STRCMP_EQUAL("Scheduled",results[expectedIndex]["status"].asCString());
+	STRCMP_EQUAL("Scheduled",results["events"][expectedIndex]["status"].asCString());
 
-	input_stream = istringstream(results[expectedIndex]["startTime"].asString());
+	input_stream = istringstream(results["events"][expectedIndex]["startTime"].asString());
 	input_stream >> value;
 	LONGS_EQUAL(newTask->getEarliestStartTime(),value);
 
-	input_stream = istringstream(results[expectedIndex]["duration"].asString());
+	input_stream = istringstream(results["events"][expectedIndex]["duration"].asString());
 	input_stream >> value;
 	LONGS_EQUAL(newTask->getDuration(),value);
 
-	LONGS_EQUAL(newTask->getRecurringIndex(),results[expectedIndex]["recurringIndex"].asInt());
+	LONGS_EQUAL(newTask->getRecurringIndex(),results["events"][expectedIndex]["recurringIndex"].asInt());
 }
 
 
@@ -336,7 +336,7 @@ TEST(AppApiGroup, InsertEvent)
 
 	procedures["insertEvent"]->call(params,results);
 
-	auto result = db->getLoggedEvents();
+	auto result = db->getAppData()->loggedEvents;
 
 	LONGS_EQUAL(1,result->size());
 
@@ -368,7 +368,7 @@ TEST(AppApiGroup, UpdateEvent)
 
 	procedures["updateEvent"]->call(params,results);
 
-	auto result = db->getLoggedEvents();
+	auto result = db->getAppData()->loggedEvents;
 	auto event = result->at(newEvent->getEventId());
 	LONGS_EQUAL(2,event->getStartTime());
 	LONGS_EQUAL(3,event->getDuration());
@@ -389,7 +389,7 @@ TEST(AppApiGroup, RemoveEvent)
 
 	procedures["removeEvent"]->call(params,results);
 
-	auto result = db->getLoggedEvents();
+	auto result = db->getAppData()->loggedEvents;
 
 	LONGS_EQUAL(0,result->size());
 }
@@ -408,8 +408,9 @@ TEST(AppApiGroup, InsertRecurringEvent)
 
 	procedures["insertEvent"]->call(params,results);
 
-	auto tasks = db->getTasks();
-	auto result = db->getLoggedEvents();
+	auto data = db->getAppData();
+	auto tasks = data->tasks;
+	auto result = data->loggedEvents;
 
 	LONGS_EQUAL(1,result->size());
 
@@ -423,6 +424,7 @@ TEST(AppApiGroup, UpdateRecurringEvent)
 	newTask->setRecurranceParameters(1,0);
 	newTask->setStatus(Task::Status::Complete);
 	uint64_t taskId = db->insertTask(*newTask);
+	newTask->setTaskId(taskId);
 	auto newEvent = make_shared<Event>(1,2);
 	newEvent->setParent(newTask->getRecurringChild(1));
 	newEvent->setEventId(db->insertEvent(*newEvent));
@@ -435,8 +437,9 @@ TEST(AppApiGroup, UpdateRecurringEvent)
 
 	procedures["updateEvent"]->call(params,results);
 
-	auto tasks = db->getTasks();
-	auto result = db->getLoggedEvents();
+	auto data = db->getAppData();
+	auto tasks = data->tasks;
+	auto result = data->loggedEvents;
 
 	LONGS_EQUAL(1,result->size());
 
@@ -444,3 +447,24 @@ TEST(AppApiGroup, UpdateRecurringEvent)
 	LONGS_EQUAL(2,event->getParent()->getRecurringIndex());
 }
 
+TEST(AppApiGroup, ValidateAppDataInWindow)
+{
+	auto newTask = make_shared<Task>("",2,4,1);
+	newTask->setStatus(Task::Status::Incomplete);
+	newTask->setRecurranceParameters(10,1);
+	unsigned int expectedIndex = 0;
+
+	unsigned int taskId = db->insertTask(*newTask);
+
+	params["startTime"] = to_string(10);
+	params["endTime"] = to_string(20);
+	procedures["getAppData"]->call(params,results);
+
+	LONGS_EQUAL(0,results["events"].size());
+
+	params["startTime"] = to_string(0);
+	params["endTime"] = to_string(10);
+	procedures["getAppData"]->call(params,results);
+
+	LONGS_EQUAL(1,results["events"].size());
+}

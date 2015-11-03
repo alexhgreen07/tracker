@@ -130,20 +130,47 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 	};
 	
 	/**
-	@method getTasks
+	@method getAppData
 	@memberof module:api~Api
 	@instance
 	@param success
 	@param error
 	*/
-	Api.prototype.getTasks = function(success,error)
+	Api.prototype.getAppData = function(success,error)
 	{
 		error = error || function(data){};
-		this.rpc.request('getTasks', {
+		this.rpc.request('getAppData', {
 			params : {},
 			success : function(data){
-				this.converTaskDateStringsToInts(data.result);
-				this.fillTaskLookup(data.result);
+				this.converTaskDateStringsToInts(data.result.tasks);
+				this.fillTaskLookup(data.result.tasks);
+				this.converEventDateStringsToInts(data.result.events);
+				
+				success(data.result);
+			}.bind(this),
+			error : error
+		});
+	};
+	
+	/**
+	@method getAppDataInWindow
+	@memberof module:api~Api
+	@instance
+	@param success
+	@param error
+	*/
+	Api.prototype.getAppDataInWindow = function(startTime,endTime,success,error)
+	{
+		error = error || function(data){};
+		this.rpc.request('getAppData', {
+			params : {
+				startTime: startTime,
+				endTime: endTime
+			},
+			success : function(data){
+				this.converTaskDateStringsToInts(data.result.tasks);
+				this.fillTaskLookup(data.result.tasks);
+				this.converEventDateStringsToInts(data.result.events);
 				
 				success(data.result);
 			}.bind(this),
@@ -179,9 +206,7 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 				recurringLateOffset: recurringLateOffset.toString()
 			},
 			success : function(data){
-				this.getTasks(function(){
-					success(data.result);
-				},error);
+				success(data.result);
 			}.bind(this),
 			error : error
 		});
@@ -217,9 +242,7 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 				recurringLateOffset: recurringLateOffset.toString()
 			},
 			success : function(data){
-				this.getTasks(function(){
-					success(data.result);
-				},error);
+				success(data.result);
 			}.bind(this),
 			error : error
 		});
@@ -245,9 +268,7 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 				status: status.toString(),
 			},
 			success : function(data){
-				this.getTasks(function(){
-					success(data.result);
-				},error);
+				success(data.result);
 			}.bind(this),
 			error : error
 		});
@@ -269,28 +290,6 @@ define( [ 'jquery', 'jqueryjsonrpc' ], function($) {
 				taskId: taskId
 			},
 			success : function(data){
-				this.getTasks(function(){
-					success(data.result);
-				},error);
-			}.bind(this),
-			error : error
-		});
-	};
-	
-	/**
-	@method getEvents
-	@memberof module:api~Api
-	@instance
-	@param success
-	@param error
-	*/
-	Api.prototype.getEvents = function(success,error)
-	{
-		error = error || function(data){};
-		this.rpc.request('getEvents', {
-			params : {},
-			success : function(data){
-				this.converEventDateStringsToInts(data.result);
 				success(data.result);
 			}.bind(this),
 			error : error

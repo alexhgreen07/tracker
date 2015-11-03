@@ -102,7 +102,7 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 			
 			testApi.taskLookup = dummyTaskLookup;
 			
-			spyOn(testApi, 'getEvents');
+			spyOn(testApi, 'getAppData');
 			spyOn(dummyTaskActionsForm,'render');
 			spyOn(dummyTaskActionsForm.editTaskForm,'setTaskData');
 			spyOn(dummyTaskActionsForm.addEventForm,'setEventData');
@@ -125,7 +125,7 @@ define( [ 'js/calendar_form', 'test/dummy_api' ], function(libCalendarForm,libDu
 		
 		it("queries events on refresh", function() {
 			testForm.refresh();
-			expect(testApi.getEvents).toHaveBeenCalled();
+			expect(testApi.getAppData).toHaveBeenCalled();
 		});
 		
 		it("converts server event to calendar event", function() {

@@ -61,7 +61,6 @@ protected:
 	APP_API_PROCEDURE(ResetProcedure) resetProcedure;
 	APP_API_PROCEDURE(SayHelloProcedure) sayHello;
 
-	APP_API_PROCEDURE(GetTasksProcedure) getTasks;
 	APP_API_PROCEDURE(InsertTask) insertTask;
 	APP_API_PROCEDURE(UpdateTask) updateTask;
 	APP_API_PROCEDURE(UpdateRecurringTaskStatus) updateRecurringTaskStatus;
@@ -69,8 +68,13 @@ protected:
 	APP_API_PROCEDURE(InsertEvent) insertEvent;
 	APP_API_PROCEDURE(UpdateEvent) updateEvent;
 	APP_API_PROCEDURE(RemoveEvent) removeEvent;
-	APP_API_PROCEDURE(GetEvents) getEvents;
 	
+	void fillTaskData(shared_ptr<AppDB::AppData> data, Json::Value& response);
+	void fillEventData(shared_ptr<AppDB::AppData> data, Json::Value& response,
+			uint64_t startTime, uint64_t endTime);
+
+	APP_API_PROCEDURE(GetAppData) getAppData;
+
 	JsonMethods procedurePointers;
 	JsonNotifications notPointers;
 };

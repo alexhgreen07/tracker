@@ -16,11 +16,6 @@
 			"name": "seppi"
 		}
 	},
-	{
-        "method": "getTasks",
-        "isNotification": false,
-        "params": {}
-    },
     {
         "method": "insertTask",
         "isNotification": false,
@@ -42,11 +37,6 @@
         "params": {}
     },
     {
-        "method": "getEvents",
-        "isNotification": false,
-        "params": {}
-    },
-    {
         "method": "insertEvent",
         "isNotification": false,
         "params": {}
@@ -58,6 +48,11 @@
     },
     {
         "method": "removeEvent",
+        "isNotification": false,
+        "params": {}
+    },
+    {
+        "method": "getAppData",
         "isNotification": false,
         "params": {}
     }
