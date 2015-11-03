@@ -17,6 +17,8 @@ define( [ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], 
 		this.resultsDiv = null;
 		
 		this.submitButton = null;
+		
+		this.submitCallback = function(){};
 	}
 	AddTaskForm.prototype.clearResults = function()
 	{
@@ -26,6 +28,7 @@ define( [ './form_helpers', 'moment', 'jquery', 'jqueryui', 'datetimepicker' ], 
 	{
 		this.resultsDiv.innerHTML = "Task submitted";
 		setTimeout(this.clearResults.bind(this),2000);
+		this.submitCallback();
 	};
 	AddTaskForm.prototype.submitError = function()
 	{
